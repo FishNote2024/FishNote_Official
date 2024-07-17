@@ -1,3 +1,4 @@
+import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -153,12 +154,98 @@ class _LedgerPageState extends State<LedgerPage>
                 ],
               ),
             ),
-            const Center(
-              child: Text('경락시세 내용'),
-            ),
+            const Center(child: MarketPriceTable()),
           ],
         ),
       ),
+    );
+  }
+}
+
+class MarketPriceTable extends StatelessWidget {
+  const MarketPriceTable({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("양양수산업협동조합", style: header3B),
+        Text("최근 경락시세", style: header3B),
+        SizedBox(height: 40),
+        Table(
+          border: TableBorder.all(color: Colors.grey),
+          children: const [
+            TableRow(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    '주요 어종',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    '최근 시세 (1kg당)',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('아귀'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('7,666원'),
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('청어'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('13,333원'),
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('정어리'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('111원'),
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('골뱅이'),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('180원'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
