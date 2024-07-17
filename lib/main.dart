@@ -1,4 +1,5 @@
 import 'package:fish_note/view/home/home_view.dart';
+import 'package:fish_note/view/home/ledger_page.dart';
 import 'package:flutter/material.dart';
 
 import 'theme/colors.dart';
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Home(),
+      home: const LedgerPage(),
     );
   }
 }
