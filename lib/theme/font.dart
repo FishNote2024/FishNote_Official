@@ -14,6 +14,7 @@ const TextStyle header1R = TextStyle(
 const TextStyle header1B = TextStyle(
   fontFamily: 'apple_bold',
   fontSize: 26.0,
+  fontWeight: FontWeight.bold,
 );
 
 const TextStyle header2 = TextStyle(
@@ -29,6 +30,7 @@ const TextStyle header3R = TextStyle(
 const TextStyle header3B = TextStyle(
   fontFamily: 'apple_bold',
   fontSize: 18.0,
+  fontWeight: FontWeight.bold,
 );
 
 const TextStyle header4 = TextStyle(
