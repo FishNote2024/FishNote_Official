@@ -19,6 +19,7 @@ class _SignUpAgeRangeState extends State<SignUpAgeRange> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: backgroundBlue,
       ),

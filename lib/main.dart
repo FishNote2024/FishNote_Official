@@ -1,5 +1,6 @@
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/view/signUp/affiliation_info.dart';
+import 'package:fish_note/view/signUp/fishing_technique.dart';
 import 'package:fish_note/view/signUp/primary_species.dart';
 import 'package:fish_note/view/signUp/sign_up_age_range.dart';
 import 'package:fish_note/view/signUp/year_experience.dart';
@@ -49,6 +50,7 @@ class MyApp extends StatelessWidget {
         '/ageRange': (context) => const SignUpAgeRange(),
         '/affiliationInfo': (context) => const AffiliationInfo(),
         '/primarySpecies': (context) => const PrimarySpecies(),
+        '/fishingTechnique': (context) => const FishingTechnique(),
       },
     );
   }
