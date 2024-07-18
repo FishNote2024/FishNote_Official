@@ -63,17 +63,20 @@ class _FishingTechniqueState extends State<FishingTechnique> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('정확한 계산을 위해\n조업 정보를 알려주세요!', style: header1B),
+            Text('정확한 계산을 위해\n조업 정보를 알려주세요!', style: header1B()),
             const SizedBox(height: 8),
-            Text('조업일지, 조업장부 작성 이외에 사용되지 않아요.', style: body1.copyWith(color: gray6)),
+            Text('조업일지, 조업장부 작성 이외에 사용되지 않아요.', style: body1(gray6)),
             const SizedBox(height: 19),
-            const Text('주로 사용하는 어법을 선택해주세요', style: header3B),
+            Text('주로 사용하는 어법을 선택해주세요', style: header3B()),
             const SizedBox(height: 16),
             TextField(
               controller: _controller,
               cursorColor: primaryBlue500,
               readOnly: technique != null,
-              style: TextStyle(color: _controller.text == technique ? Colors.white : Colors.black),
+              style: TextStyle(
+                  color: _controller.text == technique
+                      ? Colors.white
+                      : Colors.black),
               onChanged: (value) => setState(() {
                 searchResult = [];
                 for (int i = 0; i < primaryTechniques.length; i++) {
@@ -90,7 +93,9 @@ class _FishingTechniqueState extends State<FishingTechnique> {
               }),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: _controller.text == technique ? primaryBlue500 : backgroundWhite,
+                fillColor: _controller.text == technique
+                    ? primaryBlue500
+                    : backgroundWhite,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     width: 1,
@@ -113,7 +118,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                   borderRadius: const BorderRadius.all(Radius.circular(5)),
                 ),
                 hintText: '어법 이름을 입력해주세요',
-                hintStyle: body1.copyWith(color: gray3),
+                hintStyle: body1(gray3),
                 contentPadding: const EdgeInsets.all(16),
                 suffixIcon: _controller.text == technique
                     ? IconButton(
@@ -136,12 +141,13 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('주요 어법', style: body2.copyWith(color: gray6)),
+                        Text('주요 어법', style: body2(gray6)),
                         const SizedBox(height: 16),
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(4)),
                                 border: Border.all(
                                   width: 1,
                                   color: gray2,
@@ -150,7 +156,8 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                               itemBuilder: (context, index) => InkWell(
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
-                                  child: Text(primaryTechniques[index], style: body1),
+                                  child: Text(primaryTechniques[index],
+                                      style: body1()),
                                 ),
                                 onTap: () => {
                                   setState(() {
@@ -159,9 +166,11 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                                   }),
                                 },
                               ),
-                              separatorBuilder: (context, index) => const Padding(
+                              separatorBuilder: (context, index) =>
+                                  const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: Divider(thickness: 1, color: gray1, height: 0),
+                                child: Divider(
+                                    thickness: 1, color: gray1, height: 0),
                               ),
                               itemCount: primaryTechniques.length,
                             ),
@@ -174,7 +183,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('검색결과 ${searchResult.length + 1}건',
-                            style: body1.copyWith(color: gray6)),
+                            style: body1(gray6)),
                         const SizedBox(height: 8),
                         InkWell(
                           onTap: () => {
@@ -185,7 +194,8 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(Radius.circular(5)),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(5)),
                               border: Border.all(
                                 width: 1,
                                 color: primaryBlue100,
@@ -195,8 +205,8 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(_controller.text,
-                                    style: body1.copyWith(color: primaryBlue500)),
-                                Text('어법 새로 추가하기', style: body3.copyWith(color: gray5)),
+                                    style: body1(primaryBlue500)),
+                                Text('어법 새로 추가하기', style: body3(gray5)),
                               ],
                             ),
                           ),
@@ -214,16 +224,19 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                               child: Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(5)),
                                   border: Border.all(
                                     width: 1,
                                     color: primaryBlue100,
                                   ),
                                 ),
-                                child: Text(searchResult[index], style: body1),
+                                child:
+                                    Text(searchResult[index], style: body1()),
                               ),
                             ),
-                            separatorBuilder: (context, index) => const SizedBox(height: 8),
+                            separatorBuilder: (context, index) =>
+                                const SizedBox(height: 8),
                             itemCount: searchResult.length,
                           ),
                         ),

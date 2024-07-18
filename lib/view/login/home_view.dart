@@ -33,17 +33,13 @@ class HomeViewState extends State<HomeView> {
               SizedBox(height: 51),
             ],
           ),
-          const Align(
+          Align(
             alignment: Alignment.bottomCenter,
-            child : Padding(
-              padding:  EdgeInsets.only(bottom: 115),
-              child: Text(
-                '오늘도 만선하기 위해',
-                style: header3R
-              ),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 115),
+              child: Text('오늘도 만선하기 위해', style: header3R()),
             ),
-            ),
-
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
@@ -51,13 +47,12 @@ class HomeViewState extends State<HomeView> {
               child: ElevatedButton(
                 onPressed: viewModel.login,
                 style: ElevatedButton.styleFrom(
-
                   backgroundColor: primaryYellow400,
                   minimumSize: Size(328, 51),
-                  textStyle: header3R,
+                  textStyle: header3R(),
                   shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.0), // 직각 모서리
-                ),
+                    borderRadius: BorderRadius.circular(4.0), // 직각 모서리
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,

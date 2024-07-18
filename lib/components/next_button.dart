@@ -28,7 +28,7 @@ class NextButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      child: Text('다음', style: header3R.copyWith(color: Colors.white)),
+      child: Text('다음', style: header3R(Colors.white)),
     );
   }
 }
