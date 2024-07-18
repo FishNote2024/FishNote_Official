@@ -13,7 +13,8 @@ class AffiliationInfo extends StatefulWidget {
 class _AffiliationInfoState extends State<AffiliationInfo> {
   final TextEditingController _controller = TextEditingController();
   String? affiliation;
-  List<String> affiliations = [];
+  List<String> affiliations = ["완즈이", "완즈이 르끼비끼니시티자나?"];
+  List<String> searchResult = [];
 
   @override
   void dispose() {
@@ -51,15 +52,14 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                     readOnly: affiliation != null,
                     style: TextStyle(
                         color: _controller.text == affiliation ? Colors.white : Colors.black),
-                    onChanged: (value) => setState(() {}),
-                    onSubmitted: (value) => {
-                      if (_controller.text.isNotEmpty)
-                        {
-                          setState(() {
-                            affiliations.add(_controller.text);
-                          }),
+                    onChanged: (value) => setState(() {
+                      searchResult = [];
+                      for (int i = 0; i < affiliations.length; i++) {
+                        if (affiliations[i].contains(_controller.text)) {
+                          searchResult.add(affiliations[i]);
                         }
-                    },
+                      }
+                    }),
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: _controller.text == affiliation ? primaryBlue500 : backgroundWhite,
@@ -98,20 +98,11 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                                 }),
                               },
                             )
-                          : IconButton(
-                              icon: const Icon(Icons.search),
-                              onPressed: _controller.text.isEmpty
-                                  ? null
-                                  : () => {
-                                        setState(() {
-                                          affiliations.add(_controller.text);
-                                        }),
-                                      },
-                            ),
+                          : const Icon(Icons.search),
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Text('검색결과 ${affiliations.length}건', style: body1.copyWith(color: gray6)),
+                  Text('검색결과 ${searchResult.length}건', style: body1.copyWith(color: gray6)),
                   const SizedBox(height: 8),
                   Expanded(
                     child: ListView.separated(
@@ -119,8 +110,8 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                       itemBuilder: (context, index) => InkWell(
                         onTap: () => {
                           setState(() {
-                            affiliation = affiliations[index];
-                            _controller.text = affiliations[index];
+                            affiliation = searchResult[index];
+                            _controller.text = searchResult[index];
                           }),
                         },
                         child: Container(
@@ -132,11 +123,11 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                               color: primaryBlue100,
                             ),
                           ),
-                          child: Text(affiliations[index], style: body1.copyWith(color: gray6)),
+                          child: Text(searchResult[index], style: body1.copyWith(color: gray6)),
                         ),
                       ),
                       separatorBuilder: (context, index) => const SizedBox(height: 8),
-                      itemCount: affiliations.length,
+                      itemCount: searchResult.length,
                     ),
                   ),
                   const SizedBox(height: 16),
