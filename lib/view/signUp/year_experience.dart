@@ -32,12 +32,12 @@ class _SignUpState extends State<SignUp> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('안녕하세요, ${widget.name}님!', style: header1B),
+                Text('안녕하세요, ${widget.name}님!', style: header1B()),
                 const SizedBox(height: 8),
                 Text('${widget.name}님의 만선을 위해 몇 가지 정보를 알려주세요.',
-                    style: body1.copyWith(color: gray6)),
+                    style: body1(gray6)),
                 const SizedBox(height: 58),
-                const Text('조업 경력을 선택해주세요', style: header3B),
+                Text('조업 경력을 선택해주세요', style: header3B()),
                 const SizedBox(height: 16),
                 DecoratedBox(
                   decoration: BoxDecoration(
@@ -48,7 +48,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   child: DropdownButton<String>(
-                    hint: Text('햇수를 선택해주세요', style: body1.copyWith(color: gray3)),
+                    hint: Text('햇수를 선택해주세요', style: body1(gray3)),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     underline: const SizedBox.shrink(),
                     isExpanded: true,
@@ -56,7 +56,7 @@ class _SignUpState extends State<SignUp> {
                     items: dropDownList.map<DropdownMenuItem<String>>((value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(value, style: body1),
+                        child: Text(value, style: body1()),
                       );
                     }).toList(),
                     onChanged: (value) => {

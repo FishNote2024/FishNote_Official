@@ -171,8 +171,8 @@ class MarketPriceTable extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("양양수산업협동조합", style: header3B),
-        Text("최근 경락시세", style: header3B),
+        Text("양양수산업협동조합", style: header3B()),
+        Text("최근 경락시세", style: header3B()),
         SizedBox(height: 40),
         Table(
           border: TableBorder.all(color: Colors.grey),
