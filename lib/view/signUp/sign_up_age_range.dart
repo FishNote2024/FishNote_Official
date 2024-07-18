@@ -20,7 +20,7 @@ class _SignUpAgeRangeState extends State<SignUpAgeRange> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: backgroundBlue,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -31,10 +31,10 @@ class _SignUpAgeRangeState extends State<SignUpAgeRange> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 24),
                 Text('안녕하세요, ${widget.name}님!', style: header1B),
                 const SizedBox(height: 8),
-                Text('${widget.name}님의 만선을 위해 몇 가지 정보를 알려주세요.', style: body1),
+                Text('${widget.name}님의 만선을 위해 몇 가지 정보를 알려주세요.',
+                    style: body1.copyWith(color: gray6)),
                 const SizedBox(height: 58),
                 const Text('연령대를 선택해주세요', style: header3B),
                 const SizedBox(height: 16),
@@ -47,7 +47,7 @@ class _SignUpAgeRangeState extends State<SignUpAgeRange> {
                     ),
                   ),
                   child: DropdownButton<String>(
-                    hint: const Text('나이대를 선택해주세요', style: body1),
+                    hint: Text('나이대를 선택해주세요', style: body1.copyWith(color: gray3)),
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     underline: const SizedBox.shrink(),
                     isExpanded: true,
