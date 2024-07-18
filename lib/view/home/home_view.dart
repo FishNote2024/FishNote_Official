@@ -1,3 +1,6 @@
+import 'package:fish_note/theme/colors.dart';
+import 'package:fish_note/theme/font.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -57,13 +60,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        IconButton(
-                            onPressed: () {},
-                            icon:
-                                SvgPicture.asset('assets/icons/location.svg')),
-                        SizedBox(width: 4),
-                        Text('서해 바다 50KM', style: body2),
+                        SvgPicture.asset('assets/icons/location.svg'),
+                        SizedBox(width: 4.0),
+                        Text('서해 바다 50KM', style: body2()),
                       ],
                     ),
                     Text('2024.06.29'),
@@ -84,7 +85,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       Expanded(
                         child: Text(
                           '기상특보 6.28 18:00 서해 앞바다 풍랑주의보',
-                          style: body3,
+                          style: body3(alertRedDefault),
                         ),
                       ),
                     ],
@@ -126,42 +127,49 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   ),
                 ),
                 SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () {},
-                  child: Text('통합 해상정보'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBlue200,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
+                Container(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    onPressed: () {},
+                    child: Row(
+                      children: [
+                        Text('통합 해상정보', style: header4(primaryBlue500)),
+                        Spacer(),
+                        SvgPicture.asset('assets/icons/arrow.svg'),
+                      ],
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      side: BorderSide(color: primaryBlue500),
+                      backgroundColor: Colors.white,
+                      foregroundColor: primaryBlue500,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4.0),
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: 16.0),
-                // TabBar(
-                //   labelColor: primaryBlue500,
-                //   unselectedLabelColor: gray5,
-                //   indicatorColor: primaryBlue500,
-                //   tabs: [
-                //     Tab(text: '조업일지'),
-                //     Tab(text: '조업장부'),
-                //   ],
-                // ),
-
-                // Container(
-                //   width: 100,
-                //   child: TabBar.secondary(
-                //     controller: _tabController,
-                //     tabs: const <Widget>[
-                //       Tab(text: 'Overview'),
-                //       Tab(text: 'Specifications'),
-                //     ],
-                //   ),
-                // ),
+                Container(
+                  width: 180,
+                  child: TabBar.secondary(
+                    labelColor: primaryBlue500,
+                    unselectedLabelColor: gray5,
+                    indicatorColor: primaryBlue500,
+                    labelStyle: header4(),
+                    controller: _tabController,
+                    tabs: const <Widget>[
+                      Tab(text: '조업일지'),
+                      Tab(text: '조업장부'),
+                    ],
+                  ),
+                ),
                 Expanded(
                   child: TabBarView(
-                    children: [
-                      Center(child: writeFishingLogCard()),
-                      Center(child: fishingLedgerCard()),
+                    controller: _tabController,
+                    children: <Widget>[
+                      writeFishingLogCard(),
+                      fishingLedgerCard(),
                     ],
                   ),
                 ),
@@ -187,87 +195,111 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   }
 
   Widget writeFishingLogCard() {
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('조업일지 작성하기'),
-            SizedBox(height: 8.0),
-            Text('오늘도 만선을 위해 조업일지를 작성하세요!'),
-          ],
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 14.0),
+          child: Container(
+              height: 150,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: primaryBlue500),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        SvgPicture.asset('assets/icons/fishNote.svg'),
+                      ],
+                    ),
+                    SizedBox(width: 30),
+                    Container(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("조업일지 작성하기", style: header3B(Colors.white)),
+                          SizedBox(height: 8),
+                          Text("오늘도 만선을 위해\n조업일지를 작성하세요!",
+                              style: body3(Colors.white))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              )),
         ),
-      ),
+      ],
     );
   }
 
   Widget fishingLedgerCard() {
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return SingleChildScrollView(
+      child: Container(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '매출 ',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.black,
-                  ),
-                ),
-                Text(
-                  '15,145,070원',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.blue,
-                  ),
-                ),
-                Text(
-                  '지출 ',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.black,
-                  ),
-                ),
-                Text(
-                  '5,000,000원',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.orange,
-                  ),
-                ),
+                Text('매출 ', style: body3(gray4)),
+                Text('15,145,070원', style: header4(primaryBlue300)),
+                SizedBox(width: 20),
+                Text('지출 ', style: body3(gray4)),
+                Text('5,000,000원', style: header4(primaryYellow900)),
               ],
             ),
-            Text(
-              '합계 ',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.black,
-              ),
-            ),
-            Text(
-              '10,145,070원',
-              style: TextStyle(
-                fontSize: 16.0,
-                color: Colors.blue,
-              ),
+            SizedBox(height: 5),
+            Row(
+              children: [
+                Text('합계 ', style: body3(gray4)),
+                Text('10,145,070원', style: header3B(primaryBlue500)),
+              ],
             ),
             SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {},
-              child: Text('조업 장부 자세히 보기'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+            Container(
+              height: 150,
+              child: LineChart(
+                LineChartData(
+                  gridData: FlGridData(show: true),
+                  titlesData: FlTitlesData(show: false),
+                  borderData: FlBorderData(show: true),
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: [
+                        FlSpot(0, 1),
+                        FlSpot(1, 1.5),
+                        FlSpot(2, 1.4),
+                        FlSpot(3, 3.4),
+                        FlSpot(4, 2),
+                        FlSpot(5, 2.2),
+                        FlSpot(6, 1.8),
+                      ],
+                      isCurved: false,
+                      color: primaryBlue500,
+                      barWidth: 1,
+                      isStrokeCapRound: true,
+                      belowBarData: BarAreaData(show: false),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              height: 48,
+              child: OutlinedButton(
+                onPressed: () {},
+                child: Text('조업 장부 자세히 보기', style: header4(Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  side: BorderSide(color: primaryBlue500),
+                  backgroundColor: primaryBlue500,
+                  foregroundColor: primaryBlue500,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4.0),
+                  ),
                 ),
               ),
             ),
@@ -277,18 +309,3 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 }
-
-// Colors and text styles for this example
-const Color primaryBlue200 = Color(0xFF90CAF9);
-const Color primaryBlue500 = Color(0xFF2196F3);
-const Color gray5 = Color(0xFFBDBDBD);
-
-const TextStyle body2 = TextStyle(
-  fontFamily: 'apple_r',
-  fontSize: 14.0,
-);
-
-const TextStyle body3 = TextStyle(
-  fontFamily: 'apple_r',
-  fontSize: 12.0,
-);
