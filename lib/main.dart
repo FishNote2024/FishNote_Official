@@ -1,9 +1,14 @@
+
+import 'package:fish_note/view/home/home_view.dart';
+import 'package:fish_note/view/home/ledger_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/view/signUp/affiliation_info.dart';
 import 'package:fish_note/view/signUp/sign_up_age_range.dart';
 import 'package:fish_note/view/signUp/year_experience.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+
+import 'theme/colors.dart';
 
 void main() {
   KakaoSdk.init(nativeAppKey: '5df0c1f5ae7c5485d949731c13179fc3');
@@ -39,6 +44,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: backgroundBlue,
         useMaterial3: true,
       ),
+
       initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
