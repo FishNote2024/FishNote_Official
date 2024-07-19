@@ -46,10 +46,12 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
               cursorColor: primaryBlue500,
               style: const TextStyle(color: Colors.black),
               onChanged: (value) => setState(() {
-                speciesList = [];
-                for (int i = 0; i < top10.length; i++) {
-                  if (top10[i].contains(_controller.text)) {
-                    speciesList.add(top10[i]);
+                if (_controller.text.isNotEmpty) {
+                  speciesList = [];
+                  for (int i = 0; i < top10.length; i++) {
+                    if (top10[i].contains(_controller.text)) {
+                      speciesList.add(top10[i]);
+                    }
                   }
                 }
               }),

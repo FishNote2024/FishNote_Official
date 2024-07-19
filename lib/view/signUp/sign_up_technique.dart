@@ -75,17 +75,16 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
               readOnly: technique != null,
               style: TextStyle(color: _controller.text == technique ? Colors.white : Colors.black),
               onChanged: (value) => setState(() {
-                searchResult = [];
-                for (int i = 0; i < primaryTechniques.length; i++) {
-                  if (primaryTechniques[i].contains(_controller.text)) {
-                    searchResult.add(primaryTechniques[i]);
-                  }
-                }
-
                 if (_controller.text.isEmpty) {
                   isNotSearch = true;
                 } else {
                   isNotSearch = false;
+                  searchResult = [];
+                  for (int i = 0; i < primaryTechniques.length; i++) {
+                    if (primaryTechniques[i].contains(_controller.text)) {
+                      searchResult.add(primaryTechniques[i]);
+                    }
+                  }
                 }
               }),
               decoration: InputDecoration(

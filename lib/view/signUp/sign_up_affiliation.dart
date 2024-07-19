@@ -13,7 +13,7 @@ class SignUpAffiliation extends StatefulWidget {
 class _SignUpAffiliationState extends State<SignUpAffiliation> {
   final TextEditingController _controller = TextEditingController();
   String? affiliation;
-  List<String> affiliations = ["완즈이", "완즈이 르끼비끼니시티자나?"];
+  List<String> affiliations = ["완즈이", "완즈이 르끼비끼니시티자나?", "구룡포 수협"];
   List<String> searchResult = [];
 
   @override
@@ -53,10 +53,12 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
                     style: TextStyle(
                         color: _controller.text == affiliation ? Colors.white : Colors.black),
                     onChanged: (value) => setState(() {
-                      searchResult = [];
-                      for (int i = 0; i < affiliations.length; i++) {
-                        if (affiliations[i].contains(_controller.text)) {
-                          searchResult.add(affiliations[i]);
+                      if (_controller.text.isNotEmpty) {
+                        searchResult = [];
+                        for (int i = 0; i < affiliations.length; i++) {
+                          if (affiliations[i].contains(_controller.text)) {
+                            searchResult.add(affiliations[i]);
+                          }
                         }
                       }
                     }),
