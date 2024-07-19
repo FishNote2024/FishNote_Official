@@ -3,16 +3,16 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+class SignUpYearExperience extends StatefulWidget {
+  const SignUpYearExperience({super.key});
 
   final String name = "지수";
 
   @override
-  State<SignUp> createState() => _SignUpState();
+  State<SignUpYearExperience> createState() => _SignUpYearExperienceState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpYearExperienceState extends State<SignUpYearExperience> {
   List<String> dropDownList = ['0~5년', '6~10년', '11년 이상'];
   String? dropdownValue;
 
@@ -22,6 +22,7 @@ class _SignUpState extends State<SignUp> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: backgroundBlue,
+        surfaceTintColor: backgroundBlue,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -34,8 +35,7 @@ class _SignUpState extends State<SignUp> {
               children: [
                 Text('안녕하세요, ${widget.name}님!', style: header1B()),
                 const SizedBox(height: 8),
-                Text('${widget.name}님의 만선을 위해 몇 가지 정보를 알려주세요.',
-                    style: body1(gray6)),
+                Text('${widget.name}님의 만선을 위해 몇 가지 정보를 알려주세요.', style: body1(gray6)),
                 const SizedBox(height: 58),
                 Text('조업 경력을 선택해주세요', style: header3B()),
                 const SizedBox(height: 16),
@@ -68,7 +68,7 @@ class _SignUpState extends State<SignUp> {
                 ),
               ],
             ),
-            NextButton(value: dropdownValue, route: '/ageRange'),
+            NextButton(value: dropdownValue, route: '/signUp/ageRange'),
           ],
         ),
       ),

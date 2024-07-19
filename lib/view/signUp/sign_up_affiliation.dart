@@ -3,14 +3,14 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 
-class AffiliationInfo extends StatefulWidget {
-  const AffiliationInfo({super.key});
+class SignUpAffiliation extends StatefulWidget {
+  const SignUpAffiliation({super.key});
 
   @override
-  State<AffiliationInfo> createState() => _AffiliationInfoState();
+  State<SignUpAffiliation> createState() => _SignUpAffiliationState();
 }
 
-class _AffiliationInfoState extends State<AffiliationInfo> {
+class _SignUpAffiliationState extends State<SignUpAffiliation> {
   final TextEditingController _controller = TextEditingController();
   String? affiliation;
   List<String> affiliations = ["완즈이", "완즈이 르끼비끼니시티자나?"];
@@ -51,9 +51,7 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                     cursorColor: primaryBlue500,
                     readOnly: affiliation != null,
                     style: TextStyle(
-                        color: _controller.text == affiliation
-                            ? Colors.white
-                            : Colors.black),
+                        color: _controller.text == affiliation ? Colors.white : Colors.black),
                     onChanged: (value) => setState(() {
                       searchResult = [];
                       for (int i = 0; i < affiliations.length; i++) {
@@ -64,17 +62,13 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                     }),
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: _controller.text == affiliation
-                          ? primaryBlue500
-                          : backgroundWhite,
+                      fillColor: _controller.text == affiliation ? primaryBlue500 : backgroundWhite,
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 1,
-                          color:
-                              _controller.text.isEmpty ? gray2 : primaryBlue500,
+                          color: _controller.text.isEmpty ? gray2 : primaryBlue500,
                         ),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5)),
+                        borderRadius: const BorderRadius.all(Radius.circular(5)),
                       ),
                       disabledBorder: const OutlineInputBorder(
                         borderSide: BorderSide(
@@ -86,11 +80,9 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 1,
-                          color:
-                              _controller.text.isEmpty ? gray2 : primaryBlue500,
+                          color: _controller.text.isEmpty ? gray2 : primaryBlue500,
                         ),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5)),
+                        borderRadius: const BorderRadius.all(Radius.circular(5)),
                       ),
                       hintText: '조합 이름을 입력해주세요',
                       hintStyle: body1(gray3),
@@ -125,8 +117,7 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(5)),
+                            borderRadius: const BorderRadius.all(Radius.circular(5)),
                             border: Border.all(
                               width: 1,
                               color: primaryBlue100,
@@ -135,8 +126,7 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                           child: Text(searchResult[index], style: body1(gray6)),
                         ),
                       ),
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 8),
+                      separatorBuilder: (context, index) => const SizedBox(height: 8),
                       itemCount: searchResult.length,
                     ),
                   ),
@@ -144,7 +134,7 @@ class _AffiliationInfoState extends State<AffiliationInfo> {
                 ],
               ),
             ),
-            NextButton(value: affiliation, route: '/primarySpecies'),
+            NextButton(value: affiliation, route: '/signUp/species'),
           ],
         ),
       ),

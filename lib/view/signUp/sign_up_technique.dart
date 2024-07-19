@@ -3,14 +3,14 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 
-class FishingTechnique extends StatefulWidget {
-  const FishingTechnique({super.key});
+class SignUpTechnique extends StatefulWidget {
+  const SignUpTechnique({super.key});
 
   @override
-  State<FishingTechnique> createState() => _FishingTechniqueState();
+  State<SignUpTechnique> createState() => _SignUpTechniqueState();
 }
 
-class _FishingTechniqueState extends State<FishingTechnique> {
+class _SignUpTechniqueState extends State<SignUpTechnique> {
   final TextEditingController _controller = TextEditingController();
   bool isNotSearch = true;
   String? technique;
@@ -73,10 +73,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
               controller: _controller,
               cursorColor: primaryBlue500,
               readOnly: technique != null,
-              style: TextStyle(
-                  color: _controller.text == technique
-                      ? Colors.white
-                      : Colors.black),
+              style: TextStyle(color: _controller.text == technique ? Colors.white : Colors.black),
               onChanged: (value) => setState(() {
                 searchResult = [];
                 for (int i = 0; i < primaryTechniques.length; i++) {
@@ -93,9 +90,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
               }),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: _controller.text == technique
-                    ? primaryBlue500
-                    : backgroundWhite,
+                fillColor: _controller.text == technique ? primaryBlue500 : backgroundWhite,
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(
                     width: 1,
@@ -146,8 +141,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                         Expanded(
                           child: Container(
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(4)),
+                                borderRadius: const BorderRadius.all(Radius.circular(4)),
                                 border: Border.all(
                                   width: 1,
                                   color: gray2,
@@ -156,8 +150,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                               itemBuilder: (context, index) => InkWell(
                                 child: Padding(
                                   padding: const EdgeInsets.all(16),
-                                  child: Text(primaryTechniques[index],
-                                      style: body1()),
+                                  child: Text(primaryTechniques[index], style: body1()),
                                 ),
                                 onTap: () => {
                                   setState(() {
@@ -166,11 +159,9 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                                   }),
                                 },
                               ),
-                              separatorBuilder: (context, index) =>
-                                  const Padding(
+                              separatorBuilder: (context, index) => const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: Divider(
-                                    thickness: 1, color: gray1, height: 0),
+                                child: Divider(thickness: 1, color: gray1, height: 0),
                               ),
                               itemCount: primaryTechniques.length,
                             ),
@@ -182,8 +173,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('검색결과 ${searchResult.length + 1}건',
-                            style: body1(gray6)),
+                        Text('검색결과 ${searchResult.length + 1}건', style: body1(gray6)),
                         const SizedBox(height: 8),
                         InkWell(
                           onTap: () => {
@@ -194,8 +184,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                           child: Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(5)),
+                              borderRadius: const BorderRadius.all(Radius.circular(5)),
                               border: Border.all(
                                 width: 1,
                                 color: primaryBlue100,
@@ -204,8 +193,7 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(_controller.text,
-                                    style: body1(primaryBlue500)),
+                                Text(_controller.text, style: body1(primaryBlue500)),
                                 Text('어법 새로 추가하기', style: body3(gray5)),
                               ],
                             ),
@@ -224,26 +212,23 @@ class _FishingTechniqueState extends State<FishingTechnique> {
                               child: Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(5)),
+                                  borderRadius: const BorderRadius.all(Radius.circular(5)),
                                   border: Border.all(
                                     width: 1,
                                     color: primaryBlue100,
                                   ),
                                 ),
-                                child:
-                                    Text(searchResult[index], style: body1()),
+                                child: Text(searchResult[index], style: body1()),
                               ),
                             ),
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: 8),
+                            separatorBuilder: (context, index) => const SizedBox(height: 8),
                             itemCount: searchResult.length,
                           ),
                         ),
                       ],
                     ),
             ),
-            NextButton(value: technique, route: '/primarySpecies'),
+            NextButton(value: technique, route: '/signUp/permission'),
           ],
         ),
       ),

@@ -22,6 +22,7 @@ class _SignUpAgeRangeState extends State<SignUpAgeRange> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: backgroundBlue,
+        surfaceTintColor: backgroundBlue,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
@@ -34,8 +35,7 @@ class _SignUpAgeRangeState extends State<SignUpAgeRange> {
               children: [
                 Text('안녕하세요, ${widget.name}님!', style: header1B()),
                 const SizedBox(height: 8),
-                Text('${widget.name}님의 만선을 위해 몇 가지 정보를 알려주세요.',
-                    style: body1(gray6)),
+                Text('${widget.name}님의 만선을 위해 몇 가지 정보를 알려주세요.', style: body1(gray6)),
                 const SizedBox(height: 58),
                 Text('연령대를 선택해주세요', style: header3B()),
                 const SizedBox(height: 16),
@@ -68,7 +68,7 @@ class _SignUpAgeRangeState extends State<SignUpAgeRange> {
                 ),
               ],
             ),
-            NextButton(value: dropdownValue, route: '/affiliationInfo'),
+            NextButton(value: dropdownValue, route: '/signUp/affiliation'),
           ],
         ),
       ),
