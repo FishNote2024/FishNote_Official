@@ -83,6 +83,7 @@ class _SignUpViewState extends State<SignUpView> {
                     progressColor: primaryYellow500,
                     lineHeight: 4,
                     barRadius: const Radius.circular(4),
+                    animation: true,
                     animateFromLastPercent: true,
                   ),
                   Expanded(
@@ -102,6 +103,7 @@ class _SignUpViewState extends State<SignUpView> {
                     progressColor: primaryYellow500,
                     lineHeight: 4,
                     barRadius: const Radius.circular(4),
+                    animation: true,
                     animateFromLastPercent: true,
                   ),
                 ),
