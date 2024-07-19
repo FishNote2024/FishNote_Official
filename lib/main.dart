@@ -1,12 +1,6 @@
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/view/home/home_view.dart';
-import 'package:fish_note/view/signUp/sign_up_affiliation.dart';
-import 'package:fish_note/view/signUp/sign_up_location.dart';
-import 'package:fish_note/view/signUp/sign_up_technique.dart';
-import 'package:fish_note/view/signUp/sign_up_permission.dart';
-import 'package:fish_note/view/signUp/sign_up_species.dart';
-import 'package:fish_note/view/signUp/sign_up_age_range.dart';
-import 'package:fish_note/view/signUp/sign_up_year_experience.dart';
+import 'package:fish_note/view/signUp/sign_up_view.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
@@ -49,13 +43,7 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const MyHomePage(),
         // When navigating to the "/second" route, build the SecondScreen widget.
-        '/signUp/yearExperience': (context) => const SignUpYearExperience(),
-        '/signUp/ageRange': (context) => const SignUpAgeRange(),
-        '/signUp/affiliation': (context) => const SignUpAffiliation(),
-        '/signUp/species': (context) => const SignUpSpecies(),
-        '/signUp/technique': (context) => const SignUpTechnique(),
-        '/signUp/permission': (context) => const SignUpPermission(),
-        '/signUp/location': (context) => const SignUpLocation(),
+        '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),
       },
     );
@@ -70,14 +58,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: ElevatedButton(
-          onPressed: () => {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const SignUpYearExperience(),
-              ),
-            )
-          },
+          onPressed: () => {Navigator.pushNamed(context, '/signUp')},
           child: const Text("Sign Up"),
         ),
       ),
