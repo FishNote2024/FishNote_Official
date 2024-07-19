@@ -39,7 +39,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
             children: [
               Container(color: primaryYellow500),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.end,
