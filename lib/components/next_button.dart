@@ -7,11 +7,11 @@ class NextButton extends StatelessWidget {
   const NextButton({
     super.key,
     required this.value,
-    required this.route,
+    required this.onNext,
   });
 
   final String? value;
-  final String route;
+  final VoidCallback onNext;
 
   void _showPermissionModal(BuildContext context) {
     showModalBottomSheet(
@@ -46,7 +46,7 @@ class NextButton extends StatelessWidget {
               onPressed: () {
                 // 허용 버튼 클릭 시 동작 + @@권한 설정 기능@@
                 Navigator.pop(context);
-                Navigator.pushNamed(context, route);
+                onNext();
               },
               style: TextButton.styleFrom(
                 foregroundColor: textBlack,
@@ -79,9 +79,7 @@ class NextButton extends StatelessWidget {
           ? () => _showPermissionModal(context)
           : value == null
               ? null
-              : () => {
-                    Navigator.pushNamed(context, route),
-                  },
+              : onNext,
       style: ElevatedButton.styleFrom(
         backgroundColor: value == null ? gray2 : primaryBlue500,
         foregroundColor: Colors.white,

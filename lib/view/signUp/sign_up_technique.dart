@@ -4,7 +4,9 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 
 class SignUpTechnique extends StatefulWidget {
-  const SignUpTechnique({super.key});
+  const SignUpTechnique({super.key, required this.onNext});
+
+  final VoidCallback onNext;
 
   @override
   State<SignUpTechnique> createState() => _SignUpTechniqueState();
@@ -52,132 +54,153 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: backgroundBlue,
-        surfaceTintColor: backgroundBlue,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('정확한 계산을 위해\n조업 정보를 알려주세요!', style: header1B()),
-            const SizedBox(height: 8),
-            Text('조업일지, 조업장부 작성 이외에 사용되지 않아요.', style: body1(gray6)),
-            const SizedBox(height: 19),
-            Text('주로 사용하는 어법을 선택해주세요', style: header3B()),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _controller,
-              cursorColor: primaryBlue500,
-              readOnly: technique != null,
-              style: TextStyle(color: _controller.text == technique ? Colors.white : Colors.black),
-              onChanged: (value) => setState(() {
-                if (_controller.text.isEmpty) {
-                  isNotSearch = true;
-                } else {
-                  isNotSearch = false;
-                  searchResult = [];
-                  for (int i = 0; i < primaryTechniques.length; i++) {
-                    if (primaryTechniques[i].contains(_controller.text)) {
-                      searchResult.add(primaryTechniques[i]);
-                    }
-                  }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 16),
+        Text('정확한 계산을 위해\n조업 정보를 알려주세요!', style: header1B()),
+        const SizedBox(height: 8),
+        Text('조업일지, 조업장부 작성 이외에 사용되지 않아요.', style: body1(gray6)),
+        const SizedBox(height: 19),
+        Text('주로 사용하는 어법을 선택해주세요', style: header3B()),
+        const SizedBox(height: 16),
+        TextField(
+          controller: _controller,
+          cursorColor: primaryBlue500,
+          readOnly: technique != null,
+          style: TextStyle(color: _controller.text == technique ? Colors.white : Colors.black),
+          onChanged: (value) => setState(() {
+            if (_controller.text.isEmpty) {
+              isNotSearch = true;
+            } else {
+              isNotSearch = false;
+              searchResult = [];
+              for (int i = 0; i < primaryTechniques.length; i++) {
+                if (primaryTechniques[i].contains(_controller.text)) {
+                  searchResult.add(primaryTechniques[i]);
                 }
-              }),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: _controller.text == technique ? primaryBlue500 : backgroundWhite,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 1,
-                    color: _controller.text.isEmpty ? gray2 : primaryBlue500,
-                  ),
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                ),
-                disabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 1,
-                    color: primaryBlue500,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 1,
-                    color: _controller.text.isEmpty ? gray2 : primaryBlue500,
-                  ),
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                ),
-                hintText: '어법 이름을 입력해주세요',
-                hintStyle: body1(gray3),
-                contentPadding: const EdgeInsets.all(16),
-                suffixIcon: _controller.text == technique
-                    ? IconButton(
-                        icon: const Icon(Icons.close_rounded),
-                        color: Colors.white,
-                        onPressed: () => {
-                          setState(() {
-                            _controller.text = "";
-                            isNotSearch = true;
-                            technique = null;
-                          }),
-                        },
-                      )
-                    : const Icon(Icons.search),
+              }
+            }
+          }),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: _controller.text == technique ? primaryBlue500 : backgroundWhite,
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                width: 1,
+                color: _controller.text.isEmpty ? gray2 : primaryBlue500,
               ),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: isNotSearch
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('주요 어법', style: body2(gray6)),
-                        const SizedBox(height: 16),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.all(Radius.circular(4)),
-                                border: Border.all(
-                                  width: 1,
-                                  color: gray2,
-                                )),
-                            child: ListView.separated(
-                              itemBuilder: (context, index) => InkWell(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16),
-                                  child: Text(primaryTechniques[index], style: body1()),
-                                ),
-                                onTap: () => {
-                                  setState(() {
-                                    technique = primaryTechniques[index];
-                                    _controller.text = primaryTechniques[index];
-                                  }),
-                                },
-                              ),
-                              separatorBuilder: (context, index) => const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
-                                child: Divider(thickness: 1, color: gray1, height: 0),
-                              ),
-                              itemCount: primaryTechniques.length,
+            disabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(
+                width: 1,
+                color: primaryBlue500,
+              ),
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                width: 1,
+                color: _controller.text.isEmpty ? gray2 : primaryBlue500,
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+            ),
+            hintText: '어법 이름을 입력해주세요',
+            hintStyle: body1(gray3),
+            contentPadding: const EdgeInsets.all(16),
+            suffixIcon: _controller.text == technique
+                ? IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    color: Colors.white,
+                    onPressed: () => {
+                      setState(() {
+                        _controller.text = "";
+                        isNotSearch = true;
+                        technique = null;
+                      }),
+                    },
+                  )
+                : const Icon(Icons.search),
+          ),
+        ),
+        const SizedBox(height: 20),
+        Expanded(
+          child: isNotSearch
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('주요 어법', style: body2(gray6)),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.all(Radius.circular(4)),
+                            border: Border.all(
+                              width: 1,
+                              color: gray2,
+                            )),
+                        child: ListView.separated(
+                          itemBuilder: (context, index) => InkWell(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(primaryTechniques[index], style: body1()),
                             ),
+                            onTap: () => {
+                              setState(() {
+                                technique = primaryTechniques[index];
+                                _controller.text = primaryTechniques[index];
+                              }),
+                            },
+                          ),
+                          separatorBuilder: (context, index) => const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: Divider(thickness: 1, color: gray1, height: 0),
+                          ),
+                          itemCount: primaryTechniques.length,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('검색결과 ${searchResult.length + 1}건', style: body1(gray6)),
+                    const SizedBox(height: 8),
+                    InkWell(
+                      onTap: () => {
+                        setState(() {
+                          technique = _controller.text;
+                        }),
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(5)),
+                          border: Border.all(
+                            width: 1,
+                            color: primaryBlue100,
                           ),
                         ),
-                        const SizedBox(height: 16),
-                      ],
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('검색결과 ${searchResult.length + 1}건', style: body1(gray6)),
-                        const SizedBox(height: 8),
-                        InkWell(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_controller.text, style: body1(primaryBlue500)),
+                            Text('어법 새로 추가하기', style: body3(gray5)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: ListView.separated(
+                        itemBuilder: (context, index) => InkWell(
                           onTap: () => {
                             setState(() {
-                              technique = _controller.text;
+                              technique = searchResult[index];
+                              _controller.text = primaryTechniques[index];
                             }),
                           },
                           child: Container(
@@ -189,48 +212,18 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                                 color: primaryBlue100,
                               ),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(_controller.text, style: body1(primaryBlue500)),
-                                Text('어법 새로 추가하기', style: body3(gray5)),
-                              ],
-                            ),
+                            child: Text(searchResult[index], style: body1()),
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Expanded(
-                          child: ListView.separated(
-                            itemBuilder: (context, index) => InkWell(
-                              onTap: () => {
-                                setState(() {
-                                  technique = searchResult[index];
-                                  _controller.text = primaryTechniques[index];
-                                }),
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: primaryBlue100,
-                                  ),
-                                ),
-                                child: Text(searchResult[index], style: body1()),
-                              ),
-                            ),
-                            separatorBuilder: (context, index) => const SizedBox(height: 8),
-                            itemCount: searchResult.length,
-                          ),
-                        ),
-                      ],
+                        separatorBuilder: (context, index) => const SizedBox(height: 8),
+                        itemCount: searchResult.length,
+                      ),
                     ),
-            ),
-            NextButton(value: technique, route: '/signUp/permission'),
-          ],
+                  ],
+                ),
         ),
-      ),
+        NextButton(value: technique, onNext: widget.onNext),
+      ],
     );
   }
 }
