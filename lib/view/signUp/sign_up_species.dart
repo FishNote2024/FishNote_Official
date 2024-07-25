@@ -43,9 +43,9 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
           onChanged: (value) => setState(() {
             if (_controller.text.isNotEmpty) {
               speciesList = [];
-              for (int i = 0; i < top10.length; i++) {
-                if (top10[i].contains(_controller.text)) {
-                  speciesList.add(top10[i]);
+              for (final item in top10) {
+                if (item.contains(_controller.text)) {
+                  speciesList.add(item);
                 }
               }
             }
