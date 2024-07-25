@@ -4,6 +4,7 @@ import 'package:fish_note/view/login/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class HomeView extends StatefulWidget {
   @override
@@ -24,8 +25,8 @@ class HomeViewState extends State<HomeView> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset(
-                    'assets/logo.png',
+                  SvgPicture.asset(
+                    'assets/icons/logo.svg',
                     height: 150,
                   ),
                 ],
@@ -58,7 +59,7 @@ class HomeViewState extends State<HomeView> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Image.asset(
-                      'assets/kakao_icon.png',
+                      'assets/icons/kakao_talk.png',
                       height: 24,
                       width: 24,
                     ),
