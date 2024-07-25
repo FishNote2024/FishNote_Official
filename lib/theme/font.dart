@@ -20,6 +20,7 @@ TextStyle header1R([Color color = Colors.black]) {
 TextStyle header1B([Color color = Colors.black]) {
   return TextStyle(
     fontFamily: 'Pretendard-Bold',
+    fontWeight: FontWeight.bold,
     fontSize: 26.0,
     color: color,
   );
@@ -44,6 +45,7 @@ TextStyle header3R([Color color = Colors.black]) {
 TextStyle header3B([Color color = Colors.black]) {
   return TextStyle(
     fontFamily: 'Pretendard-Bold',
+    fontWeight: FontWeight.bold,
     fontSize: 18.0,
     color: color,
   );

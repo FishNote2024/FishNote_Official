@@ -75,9 +75,9 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
             } else {
               isNotSearch = false;
               searchResult = [];
-              for (int i = 0; i < primaryTechniques.length; i++) {
-                if (primaryTechniques[i].contains(_controller.text)) {
-                  searchResult.add(primaryTechniques[i]);
+              for (final item in primaryTechniques) {
+                if (item.contains(_controller.text)) {
+                  searchResult.add(item);
                 }
               }
             }
