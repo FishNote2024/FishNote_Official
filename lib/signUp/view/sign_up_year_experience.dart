@@ -1,4 +1,4 @@
-import 'package:fish_note/components/next_button.dart';
+import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';

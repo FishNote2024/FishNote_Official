@@ -1,31 +1,29 @@
-import 'package:fish_note/view/login/social_login.dart';
+import 'package:fish_note/login/view/social_login.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
-class KakaoLogin implements SocialLogin{
+class KakaoLogin implements SocialLogin {
   @override
   Future<bool> login() async {
-    try{
+    try {
       bool isInstalled = await isKakaoTalkInstalled();
-      if(isInstalled){
-        try{
+      if (isInstalled) {
+        try {
           await UserApi.instance.loginWithKakaoTalk();
           return true;
-        }catch(e){
+        } catch (e) {
           return false;
         }
-      } else{
-        try{
+      } else {
+        try {
           await UserApi.instance.loginWithKakaoAccount();
           return true;
-        }catch(e){
+        } catch (e) {
           return false;
         }
       }
-    }catch(e){
+    } catch (e) {
       return false;
     }
-
-
   }
 
   @override
@@ -37,7 +35,4 @@ class KakaoLogin implements SocialLogin{
       return false;
     }
   }
-
 }
-
-

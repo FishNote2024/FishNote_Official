@@ -1,5 +1,5 @@
-import 'package:fish_note/view/login/kakao_login.dart';
-import 'package:fish_note/view/login/main_view_model.dart';
+import 'package:fish_note/login/view/kakao_login.dart';
+import 'package:fish_note/login/view/main_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
