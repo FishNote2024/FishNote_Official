@@ -1,22 +1,50 @@
-import 'package:fish_note/components/next_button.dart';
+import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 
-class SignUpSpecies extends StatefulWidget {
-  const SignUpSpecies({super.key, required this.onNext});
+class SignUpTechnique extends StatefulWidget {
+  const SignUpTechnique({super.key, required this.onNext});
 
   final VoidCallback onNext;
 
   @override
-  State<SignUpSpecies> createState() => _SignUpSpeciesState();
+  State<SignUpTechnique> createState() => _SignUpTechniqueState();
 }
 
-class _SignUpSpeciesState extends State<SignUpSpecies> {
+class _SignUpTechniqueState extends State<SignUpTechnique> {
   final TextEditingController _controller = TextEditingController();
-  List<String> selectedList = [];
-  List<String> speciesList = [];
-  List<String> top10 = ["가자미", "갈치", "감성돔", "광어", "노래미", "농어", "고등어", "방어", "우럭", "참돔"];
+  bool isNotSearch = true;
+  String? technique;
+  List<String> searchResult = [];
+  List<String> primaryTechniques = [
+    "가자미어업",
+    "건간망 어업",
+    "기선권현망 어업",
+    "기타통발 어업",
+    "끌낚시 어업",
+    "낭장망 어업",
+    "문어단지 어업",
+    "미역어업",
+    "방치망 어업",
+    "병어 어업",
+    "선망 어업",
+    "새우조망 어업",
+    "안강망 어업",
+    "자망 어업",
+    "자리돔들망 어업",
+    "쌍끌이 기선저인망 어업",
+    "연승 어업",
+    "외끌이 기선저인망 어업",
+    "외줄낚시 어업",
+    "패류껍질 어업",
+    "트롤 어업",
+    "정치망 어업",
+    "초망 어업",
+    "죽방렴 어업",
+    "주목망 어업",
+    "장어통발 어업"
+  ];
 
   @override
   void dispose() {
@@ -34,25 +62,29 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
         const SizedBox(height: 8),
         Text('조업일지, 조업장부 작성 이외에 사용되지 않아요.', style: body1(gray6)),
         const SizedBox(height: 19),
-        Text('주 어종을 선택해주세요.', style: header3B()),
+        Text('주로 사용하는 어법을 선택해주세요', style: header3B()),
         const SizedBox(height: 16),
         TextField(
           controller: _controller,
           cursorColor: primaryBlue500,
-          style: const TextStyle(color: Colors.black),
+          readOnly: technique != null,
+          style: TextStyle(color: _controller.text == technique ? Colors.white : Colors.black),
           onChanged: (value) => setState(() {
-            if (_controller.text.isNotEmpty) {
-              speciesList = [];
-              for (final item in top10) {
+            if (_controller.text.isEmpty) {
+              isNotSearch = true;
+            } else {
+              isNotSearch = false;
+              searchResult = [];
+              for (final item in primaryTechniques) {
                 if (item.contains(_controller.text)) {
-                  speciesList.add(item);
+                  searchResult.add(item);
                 }
               }
             }
           }),
           decoration: InputDecoration(
             filled: true,
-            fillColor: backgroundWhite,
+            fillColor: _controller.text == technique ? primaryBlue500 : backgroundWhite,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 width: 1,
@@ -74,52 +106,31 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
               ),
               borderRadius: const BorderRadius.all(Radius.circular(5)),
             ),
-            hintText: '어종 이름을 입력해주세요',
+            hintText: '어법 이름을 입력해주세요',
             hintStyle: body1(gray3),
             contentPadding: const EdgeInsets.all(16),
-            suffixIcon: const Icon(Icons.search),
+            suffixIcon: _controller.text == technique
+                ? IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    color: Colors.white,
+                    onPressed: () => {
+                      setState(() {
+                        _controller.text = "";
+                        isNotSearch = true;
+                        technique = null;
+                      }),
+                    },
+                  )
+                : const Icon(Icons.search),
           ),
         ),
         const SizedBox(height: 20),
-        Text('선택 내역', style: body2(gray6)),
-        const SizedBox(height: 8),
-        selectedList.isEmpty
-            ? Text('아직 선택된 어종이 없어요', style: body2(gray2))
-            : SizedBox(
-                height: 36,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: selectedList.length,
-                  itemBuilder: (context, index) => TextButton.icon(
-                    iconAlignment: IconAlignment.end,
-                    label: Text(
-                      selectedList[index],
-                      style: body3(Colors.white),
-                    ),
-                    onPressed: () => {
-                      setState(() {
-                        selectedList.remove(selectedList[index]);
-                      }),
-                    },
-                    icon: const Icon(
-                      Icons.close_rounded,
-                      color: Colors.white,
-                      size: 16,
-                    ),
-                    style: TextButton.styleFrom(
-                      backgroundColor: primaryBlue500,
-                    ),
-                  ),
-                  separatorBuilder: (context, index) => const SizedBox(width: 8),
-                ),
-              ),
-        const SizedBox(height: 23),
         Expanded(
-          child: _controller.text.isEmpty
+          child: isNotSearch
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('어획량 순 top 10', style: body2(gray6)),
+                    Text('주요 어법', style: body2(gray6)),
                     const SizedBox(height: 16),
                     Expanded(
                       child: Container(
@@ -133,16 +144,12 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                           itemBuilder: (context, index) => InkWell(
                             child: Padding(
                               padding: const EdgeInsets.all(16),
-                              child: Text(
-                                top10[index],
-                                style: selectedList.contains(top10[index])
-                                    ? body1(primaryBlue500)
-                                    : body1(),
-                              ),
+                              child: Text(primaryTechniques[index], style: body1()),
                             ),
                             onTap: () => {
                               setState(() {
-                                selectedList.add(top10[index]);
+                                technique = primaryTechniques[index];
+                                _controller.text = primaryTechniques[index];
                               }),
                             },
                           ),
@@ -150,7 +157,7 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                             padding: EdgeInsets.symmetric(horizontal: 16),
                             child: Divider(thickness: 1, color: gray1, height: 0),
                           ),
-                          itemCount: top10.length,
+                          itemCount: primaryTechniques.length,
                         ),
                       ),
                     ),
@@ -160,14 +167,40 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('검색결과 ${speciesList.length}건', style: body1(gray6)),
+                    Text('검색결과 ${searchResult.length + 1}건', style: body1(gray6)),
+                    const SizedBox(height: 8),
+                    InkWell(
+                      onTap: () => {
+                        setState(() {
+                          technique = _controller.text;
+                        }),
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          borderRadius: const BorderRadius.all(Radius.circular(5)),
+                          border: Border.all(
+                            width: 1,
+                            color: primaryBlue100,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_controller.text, style: body1(primaryBlue500)),
+                            Text('어법 새로 추가하기', style: body3(gray5)),
+                          ],
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 8),
                     Expanded(
                       child: ListView.separated(
                         itemBuilder: (context, index) => InkWell(
                           onTap: () => {
                             setState(() {
-                              selectedList.add(speciesList[index]);
+                              technique = searchResult[index];
+                              _controller.text = primaryTechniques[index];
                             }),
                           },
                           child: Container(
@@ -179,22 +212,17 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                                 color: primaryBlue100,
                               ),
                             ),
-                            child: Text(
-                              speciesList[index],
-                              style: selectedList.contains(speciesList[index])
-                                  ? body1(primaryBlue500)
-                                  : body1(),
-                            ),
+                            child: Text(searchResult[index], style: body1()),
                           ),
                         ),
                         separatorBuilder: (context, index) => const SizedBox(height: 8),
-                        itemCount: speciesList.length,
+                        itemCount: searchResult.length,
                       ),
                     ),
                   ],
                 ),
         ),
-        NextButton(value: selectedList.isEmpty ? null : selectedList[0], onNext: widget.onNext),
+        NextButton(value: technique, onNext: widget.onNext),
       ],
     );
   }

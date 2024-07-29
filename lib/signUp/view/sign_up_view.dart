@@ -1,11 +1,11 @@
 import 'package:fish_note/theme/colors.dart';
-import 'package:fish_note/view/signUp/sign_up_affiliation.dart';
-import 'package:fish_note/view/signUp/sign_up_age_range.dart';
-import 'package:fish_note/view/signUp/sign_up_location.dart';
-import 'package:fish_note/view/signUp/sign_up_permission.dart';
-import 'package:fish_note/view/signUp/sign_up_species.dart';
-import 'package:fish_note/view/signUp/sign_up_technique.dart';
-import 'package:fish_note/view/signUp/sign_up_year_experience.dart';
+import 'package:fish_note/signUp/view/sign_up_affiliation.dart';
+import 'package:fish_note/signUp/view/sign_up_age_range.dart';
+import 'package:fish_note/signUp/view/sign_up_location.dart';
+import 'package:fish_note/signUp/view/sign_up_permission.dart';
+import 'package:fish_note/signUp/view/sign_up_species.dart';
+import 'package:fish_note/signUp/view/sign_up_technique.dart';
+import 'package:fish_note/signUp/view/sign_up_year_experience.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 

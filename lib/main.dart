@@ -1,6 +1,6 @@
 import 'package:fish_note/theme/colors.dart';
-import 'package:fish_note/view/home/home_view.dart';
-import 'package:fish_note/view/signUp/sign_up_view.dart';
+import 'package:fish_note/home/view/home_view.dart';
+import 'package:fish_note/signUp/view/sign_up_view.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
