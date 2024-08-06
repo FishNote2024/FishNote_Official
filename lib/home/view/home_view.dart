@@ -1,3 +1,5 @@
+import 'package:fish_note/home/view/home_custom_button.dart';
+import 'package:fish_note/home/view/net_wait_card.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -28,6 +30,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -40,10 +43,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             },
           ),
           actions: [
-            IconButton(
-              icon: SvgPicture.asset('assets/icons/map.svg'),
-              onPressed: () {},
-            ),
             IconButton(
               icon: SvgPicture.asset('assets/icons/profile.svg'),
               onPressed: () {},
@@ -74,7 +73,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 height: 40,
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: alertRedDefault,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Row(
@@ -84,7 +83,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     Expanded(
                       child: Text(
                         '기상특보 6.28 18:00 서해 앞바다 풍랑주의보',
-                        style: body3(alertRedDefault),
+                        style: body3(Colors.white),
                       ),
                     ),
                   ],
@@ -94,79 +93,53 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               Container(
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: gray2)),
                 child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        weatherColumn('14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn('15:00', Icons.grain, '2m/s', '→', '0.5m'),
-                        weatherColumn('16:00', Icons.cloud, '4m/s', '↗', '0.5m'),
-                        weatherColumn('17:00', Icons.wb_sunny, '6m/s', '↗', '0.5m'),
-                        weatherColumn('18:00', Icons.wb_sunny, '5m/s', '→', '0.5m'),
+                        weatherColumn(
+                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn(
+                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn(
+                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn(
+                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn(
+                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
                       ],
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 16.0),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: OutlinedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    side: const BorderSide(color: primaryBlue500),
-                    backgroundColor: Colors.white,
-                    foregroundColor: primaryBlue500,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4.0),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Text('통합 해상정보', style: header4(primaryBlue500)),
-                      const Spacer(),
-                      SvgPicture.asset('assets/icons/arrow.svg'),
-                    ],
-                  ),
-                ),
-              ),
+              Row(children: [
+                Homecustombutton(
+                    iconPath: 'assets/icons/buttonIcon_star.svg',
+                    text: "즐겨찾기",
+                    onPressed: () {}),
+                SizedBox(width: 12),
+                Homecustombutton(
+                    iconPath: 'assets/icons/buttonIcon_note.svg',
+                    text: "일지",
+                    onPressed: () {}),
+                SizedBox(width: 12),
+                Homecustombutton(
+                    iconPath: 'assets/icons/buttonIcon_calculate.svg',
+                    text: "장부",
+                    onPressed: () {}),
+                SizedBox(width: 12),
+                Homecustombutton(
+                    iconPath: 'assets/icons/buttonIcon_price.svg',
+                    text: "시세",
+                    onPressed: () {}),
+              ]),
               const SizedBox(height: 16.0),
-              SizedBox(
-                width: 180,
-                child: TabBar.secondary(
-                  labelColor: primaryBlue500,
-                  unselectedLabelColor: gray5,
-                  indicatorColor: primaryBlue500,
-                  labelStyle: header4(),
-                  controller: _tabController,
-                  tabs: const <Widget>[
-                    Tab(text: '조업일지'),
-                    Tab(text: '조업장부'),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: <Widget>[
-                    writeFishingLogCard(),
-                    fishingLedgerCard(),
-                  ],
-                ),
-              ),
+              writeFishingLogCard(),
             ],
           ),
         ),
@@ -174,8 +147,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  Widget weatherColumn(
-      String time, IconData icon, String windSpeed, String direction, String waveHeight) {
+  Widget weatherColumn(String time, IconData icon, String windSpeed,
+      String direction, String waveHeight) {
     return Column(
       children: [
         Text(time),
@@ -194,8 +167,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           padding: const EdgeInsets.only(top: 14.0),
           child: Container(
               height: 150,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(5), color: primaryBlue500),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                  color: primaryBlue500),
               child: Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Row(
@@ -211,9 +185,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("조업일지 작성하기", style: header3B(Colors.white)),
+                          Text("기록하기", style: header1B(Colors.white)),
                           const SizedBox(height: 8),
-                          Text("오늘도 만선을 위해\n조업일지를 작성하세요!", style: body3(Colors.white))
+                          Text("오늘도 만선을 위해\n조업일지를 작성하세요!", style: body3(gray2))
                         ],
                       ),
                     )
@@ -221,82 +195,105 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ),
               )),
         ),
+        SizedBox(height: 16),
+        Row(
+          children: [
+            IntrinsicWidth(
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border(
+                  bottom: BorderSide(
+                    color: primaryBlue500,
+                    width: 2.0,
+                  ),
+                )),
+                padding: EdgeInsets.only(bottom: 4),
+                alignment: Alignment.topLeft,
+                child: Text(" 양망대기 ", style: header4(primaryBlue500)),
+              ),
+            ),
+            Spacer()
+          ],
+        ),
+        SizedBox(height: 8),
+        NetWaitCard()
       ],
     );
   }
 
-  Widget fishingLedgerCard() {
-    return SingleChildScrollView(
-      child: Container(
-        child: Column(
-          children: [
-            const SizedBox(height: 16),
-            Row(
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('매출 ', style: body3(gray4)),
-                Text('15,145,070원', style: header4(primaryBlue300)),
-                const SizedBox(width: 20),
-                Text('지출 ', style: body3(gray4)),
-                Text('5,000,000원', style: header4(primaryYellow900)),
-              ],
-            ),
-            const SizedBox(height: 5),
-            Row(
-              children: [
-                Text('합계 ', style: body3(gray4)),
-                Text('10,145,070원', style: header3B(primaryBlue500)),
-              ],
-            ),
-            const SizedBox(height: 16.0),
-            SizedBox(
-              height: 150,
-              child: LineChart(
-                LineChartData(
-                  gridData: const FlGridData(show: true),
-                  titlesData: const FlTitlesData(show: false),
-                  borderData: FlBorderData(show: true),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: [
-                        const FlSpot(0, 1),
-                        const FlSpot(1, 1.5),
-                        const FlSpot(2, 1.4),
-                        const FlSpot(3, 3.4),
-                        const FlSpot(4, 2),
-                        const FlSpot(5, 2.2),
-                        const FlSpot(6, 1.8),
-                      ],
-                      isCurved: false,
-                      color: primaryBlue500,
-                      barWidth: 1,
-                      isStrokeCapRound: true,
-                      belowBarData: BarAreaData(show: false),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: OutlinedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  side: const BorderSide(color: primaryBlue500),
-                  backgroundColor: primaryBlue500,
-                  foregroundColor: primaryBlue500,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                ),
-                child: Text('조업 장부 자세히 보기', style: header4(Colors.white)),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+// 나중에 사용될 수 있는 코드입니다.
+//   Widget fishingLedgerCard() {
+//     return SingleChildScrollView(
+//       child: Container(
+//         child: Column(
+//           children: [
+//             const SizedBox(height: 16),
+//             Row(
+//               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text('매출 ', style: body3(gray4)),
+//                 Text('15,145,070원', style: header4(primaryBlue300)),
+//                 const SizedBox(width: 20),
+//                 Text('지출 ', style: body3(gray4)),
+//                 Text('5,000,000원', style: header4(primaryYellow900)),
+//               ],
+//             ),
+//             const SizedBox(height: 5),
+//             Row(
+//               children: [
+//                 Text('합계 ', style: body3(gray4)),
+//                 Text('10,145,070원', style: header3B(primaryBlue500)),
+//               ],
+//             ),
+//             const SizedBox(height: 16.0),
+//             SizedBox(
+//               height: 150,
+//               child: LineChart(
+//                 LineChartData(
+//                   gridData: const FlGridData(show: true),
+//                   titlesData: const FlTitlesData(show: false),
+//                   borderData: FlBorderData(show: true),
+//                   lineBarsData: [
+//                     LineChartBarData(
+//                       spots: [
+//                         const FlSpot(0, 1),
+//                         const FlSpot(1, 1.5),
+//                         const FlSpot(2, 1.4),
+//                         const FlSpot(3, 3.4),
+//                         const FlSpot(4, 2),
+//                         const FlSpot(5, 2.2),
+//                         const FlSpot(6, 1.8),
+//                       ],
+//                       isCurved: false,
+//                       color: primaryBlue500,
+//                       barWidth: 1,
+//                       isStrokeCapRound: true,
+//                       belowBarData: BarAreaData(show: false),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(height: 10),
+//             SizedBox(
+//               width: double.infinity,
+//               height: 48,
+//               child: OutlinedButton(
+//                 onPressed: () {},
+//                 style: ElevatedButton.styleFrom(
+//                   side: const BorderSide(color: primaryBlue500),
+//                   backgroundColor: primaryBlue500,
+//                   foregroundColor: primaryBlue500,
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(4.0),
+//                   ),
+//                 ),
+//                 child: Text('조업 장부 자세히 보기', style: header4(Colors.white)),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
 }
