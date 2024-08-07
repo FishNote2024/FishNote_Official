@@ -18,6 +18,7 @@ class NetWaitCard extends StatelessWidget {
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           backgroundColor: primaryBlue500,
           foregroundColor: Colors.white,
+          overlayColor: Colors.grey,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4.0),
           ),

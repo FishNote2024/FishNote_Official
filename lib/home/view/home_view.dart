@@ -36,12 +36,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            iconSize: 51,
-            icon: SvgPicture.asset('assets/icons/logo.svg'),
-            onPressed: () {
-              print("button pressed");
-            },
+          toolbarHeight: 80,
+          leadingWidth: 80,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 4.0),
+            child: IconButton(
+              iconSize: 51,
+              icon: SvgPicture.asset('assets/icons/logo.svg'),
+              onPressed: () {
+                print("button pressed");
+              },
+            ),
           ),
           actions: [
             IconButton(
