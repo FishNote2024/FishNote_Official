@@ -4,14 +4,9 @@ import 'package:flutter_svg/svg.dart';
 import '../../theme/colors.dart';
 import '../../theme/font.dart';
 
-class NetWaitCard extends StatefulWidget {
+class NetWaitCard extends StatelessWidget {
   const NetWaitCard({super.key});
 
-  @override
-  State<NetWaitCard> createState() => _NetWaitCardState();
-}
-
-class _NetWaitCardState extends State<NetWaitCard> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
