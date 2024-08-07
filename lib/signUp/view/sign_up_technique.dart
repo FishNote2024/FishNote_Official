@@ -1,4 +1,5 @@
 import 'package:fish_note/signUp/components/next_button.dart';
+import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -17,34 +18,6 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
   bool isNotSearch = true;
   String? technique;
   List<String> searchResult = [];
-  List<String> primaryTechniques = [
-    "가자미어업",
-    "건간망 어업",
-    "기선권현망 어업",
-    "기타통발 어업",
-    "끌낚시 어업",
-    "낭장망 어업",
-    "문어단지 어업",
-    "미역어업",
-    "방치망 어업",
-    "병어 어업",
-    "선망 어업",
-    "새우조망 어업",
-    "안강망 어업",
-    "자망 어업",
-    "자리돔들망 어업",
-    "쌍끌이 기선저인망 어업",
-    "연승 어업",
-    "외끌이 기선저인망 어업",
-    "외줄낚시 어업",
-    "패류껍질 어업",
-    "트롤 어업",
-    "정치망 어업",
-    "초망 어업",
-    "죽방렴 어업",
-    "주목망 어업",
-    "장어통발 어업"
-  ];
 
   @override
   void dispose() {
