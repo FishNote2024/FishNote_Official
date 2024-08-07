@@ -30,6 +30,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    DateTime currentDate = DateTime.now();
     double screenWidth = MediaQuery.of(context).size.width;
     return DefaultTabController(
       length: 2,
@@ -65,7 +66,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       Text('서해 바다 50KM', style: body2()),
                     ],
                   ),
-                  const Text('2024.06.29'),
+                  Text(
+                      '${currentDate.year}.${currentDate.month}.${currentDate.day}',
+                      style: body2()),
                 ],
               ),
               const SizedBox(height: 16.0),
