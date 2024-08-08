@@ -24,8 +24,9 @@ class Homecustombutton extends StatelessWidget {
           padding: EdgeInsets.only(top: 8, bottom: 9),
           backgroundColor: Colors.white,
           shadowColor: Colors.black,
+          overlayColor: Colors.black,
           elevation: 1,
-          side: BorderSide(color: Colors.transparent, width: 1.0),
+          side: BorderSide(color: gray1, width: 1.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),
           ),
