@@ -46,7 +46,8 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),
-        '/ledger': (context) => const LedgerPage(),
+        '/ledger1': (context) => const LedgerPage(initialTabIndex: 0),
+        '/ledger2': (context) => const LedgerPage(initialTabIndex: 1),
       },
     );
   }

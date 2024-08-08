@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
 import '../../theme/colors.dart';
 import '../../theme/font.dart';
 
@@ -15,7 +14,7 @@ class NetWaitCard extends StatelessWidget {
       child: OutlinedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           backgroundColor: primaryBlue500,
           foregroundColor: Colors.white,
           overlayColor: Colors.grey,

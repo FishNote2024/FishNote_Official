@@ -137,15 +137,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     onPressed: () {}),
                 SizedBox(width: 12),
                 Homecustombutton(
-                  iconPath: 'assets/icons/buttonIcon_calculate.svg',
-                  text: "장부",
-                  onPressed: () => {Navigator.pushNamed(context, '/ledger')},
-                ),
+                    iconPath: 'assets/icons/buttonIcon_calculate.svg',
+                    text: "장부",
+                    onPressed: () =>
+                        {Navigator.pushNamed(context, '/ledger1')}),
                 SizedBox(width: 12),
                 Homecustombutton(
                     iconPath: 'assets/icons/buttonIcon_price.svg',
                     text: "시세",
-                    onPressed: () {}),
+                    onPressed: () => {Navigator.pushNamed(context, '/ledger2')})
               ]),
               const SizedBox(height: 16.0),
               writeFishingLogCard(),
