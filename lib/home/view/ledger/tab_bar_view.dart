@@ -40,6 +40,7 @@ class _LedgerTabBarViewState extends State<LedgerTabBarView>
           indicatorWeight: 1,
           indicatorColor: primaryBlue500,
           indicatorSize: TabBarIndicatorSize.tab,
+          indicatorPadding: const EdgeInsets.symmetric(horizontal: 16),
           tabs: const [
             Tab(text: '위판장부'),
             Tab(text: '경락시세'),
@@ -47,7 +48,7 @@ class _LedgerTabBarViewState extends State<LedgerTabBarView>
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(15.0),
         child: TabBarView(
           controller: _tabController,
           children: [

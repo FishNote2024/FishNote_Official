@@ -64,6 +64,8 @@ class MarketPrice extends StatelessWidget {
                     style: header3B(primaryBlue500).copyWith(height: 0.6)),
                 IconButton(
                   key: _iconKey,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(),
                   icon: Icon(Icons.error_outline, color: gray5, size: 25),
                   onPressed: () {
                     _showTooltip();
