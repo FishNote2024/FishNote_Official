@@ -25,13 +25,15 @@ class _LedgerPageState extends State<LedgerPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: backgroundWhite,
       appBar: AppBar(
+        backgroundColor: backgroundWhite,
         title: Text('조업 장부', style: body2(textBlack)),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
           dividerColor: Colors.transparent,
-          labelStyle: body1(primaryBlue500),
+          labelStyle: header4(primaryBlue500),
           unselectedLabelStyle: TextStyle(color: gray5),
           indicatorWeight: 1,
           indicatorColor: primaryBlue500,
@@ -175,85 +177,102 @@ class MarketPriceTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("양양수산업협동조합", style: header3B()),
-        Text("최근 경락시세", style: header3B()),
-        SizedBox(height: 40),
-        Table(
-          border: TableBorder.all(color: Colors.grey),
-          children: const [
-            TableRow(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.zero,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '주요 어종',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                Text("양양수산업협동조합",
+                    style: header3B(primaryBlue500).copyWith(height: 0.6)),
+                IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    onPressed: () {},
+                    icon: Icon(Icons.error_outline, color: gray5, size: 20))
+              ],
+            ),
+          ),
+          Text("최근 경락시세", style: header3B().copyWith(height: 0.6)),
+          SizedBox(height: 40),
+          Table(
+            border: TableBorder.all(color: Colors.grey),
+            children: const [
+              TableRow(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      '주요 어종',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '최근 시세 (1kg당)',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      '최근 시세 (1kg당)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('아귀'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('7,666원'),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('청어'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('13,333원'),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('정어리'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('111원'),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('골뱅이'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('180원'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
+                ],
+              ),
+              TableRow(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('아귀'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('7,666원'),
+                  ),
+                ],
+              ),
+              TableRow(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('청어'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('13,333원'),
+                  ),
+                ],
+              ),
+              TableRow(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('정어리'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('111원'),
+                  ),
+                ],
+              ),
+              TableRow(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('골뱅이'),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('180원'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
