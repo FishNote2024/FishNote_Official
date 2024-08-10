@@ -1,3 +1,4 @@
+import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -25,9 +26,16 @@ class _LedgerPageState extends State<LedgerPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('조업 장부'),
+        title: Text('조업 장부', style: body2(textBlack)),
+        centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
+          dividerColor: Colors.transparent,
+          labelStyle: body1(primaryBlue500),
+          unselectedLabelStyle: TextStyle(color: gray5),
+          indicatorWeight: 1,
+          indicatorColor: primaryBlue500,
+          indicatorSize: TabBarIndicatorSize.tab,
           tabs: const [
             Tab(text: '위판장부'),
             Tab(text: '경락시세'),

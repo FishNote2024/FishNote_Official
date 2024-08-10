@@ -4,6 +4,8 @@ import 'package:fish_note/signUp/view/sign_up_view.dart';
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
+import 'home/view/ledger_page.dart';
+
 void main() {
   KakaoSdk.init(nativeAppKey: '5df0c1f5ae7c5485d949731c13179fc3');
   runApp(const MyApp());
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => const MyHomePage(),
+        '/': (context) => const LedgerPage(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),
