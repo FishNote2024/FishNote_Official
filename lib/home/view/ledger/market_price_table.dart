@@ -8,22 +8,18 @@ class MarketPrice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final GlobalKey<TooltipState> tooltipkey = GlobalKey<TooltipState>();
     List<Map<String, String>> fishData = [
       {'name': '아귀', 'price': '7,666원'},
       {'name': '청어', 'price': '13,333원'},
       {'name': '정어리', 'price': '111원'},
       {'name': '골뱅이', 'price': '180원'},
+      {'name': '참치', 'price': '1280원'},
     ];
 
     final GlobalKey _iconKey = GlobalKey();
     OverlayEntry? _overlayEntry;
 
     void _showTooltip() {
-      final RenderBox renderBox =
-          _iconKey.currentContext!.findRenderObject() as RenderBox;
-      final Offset offset = renderBox.localToGlobal(Offset.zero);
-
       _overlayEntry = OverlayEntry(
         builder: (context) => Positioned(
           top: MediaQuery.of(context).size.height - 635,
@@ -45,7 +41,6 @@ class MarketPrice extends StatelessWidget {
           ),
         ),
       );
-
       Overlay.of(context)?.insert(_overlayEntry!);
     }
 
@@ -74,27 +69,9 @@ class MarketPrice extends StatelessWidget {
                     _showTooltip();
                     Future.delayed(Duration(seconds: 2), () {
                       _hideTooltip();
-                    }); // 2초 후에 툴팁 숨기기
+                    });
                   },
                 ),
-                // Tooltip(
-                //     key: tooltipkey,
-                //     preferBelow: false,
-                //     verticalOffset: -10,
-                //     triggerMode: TooltipTriggerMode.manual,
-                //     showDuration: const Duration(seconds: 1),
-                //     message: '소속 조합은 마이페이지에서\n변경 가능합니다',
-                //     child: IconButton(
-                //         padding: EdgeInsets.zero,
-                //         constraints: BoxConstraints(),
-                //         onPressed: () {
-                //           _showTooltip();
-                //           Future.delayed(Duration(seconds: 2), () {
-                //             _hideTooltip();
-                //           });
-                //         },
-                //         icon:
-                //             Icon(Icons.error_outline, color: gray5, size: 20))),
               ],
             ),
           ),
