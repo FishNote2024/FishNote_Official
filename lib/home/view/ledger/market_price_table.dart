@@ -8,12 +8,51 @@ class MarketPrice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<TooltipState> tooltipkey = GlobalKey<TooltipState>();
     List<Map<String, String>> fishData = [
       {'name': '아귀', 'price': '7,666원'},
       {'name': '청어', 'price': '13,333원'},
       {'name': '정어리', 'price': '111원'},
       {'name': '골뱅이', 'price': '180원'},
     ];
+
+    final GlobalKey _iconKey = GlobalKey();
+    OverlayEntry? _overlayEntry;
+
+    void _showTooltip() {
+      final RenderBox renderBox =
+          _iconKey.currentContext!.findRenderObject() as RenderBox;
+      final Offset offset = renderBox.localToGlobal(Offset.zero);
+
+      _overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          top: MediaQuery.of(context).size.height - 635,
+          left: MediaQuery.of(context).size.width - 145,
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: gray2),
+              ),
+              child: Text(
+                '소속 조합은 마이페이지에서\n변경 가능합니다',
+                style: caption1(gray4),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      Overlay.of(context)?.insert(_overlayEntry!);
+    }
+
+    void _hideTooltip() {
+      _overlayEntry?.remove();
+      _overlayEntry = null;
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -29,10 +68,33 @@ class MarketPrice extends StatelessWidget {
                 Text("양양수산업협동조합",
                     style: header3B(primaryBlue500).copyWith(height: 0.6)),
                 IconButton(
-                    padding: EdgeInsets.zero,
-                    constraints: BoxConstraints(),
-                    onPressed: () {},
-                    icon: Icon(Icons.error_outline, color: gray5, size: 20))
+                  key: _iconKey,
+                  icon: Icon(Icons.error_outline, color: gray5, size: 25),
+                  onPressed: () {
+                    _showTooltip();
+                    Future.delayed(Duration(seconds: 2), () {
+                      _hideTooltip();
+                    }); // 2초 후에 툴팁 숨기기
+                  },
+                ),
+                // Tooltip(
+                //     key: tooltipkey,
+                //     preferBelow: false,
+                //     verticalOffset: -10,
+                //     triggerMode: TooltipTriggerMode.manual,
+                //     showDuration: const Duration(seconds: 1),
+                //     message: '소속 조합은 마이페이지에서\n변경 가능합니다',
+                //     child: IconButton(
+                //         padding: EdgeInsets.zero,
+                //         constraints: BoxConstraints(),
+                //         onPressed: () {
+                //           _showTooltip();
+                //           Future.delayed(Duration(seconds: 2), () {
+                //             _hideTooltip();
+                //           });
+                //         },
+                //         icon:
+                //             Icon(Icons.error_outline, color: gray5, size: 20))),
               ],
             ),
           ),
