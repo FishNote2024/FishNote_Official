@@ -21,12 +21,12 @@ class MarketPrice extends StatelessWidget {
     void _showTooltip() {
       _overlayEntry = OverlayEntry(
         builder: (context) => Positioned(
-          top: MediaQuery.of(context).size.height - 635,
-          left: MediaQuery.of(context).size.width - 145,
+          top: MediaQuery.of(context).size.height - 620,
+          left: MediaQuery.of(context).size.width - 150,
           child: Material(
             color: Colors.transparent,
             child: Container(
-              padding: EdgeInsets.all(5),
+              padding: EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(4),
