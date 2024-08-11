@@ -15,8 +15,18 @@ class LedgerPage extends StatefulWidget {
 class _LedgerPageState extends State<LedgerPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+
   @override
   Widget build(BuildContext context) {
+    void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+      if (!isSameDay(_selectedDay, selectedDay)) {
+        setState(() {
+          _focusedDay = focusedDay;
+          _selectedDay = selectedDay;
+        });
+      }
+    }
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,15 +36,15 @@ class _LedgerPageState extends State<LedgerPage> {
             lastDay: DateTime.utc(2030, 3, 14),
             focusedDay: DateTime.now(),
             calendarFormat: CalendarFormat.week,
-            locale: 'ko_KR',
-            selectedDayPredicate: (day) {
-              return isSameDay(_selectedDay, day);
-            },
             onDaySelected: (selectedDay, focusedDay) {
               setState(() {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
               });
+            },
+            locale: 'ko_KR',
+            selectedDayPredicate: (day) {
+              return isSameDay(_selectedDay, day);
             },
             headerStyle: HeaderStyle(
               titleCentered: true,
@@ -49,9 +59,9 @@ class _LedgerPageState extends State<LedgerPage> {
             ),
             calendarStyle: CalendarStyle(
               outsideTextStyle: body2(gray3),
-              defaultTextStyle: body2(gray7),
+              defaultTextStyle: body2(gray8),
               todayTextStyle: body2(Colors.white),
-              selectedTextStyle: body2(Colors.red),
+              selectedTextStyle: body2(gray8),
               todayDecoration: const BoxDecoration(
                 color: primaryBlue500,
                 shape: BoxShape.circle,
