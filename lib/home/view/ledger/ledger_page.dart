@@ -15,6 +15,7 @@ class LedgerPage extends StatefulWidget {
 class _LedgerPageState extends State<LedgerPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  int _selectedValue = 0;
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
@@ -73,26 +74,63 @@ class _LedgerPageState extends State<LedgerPage> {
             ),
           ),
           const SizedBox(height: 16.0),
+          Container(
+            padding: EdgeInsets.zero,
+            child: Row(children: [
+              DropdownButton<int>(
+                value: _selectedValue,
+                items: [
+                  DropdownMenuItem(
+                      child: Text('월간 총 이익', style: body1(gray5)), value: 0),
+                  DropdownMenuItem(
+                      child: Text('주간 총 이익', style: body1(gray5)), value: 1)
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedValue = value!;
+                  });
+                },
+                dropdownColor: Colors.white,
+                style: body2(gray8),
+                underline: Container(height: 0, color: Colors.transparent),
+              ),
+              Spacer(),
+              Text("계좌연동 기능 준비중", style: body3(gray3))
+            ]),
+          ),
+          Text("10,145,070원", style: header1B(primaryBlue500)),
+          SizedBox(height: 20),
           Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
-              Text(
-                '매출 50,245,070원',
-                style: TextStyle(color: Colors.blue),
+            children: [
+              Row(
+                children: [
+                  Text('매출', style: body1(gray4)),
+                  SizedBox(width: 12),
+                  Text('50,245,070원', style: header4(primaryBlue300))
+                ],
               ),
-              Text(
-                '지출 20,000,000원',
-                style: TextStyle(color: Colors.red),
+              Divider(color: gray1, thickness: 1, endIndent: 156),
+              Row(
+                children: [
+                  Text('지출', style: body1(gray4)),
+                  SizedBox(width: 12),
+                  Text('5,000,000원', style: header4(primaryYellow900))
+                ],
               ),
-              Text(
-                '합계 30,245,070원',
-                style: TextStyle(color: Colors.black),
+              Divider(color: gray1, thickness: 1),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text('합계', style: body1(gray4)),
+                  SizedBox(width: 12),
+                  Text('10,145,070원', style: header4(primaryBlue500))
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 16.0),
-          const Text('매출 추이'),
-          const SizedBox(height: 8.0),
+          SizedBox(height: 16.0),
+          Text('매출 추이'),
+          SizedBox(height: 8.0),
           SizedBox(
             height: 200,
             child: LineChart(
@@ -121,9 +159,9 @@ class _LedgerPageState extends State<LedgerPage> {
               ),
             ),
           ),
-          const SizedBox(height: 16.0),
-          const Text('매출 통계'),
-          const SizedBox(height: 8.0),
+          SizedBox(height: 16.0),
+          Text('매출 통계'),
+          SizedBox(height: 8.0),
           SizedBox(
             height: 200,
             child: PieChart(
