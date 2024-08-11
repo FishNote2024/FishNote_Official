@@ -2,7 +2,7 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-
+import 'package:intl/intl.dart';
 import '../../../theme/font.dart';
 
 class LedgerPage extends StatefulWidget {
@@ -20,17 +20,37 @@ class _LedgerPageState extends State<LedgerPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TableCalendar(
-            firstDay: DateTime.utc(2020, 1, 1),
-            lastDay: DateTime.utc(2030, 12, 31),
+            firstDay: DateTime.utc(2021, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
             focusedDay: DateTime.now(),
-            calendarFormat: CalendarFormat.month,
+            calendarFormat: CalendarFormat.week,
+            locale: 'ko_KR',
+            headerStyle: HeaderStyle(
+              titleCentered: true,
+              titleTextFormatter: (date, locale) =>
+                  DateFormat.yMMMMd(locale).format(date),
+              formatButtonVisible: false,
+              titleTextStyle: const TextStyle(
+                fontSize: 20.0,
+                color: Colors.blue,
+              ),
+              headerPadding: const EdgeInsets.symmetric(vertical: 4.0),
+              leftChevronIcon: const Icon(
+                Icons.arrow_back_ios,
+                size: 15.0,
+              ),
+              rightChevronIcon: const Icon(
+                Icons.arrow_forward_ios,
+                size: 15.0,
+              ),
+            ),
           ),
           const SizedBox(height: 16.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
               Text(
-                '매출 50,245,070원',
+                '매출 50,245,070원dd',
                 style: TextStyle(color: Colors.blue),
               ),
               Text(

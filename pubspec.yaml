@@ -41,6 +41,7 @@ dependencies:
   fl_chart: ^0.68.0
   kakao_flutter_sdk_user: ^1.9.4
   percent_indicator: ^4.2.3
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
