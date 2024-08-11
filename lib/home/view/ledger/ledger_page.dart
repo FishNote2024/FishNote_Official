@@ -52,6 +52,11 @@ class _LedgerPageState extends State<LedgerPage> {
               leftChevronIcon: const Icon(Icons.arrow_back_ios, size: 15.0),
               rightChevronIcon: const Icon(Icons.arrow_forward_ios, size: 15.0),
             ),
+            daysOfWeekStyle: DaysOfWeekStyle(
+              weekdayStyle: body2(primaryBlue400),
+              weekendStyle: body2(primaryBlue400),
+            ),
+            daysOfWeekHeight: 25,
             calendarStyle: CalendarStyle(
               outsideTextStyle: body2(gray3),
               defaultTextStyle: body2(gray8),
