@@ -2,9 +2,6 @@ import 'package:fish_note/home/view/ledger/ledger_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:fl_chart/fl_chart.dart';
-
 import 'market_price_table.dart';
 
 class LedgerTabBarView extends StatefulWidget {
@@ -27,9 +24,9 @@ class _LedgerTabBarViewState extends State<LedgerTabBarView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundWhite,
+      backgroundColor: backgroundBlue,
       appBar: AppBar(
-        backgroundColor: backgroundWhite,
+        backgroundColor: backgroundBlue,
         title: Text('조업 장부', style: body2(textBlack)),
         centerTitle: true,
         bottom: TabBar(
