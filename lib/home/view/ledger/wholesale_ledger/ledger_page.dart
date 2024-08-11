@@ -143,7 +143,22 @@ class _LedgerPageState extends State<LedgerPage> {
             const SizedBox(height: 13.0),
             LineChartView(),
             const SizedBox(height: 40.0),
-            Text('매출 통계', style: body1(gray8)),
+            DropdownButton<int>(
+                value: _selectedValue,
+                items: [
+                  DropdownMenuItem(
+                      child: Text('매출 통계', style: body1(gray8)), value: 0),
+                  DropdownMenuItem(
+                      child: Text('지출 통계', style: body1(gray8)), value: 1)
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedValue = value!;
+                  });
+                },
+                dropdownColor: Colors.white,
+                style: body2(gray8),
+                underline: Container(height: 0, color: Colors.transparent)),
             const SizedBox(height: 20.0),
             PieChartView(),
             const SizedBox(height: 30)
