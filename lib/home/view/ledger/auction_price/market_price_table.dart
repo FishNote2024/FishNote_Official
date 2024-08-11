@@ -26,7 +26,7 @@ class MarketPrice extends StatelessWidget {
           child: Material(
             color: Colors.transparent,
             child: Container(
-              padding: EdgeInsets.all(8),
+              padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(4),
@@ -34,13 +34,13 @@ class MarketPrice extends StatelessWidget {
               ),
               child: Text(
                 '소속 조합은 마이페이지에서\n변경 가능합니다',
-                style: caption1(gray4),
+                style: caption2(gray4),
               ),
             ),
           ),
         ),
       );
-      Overlay.of(context)?.insert(_overlayEntry!);
+      Overlay.of(context).insert(_overlayEntry!);
     }
 
     void _hideTooltip() {

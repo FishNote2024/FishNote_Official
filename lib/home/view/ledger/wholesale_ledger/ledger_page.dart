@@ -98,18 +98,18 @@ class _LedgerPageState extends State<LedgerPage> {
                     dropdownColor: Colors.white,
                     style: body2(gray8),
                     underline: Container(height: 0, color: Colors.transparent)),
-                Spacer(),
+                const Spacer(),
                 Text("계좌연동 기능 준비중", style: body3(gray3))
               ]),
             ),
             Text("10,145,070원", style: header1B(primaryBlue500)),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Column(
               children: [
                 Row(
                   children: [
                     Text('매출', style: body1(gray4)),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Text('50,245,070원', style: header4(primaryBlue300))
                   ],
                 ),
@@ -117,7 +117,7 @@ class _LedgerPageState extends State<LedgerPage> {
                 Row(
                   children: [
                     Text('지출', style: body1(gray4)),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Text('5,000,000원', style: header4(primaryYellow900))
                   ],
                 ),
@@ -126,7 +126,7 @@ class _LedgerPageState extends State<LedgerPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text('합계', style: body1(gray4)),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                     Text('10,145,070원', style: header4(primaryBlue500))
                   ],
                 ),
@@ -142,11 +142,11 @@ class _LedgerPageState extends State<LedgerPage> {
             ),
             const SizedBox(height: 13.0),
             LineChartView(),
-            SizedBox(height: 40.0),
+            const SizedBox(height: 40.0),
             Text('매출 통계', style: body1(gray8)),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             PieChartView(),
-            SizedBox(height: 10)
+            const SizedBox(height: 30)
           ],
         ),
       ),
