@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import '../../../theme/colors.dart';
-import '../../../theme/font.dart';
+import '../../../../theme/colors.dart';
+import '../../../../theme/font.dart';
 
 class LineChartView extends StatefulWidget {
   const LineChartView({super.key});
@@ -13,54 +13,59 @@ class LineChartView extends StatefulWidget {
 class _LineChartViewState extends State<LineChartView> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, 37),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(color: gray1)),
-      height: 200,
+    return SizedBox(
+      height: 250,
       child: Container(
-        child: LineChart(
-          LineChartData(
-            gridData: FlGridData(show: false),
-            titlesData: FlTitlesData(
-                show: true,
-                leftTitles: AxisTitles(
-                  sideTitles: leftTitles(),
+        padding: EdgeInsets.fromLTRB(16, 5, 35, 12),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(4),
+            border: Border.all(color: gray1)),
+        height: 200,
+        child: Container(
+          child: LineChart(
+            LineChartData(
+              minY: 0, // Y축의 최소값
+              maxY: 3.5,
+              gridData: FlGridData(show: false),
+              titlesData: FlTitlesData(
+                  show: true,
+                  leftTitles: AxisTitles(
+                    sideTitles: leftTitles(),
+                  ),
+                  rightTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  topTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  bottomTitles: AxisTitles(sideTitles: bottomTitles)),
+              extraLinesData: ExtraLinesData(
+                verticalLines: [
+                  VerticalLine(x: 0, color: gray1, strokeWidth: 1),
+                  VerticalLine(x: 1, color: gray1, strokeWidth: 1),
+                  VerticalLine(x: 2, color: gray1, strokeWidth: 1),
+                  VerticalLine(x: 3, color: gray1, strokeWidth: 1),
+                  VerticalLine(x: 4, color: gray1, strokeWidth: 1),
+                  VerticalLine(x: 5, color: gray1, strokeWidth: 1)
+                ],
+              ),
+              borderData: FlBorderData(show: false),
+              lineBarsData: [
+                LineChartBarData(
+                  spots: [
+                    FlSpot(0, 1),
+                    FlSpot(1, 2.4),
+                    FlSpot(2, 2),
+                    FlSpot(3, 3),
+                    FlSpot(4, 2),
+                  ],
+                  isCurved: false,
+                  color: primaryBlue500,
+                  barWidth: 1,
+                  isStrokeCapRound: true,
+                  belowBarData: BarAreaData(show: false),
                 ),
-                rightTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                topTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                bottomTitles: AxisTitles(sideTitles: bottomTitles)),
-            extraLinesData: ExtraLinesData(
-              verticalLines: [
-                VerticalLine(x: 0, color: gray1, strokeWidth: 1),
-                VerticalLine(x: 1, color: gray1, strokeWidth: 1),
-                VerticalLine(x: 2, color: gray1, strokeWidth: 1),
-                VerticalLine(x: 3, color: gray1, strokeWidth: 1),
-                VerticalLine(x: 4, color: gray1, strokeWidth: 1),
-                VerticalLine(x: 5, color: gray1, strokeWidth: 1)
               ],
             ),
-            borderData: FlBorderData(show: false),
-            lineBarsData: [
-              LineChartBarData(
-                spots: [
-                  FlSpot(0, 1),
-                  FlSpot(1, 5),
-                  FlSpot(2, 2),
-                  FlSpot(3, 3),
-                  FlSpot(4, 2),
-                ],
-                isCurved: false,
-                color: primaryBlue500,
-                barWidth: 1,
-                isStrokeCapRound: true,
-                belowBarData: BarAreaData(show: false),
-              ),
-            ],
           ),
         ),
       ),
@@ -72,23 +77,26 @@ class _LineChartViewState extends State<LineChartView> {
     final style = caption2(gray4);
     Widget text;
     switch (value.toInt()) {
+      case 1:
+        text = Text('5월 4주차', style: style);
+        break;
       case 2:
-        text = Text('SEPT', style: style);
+        text = Text('6월 1주차', style: style);
         break;
-      case 7:
-        text = Text('OCT', style: style);
+      case 3:
+        text = Text('6월 2주차', style: style);
         break;
-      case 12:
-        text = Text('DEC', style: style);
+      case 4:
+        text = Text('6월 3주차', style: style);
         break;
       default:
-        text = Text('');
+        text = Text('5월 3주차', style: style);
         break;
     }
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
-      space: 20,
+      space: 15,
       child: text,
     );
   }
@@ -103,37 +111,42 @@ class _LineChartViewState extends State<LineChartView> {
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     final style = caption2(gray4);
     String text;
-    switch (value.toInt()) {
-      case 1:
+    switch (value.toDouble()) {
+      case 0:
         text = '0.5';
         break;
-      case 2:
+      case 0.5:
         text = '1';
         break;
-      case 3:
+      case 1:
         text = '1.5';
         break;
-      case 4:
+      case 1.5:
         text = '2';
         break;
-      case 5:
+      case 2:
         text = '2.5';
-      case 6:
+        break;
+      case 2.5:
         text = '3';
-      case 7:
+        break;
+      case 3:
         text = '3.5';
         break;
       default:
         return Container();
     }
 
-    return Text(text, style: style, textAlign: TextAlign.center);
+    return Padding(
+      padding: const EdgeInsets.only(right: 10.0),
+      child: Text(text, style: style, textAlign: TextAlign.end),
+    );
   }
 
   SideTitles leftTitles() => SideTitles(
         getTitlesWidget: leftTitleWidgets,
         showTitles: true,
-        interval: 1,
+        interval: 0.5,
         reservedSize: 30,
       );
 }

@@ -1,8 +1,8 @@
-import 'package:fish_note/home/view/ledger/ledger_page.dart';
+import 'package:fish_note/home/view/ledger/wholesale_ledger/ledger_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
-import 'market_price_table.dart';
+import 'auction_price/market_price_table.dart';
 
 class LedgerTabBarView extends StatefulWidget {
   const LedgerTabBarView({super.key});

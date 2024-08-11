@@ -1,10 +1,10 @@
-import 'package:fish_note/home/view/ledger/line_chart_view.dart';
-import 'package:fish_note/home/view/ledger/pie_chart_view.dart';
+import 'package:fish_note/home/view/ledger/wholesale_ledger/line_chart_view.dart';
+import 'package:fish_note/home/view/ledger/wholesale_ledger/pie_chart_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
-import '../../../theme/font.dart';
+import '../../../../theme/font.dart';
 
 class LedgerPage extends StatefulWidget {
   const LedgerPage({super.key});
@@ -136,15 +136,15 @@ class _LedgerPageState extends State<LedgerPage> {
             Row(
               children: [
                 Text('매출 추이', style: body1(gray8)),
-                Spacer(),
-                Text("단위 1백만", style: body3(gray4)),
+                const Spacer(),
+                Text("단위 1백만", style: body3(gray4))
               ],
             ),
             const SizedBox(height: 13.0),
             LineChartView(),
-            SizedBox(height: 16.0),
-            Text('매출 통계'),
-            SizedBox(height: 8.0),
+            SizedBox(height: 40.0),
+            Text('매출 통계', style: body1(gray8)),
+            SizedBox(height: 24.0),
             PieChartView()
           ],
         ),
