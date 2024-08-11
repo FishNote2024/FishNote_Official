@@ -13,6 +13,8 @@ class LedgerPage extends StatefulWidget {
 }
 
 class _LedgerPageState extends State<LedgerPage> {
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -25,32 +27,47 @@ class _LedgerPageState extends State<LedgerPage> {
             focusedDay: DateTime.now(),
             calendarFormat: CalendarFormat.week,
             locale: 'ko_KR',
+            selectedDayPredicate: (day) {
+              return isSameDay(_selectedDay, day);
+            },
+            onDaySelected: (selectedDay, focusedDay) {
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+              });
+            },
             headerStyle: HeaderStyle(
               titleCentered: true,
               titleTextFormatter: (date, locale) =>
                   DateFormat.yMMMMd(locale).format(date),
               formatButtonVisible: false,
-              titleTextStyle: const TextStyle(
-                fontSize: 20.0,
-                color: Colors.blue,
+              titleTextStyle: body1(gray6),
+              headerPadding:
+                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
+              leftChevronIcon: const Icon(Icons.arrow_back_ios, size: 15.0),
+              rightChevronIcon: const Icon(Icons.arrow_forward_ios, size: 15.0),
+            ),
+            calendarStyle: CalendarStyle(
+              outsideTextStyle: body2(gray3),
+              defaultTextStyle: body2(gray7),
+              todayTextStyle: body2(Colors.white),
+              selectedTextStyle: body2(Colors.red),
+              todayDecoration: const BoxDecoration(
+                color: primaryBlue500,
+                shape: BoxShape.circle,
               ),
-              headerPadding: const EdgeInsets.symmetric(vertical: 4.0),
-              leftChevronIcon: const Icon(
-                Icons.arrow_back_ios,
-                size: 15.0,
-              ),
-              rightChevronIcon: const Icon(
-                Icons.arrow_forward_ios,
-                size: 15.0,
+              selectedDecoration: const BoxDecoration(
+                color: primaryYellow500,
+                shape: BoxShape.circle,
               ),
             ),
           ),
           const SizedBox(height: 16.0),
-          Row(
+          Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: const [
               Text(
-                '매출 50,245,070원dd',
+                '매출 50,245,070원',
                 style: TextStyle(color: Colors.blue),
               ),
               Text(
