@@ -15,31 +15,10 @@ class LedgerPage extends StatefulWidget {
 class _LedgerPageState extends State<LedgerPage> {
   @override
   Widget build(BuildContext context) {
-    String _dropdownValue = '월간';
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DropdownButton<String>(
-            value: _dropdownValue,
-            onChanged: (String? newValue) {
-              setState(() {
-                _dropdownValue = newValue!;
-              });
-            },
-            items: <String>['월간', '주간']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 16.0),
-          const Text(
-            '30,245,070원',
-            style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-          ),
           TableCalendar(
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
