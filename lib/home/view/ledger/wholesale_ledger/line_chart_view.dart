@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../theme/colors.dart';
 import '../../../../theme/font.dart';
 
+// 현재는 월간 기준입니다.
 class LineChartView extends StatefulWidget {
   const LineChartView({super.key});
 
@@ -52,9 +53,9 @@ class _LineChartViewState extends State<LineChartView> {
               lineBarsData: [
                 LineChartBarData(
                   spots: [
-                    FlSpot(0, 1),
+                    FlSpot(0, 0),
                     FlSpot(1, 2.4),
-                    FlSpot(2, 2),
+                    FlSpot(2, 1),
                     FlSpot(3, 3),
                     FlSpot(4, 2),
                   ],

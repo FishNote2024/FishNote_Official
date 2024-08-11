@@ -144,8 +144,9 @@ class _LedgerPageState extends State<LedgerPage> {
             LineChartView(),
             SizedBox(height: 40.0),
             Text('매출 통계', style: body1(gray8)),
-            SizedBox(height: 24.0),
-            PieChartView()
+            SizedBox(height: 20.0),
+            PieChartView(),
+            SizedBox(height: 10)
           ],
         ),
       ),
