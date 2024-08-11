@@ -16,17 +16,17 @@ class _LedgerPageState extends State<LedgerPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    if (!isSameDay(_selectedDay, selectedDay)) {
+      setState(() {
+        _selectedDay = selectedDay;
+        _focusedDay = focusedDay;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-      if (!isSameDay(_selectedDay, selectedDay)) {
-        setState(() {
-          _focusedDay = focusedDay;
-          _selectedDay = selectedDay;
-        });
-      }
-    }
-
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,14 +34,9 @@ class _LedgerPageState extends State<LedgerPage> {
           TableCalendar(
             firstDay: DateTime.utc(2021, 10, 16),
             lastDay: DateTime.utc(2030, 3, 14),
-            focusedDay: DateTime.now(),
+            focusedDay: _focusedDay,
             calendarFormat: CalendarFormat.week,
-            onDaySelected: (selectedDay, focusedDay) {
-              setState(() {
-                _selectedDay = selectedDay;
-                _focusedDay = focusedDay;
-              });
-            },
+            onDaySelected: _onDaySelected,
             locale: 'ko_KR',
             selectedDayPredicate: (day) {
               return isSameDay(_selectedDay, day);
@@ -112,7 +107,6 @@ class _LedgerPageState extends State<LedgerPage> {
                       FlSpot(6, 1.8),
                     ],
                     isCurved: true,
-                    // backg: [Colors.blue],
                     color: Colors.red,
                     barWidth: 4,
                     isStrokeCapRound: true,
