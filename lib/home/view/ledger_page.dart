@@ -4,7 +4,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class LedgerPage extends StatefulWidget {
-  const LedgerPage({super.key});
+  final int initialTabIndex;
+  const LedgerPage({super.key, required this.initialTabIndex});
 
   @override
   _LedgerPageState createState() => _LedgerPageState();
@@ -18,7 +19,8 @@ class _LedgerPageState extends State<LedgerPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+        length: 2, vsync: this, initialIndex: widget.initialTabIndex);
   }
 
   @override
