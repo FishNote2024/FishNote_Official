@@ -54,6 +54,7 @@ TextStyle header3B([Color color = Colors.black]) {
 TextStyle header4([Color color = Colors.black]) {
   return TextStyle(
     fontFamily: 'Pretendard-Bold',
+    fontWeight: FontWeight.bold,
     fontSize: 15.0,
     color: color,
   );
