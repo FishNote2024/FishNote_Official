@@ -126,23 +126,23 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 16.0),
               Row(children: [
-                Homecustombutton(
+                VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_star.svg',
                     text: "즐겨찾기",
                     onPressed: () {}),
                 SizedBox(width: 12),
-                Homecustombutton(
+                VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_note.svg',
                     text: "일지",
                     onPressed: () {}),
                 SizedBox(width: 12),
-                Homecustombutton(
+                VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_calculate.svg',
                     text: "장부",
                     onPressed: () =>
                         {Navigator.pushNamed(context, '/ledger1')}),
                 SizedBox(width: 12),
-                Homecustombutton(
+                VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_price.svg',
                     text: "시세",
                     onPressed: () => {Navigator.pushNamed(context, '/ledger2')})

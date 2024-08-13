@@ -3,12 +3,12 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class Homecustombutton extends StatelessWidget {
+class VerticalOutlinedButton extends StatelessWidget {
   final String iconPath;
   final String text;
   final VoidCallback onPressed;
 
-  Homecustombutton({
+  VerticalOutlinedButton({
     required this.iconPath,
     required this.text,
     required this.onPressed,
