@@ -183,6 +183,7 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
 
   // 등록된 어종 목록
   final List<String> registeredSpecies = ['문어', '전복', '방어', '소라'];
+  final String mxtrNm = '거제수산업협동조합';
 
   Map<String, Map<String, dynamic>> groupedData = {};
 
@@ -197,9 +198,12 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
       // 기존 데이터 제거
       groupedData.clear();
 
+      // String requestUrl =
+      //     '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&fromDt=$baseDt&toDt=$baseDt&type=xml';
+      // String requestUrl =
+      //     '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&mxtrNm=%EA%B1%B0%EC%A0%9C%EC%88%98%EC%82%B0%EC%97%85%ED%98%91%EB%8F%99%EC%A1%B0%ED%95%A9&fshrNm=%EB%82%98%EC%9E%A0%EC%96%B4%EC%97%85&fromDt=$baseDt&toDt=$baseDt&type=xml';
       String requestUrl =
-          '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&type=xml';
-
+          '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&mxtrNm=$mxtrNm&fromDt=$baseDt&toDt=$baseDt&type=xml';
       var response = await dio.get(requestUrl);
       if (response.statusCode == 200) {
         var document = xml.XmlDocument.parse(response.data);
@@ -242,7 +246,7 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("거제수산업협동조합",
+            Text(mxtrNm,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
             Text("최근 경락시세",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
