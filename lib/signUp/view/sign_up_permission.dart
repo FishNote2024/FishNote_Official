@@ -24,7 +24,7 @@ class _SignUpPermissionState extends State<SignUpPermission> {
           const SizedBox(height: 16),
           Text('피시노트는 기록을 위해\n아래 권한이 필요해요', style: header1B()),
           const SizedBox(height: 8),
-          Text('권한을 허용하지 않아도 이용은 가능하지만\n일부 서비스가 제한될 수 있습니다', style: body1(gray6)),
+          Text('권한을 허용하지 않으면\n피시노트의 해상지도 기능을 사용하실 수 없습니다.', style: body1(gray6)),
           const SizedBox(height: 38),
           Expanded(
             child: Padding(

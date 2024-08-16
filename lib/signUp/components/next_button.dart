@@ -58,7 +58,6 @@ class NextButton extends StatelessWidget {
               onPressed: () {
                 // 허용 안함 버튼 클릭 시 동작
                 Navigator.pop(context);
-                Navigator.pushReplacementNamed(context, '/home');
               },
               style: TextButton.styleFrom(
                 foregroundColor: textBlack,
