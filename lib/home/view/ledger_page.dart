@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:xml/xml.dart' as xml;
 
 class LedgerPage extends StatefulWidget {
   final int initialTabIndex;
@@ -164,90 +166,130 @@ class _LedgerPageState extends State<LedgerPage>
   }
 }
 
-class MarketPriceTable extends StatelessWidget {
-  const MarketPriceTable({super.key});
+class MarketPriceTable extends StatefulWidget {
+  const MarketPriceTable({Key? key}) : super(key: key);
+
+  @override
+  _MarketPriceTableState createState() => _MarketPriceTableState();
+}
+
+class _MarketPriceTableState extends State<MarketPriceTable> {
+  final Dio dio = Dio();
+  final String apiUrl =
+      'http://apis.data.go.kr/1192000/select0030List/getselect0030List';
+  final String apiKey =
+      'P9snIt2gDleusE4uaQ9a1Tyx6/QaQRBJjRzr9H4ELGzbp263NM0Fvprpu1mr6Qqu6Efxqu35tgxg0JeKZtRnHA==';
+  String baseDt = '20240816';
+
+  // 등록된 어종 목록
+  final List<String> registeredSpecies = ['문어', '전복', '방어', '소라'];
+
+  Map<String, Map<String, dynamic>> groupedData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    try {
+      // 기존 데이터 제거
+      groupedData.clear();
+
+      String requestUrl =
+          '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&type=xml';
+
+      var response = await dio.get(requestUrl);
+      if (response.statusCode == 200) {
+        var document = xml.XmlDocument.parse(response.data);
+        final items = document.findAllElements('item');
+
+        // 어종(mprcStdCodeNm)을 기준으로 그룹화 및 평균 계산
+        for (var item in items) {
+          String mprcStdCodeNm = item.findElements('mprcStdCodeNm').single.text;
+
+          // 등록된 어종만 필터링
+          if (registeredSpecies.contains(mprcStdCodeNm)) {
+            double csmtUntpc =
+                double.parse(item.findElements('csmtUntpc').single.text);
+
+            if (groupedData.containsKey(mprcStdCodeNm)) {
+              groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
+              groupedData[mprcStdCodeNm]!['count'] += 1;
+            } else {
+              groupedData[mprcStdCodeNm] = {
+                'mprcStdCodeNm': mprcStdCodeNm,
+                'totalUntpc': csmtUntpc,
+                'count': 1,
+              };
+            }
+          }
+        }
+
+        setState(() {}); // 상태 갱신
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text("양양수산업협동조합", style: header3B()),
-        Text("최근 경락시세", style: header3B()),
-        SizedBox(height: 40),
-        Table(
-          border: TableBorder.all(color: Colors.grey),
-          children: const [
-            TableRow(
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("거제수산업협동조합",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text("최근 경락시세",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 40),
+            Table(
+              border: TableBorder.all(color: Colors.grey),
               children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '주요 어종',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                const TableRow(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        '주요 어종',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Text(
+                        '최근 시세 (1kg당)',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    '최근 시세 (1kg당)',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('아귀'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('7,666원'),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('청어'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('13,333원'),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('정어리'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('111원'),
-                ),
-              ],
-            ),
-            TableRow(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('골뱅이'),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text('180원'),
-                ),
+                ...groupedData.entries.map((entry) {
+                  final avgUntpc =
+                      (entry.value['totalUntpc'] / entry.value['count'])
+                          .toStringAsFixed(2);
+                  return TableRow(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(entry.value['mprcStdCodeNm']),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text('$avgUntpc원'),
+                      ),
+                    ],
+                  );
+                }).toList(),
               ],
             ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
