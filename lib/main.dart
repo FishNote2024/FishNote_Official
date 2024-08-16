@@ -1,4 +1,3 @@
-import 'package:fish_note/home/view/ledger_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/signUp/view/sign_up_view.dart';
@@ -9,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'home/view/ledger/tab_bar_view.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   KakaoSdk.init(nativeAppKey: '5df0c1f5ae7c5485d949731c13179fc3');
   await initializeDateFormatting('ko_KR', null);
   runApp(const MyApp());
