@@ -112,7 +112,7 @@ class _LineChartViewState extends State<LineChartView> {
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     final style = caption2(gray4);
     String text;
-    switch (value.toDouble()) {
+    switch (value) {
       case 0:
         text = '0.5';
         break;
