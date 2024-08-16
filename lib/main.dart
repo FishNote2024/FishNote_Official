@@ -46,12 +46,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => const LedgerTabBarView(),
+        '/': (context) => const Home(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),
-        '/ledger1': (context) => const LedgerPage(initialTabIndex: 0),
-        '/ledger2': (context) => const LedgerPage(initialTabIndex: 1),
+        '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
+        '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
       },
     );
   }

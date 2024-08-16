@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'auction_price/market_price_table.dart';
 
 class LedgerTabBarView extends StatefulWidget {
-  const LedgerTabBarView({super.key});
+  final int initialTabIndex;
+  const LedgerTabBarView({super.key, required this.initialTabIndex});
 
   @override
   _LedgerTabBarViewState createState() => _LedgerTabBarViewState();
@@ -14,11 +15,11 @@ class LedgerTabBarView extends StatefulWidget {
 class _LedgerTabBarViewState extends State<LedgerTabBarView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(
+        length: 2, vsync: this, initialIndex: widget.initialTabIndex);
   }
 
   @override
@@ -48,10 +49,7 @@ class _LedgerTabBarViewState extends State<LedgerTabBarView>
         padding: const EdgeInsets.all(15.0),
         child: TabBarView(
           controller: _tabController,
-          children: [
-            LedgerPage(),
-            const Center(child: MarketPrice()),
-          ],
+          children: [LedgerPage(), MarketPrice()],
         ),
       ),
     );
