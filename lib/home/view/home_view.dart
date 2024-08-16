@@ -1,8 +1,7 @@
-import 'package:fish_note/home/view/home_custom_button.dart';
 import 'package:fish_note/home/view/net_wait_card.dart';
+import 'package:fish_note/home/view/vertical_outlined_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -31,7 +30,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     DateTime currentDate = DateTime.now();
-    double screenWidth = MediaQuery.of(context).size.width;
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -71,8 +70,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       Text('서해 바다 50KM', style: body2()),
                     ],
                   ),
-                  Text(
-                      '${currentDate.year}.${currentDate.month}.${currentDate.day}',
+                  Text('${currentDate.year}.${currentDate.month}.${currentDate.day}',
                       style: body2()),
                 ],
               ),
@@ -109,16 +107,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn('14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn('14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn('14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn('14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
+                        weatherColumn('14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
                       ],
                     ),
                   ],
@@ -127,21 +120,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               const SizedBox(height: 16.0),
               Row(children: [
                 VerticalOutlinedButton(
-                    iconPath: 'assets/icons/buttonIcon_star.svg',
-                    text: "즐겨찾기",
-                    onPressed: () {}),
-                SizedBox(width: 12),
+                    iconPath: 'assets/icons/buttonIcon_star.svg', text: "즐겨찾기", onPressed: () {}),
+                const SizedBox(width: 12),
                 VerticalOutlinedButton(
-                    iconPath: 'assets/icons/buttonIcon_note.svg',
-                    text: "일지",
-                    onPressed: () {}),
-                SizedBox(width: 12),
+                    iconPath: 'assets/icons/buttonIcon_note.svg', text: "일지", onPressed: () {}),
+                const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_calculate.svg',
                     text: "장부",
-                    onPressed: () =>
-                        {Navigator.pushNamed(context, '/ledger1')}),
-                SizedBox(width: 12),
+                    onPressed: () => {Navigator.pushNamed(context, '/ledger1')}),
+                const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_price.svg',
                     text: "시세",
@@ -156,8 +144,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     );
   }
 
-  Widget weatherColumn(String time, IconData icon, String windSpeed,
-      String direction, String waveHeight) {
+  Widget weatherColumn(
+      String time, IconData icon, String windSpeed, String direction, String waveHeight) {
     return Column(
       children: [
         Text(time),
@@ -176,9 +164,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           padding: const EdgeInsets.only(top: 14.0),
           child: Container(
               height: 150,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: primaryBlue500),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(5), color: primaryBlue500),
               child: Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Row(
@@ -204,28 +191,28 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ),
               )),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Row(
           children: [
             IntrinsicWidth(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     border: Border(
                   bottom: BorderSide(
                     color: primaryBlue500,
                     width: 2.0,
                   ),
                 )),
-                padding: EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.only(bottom: 4),
                 alignment: Alignment.topLeft,
                 child: Text(" 양망대기 ", style: header4(primaryBlue500)),
               ),
             ),
-            Spacer()
+            const Spacer()
           ],
         ),
-        SizedBox(height: 8),
-        NetWaitCard()
+        const SizedBox(height: 8),
+        const NetWaitCard()
       ],
     );
   }

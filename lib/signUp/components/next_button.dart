@@ -10,7 +10,7 @@ class NextButton extends StatelessWidget {
     required this.onNext,
   });
 
-  final String? value;
+  final Object? value;
   final VoidCallback onNext;
 
   void _showPermissionModal(BuildContext context) {
