@@ -1,3 +1,4 @@
+import 'package:fish_note/home/view/ledger_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/signUp/view/sign_up_view.dart';
@@ -49,6 +50,8 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),
+        '/ledger1': (context) => const LedgerPage(initialTabIndex: 0),
+        '/ledger2': (context) => const LedgerPage(initialTabIndex: 1),
       },
     );
   }
