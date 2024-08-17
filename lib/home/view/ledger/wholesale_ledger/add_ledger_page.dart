@@ -114,17 +114,14 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   Text("위판", style: header4(gray8)),
                   Spacer(),
                   OutlinedButton(
-                    onPressed: _addExpenseEntry,
+                    onPressed: _addRevenueEntry,
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.transparent),
                       padding: EdgeInsets.zero,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('위판 추가하기 ', style: body2(gray4)),
-                        Icon(Icons.add_circle_outline, color: gray4),
-                      ],
+                      children: [Text('위판 추가하기 ', style: body2(gray4))],
                     ),
                   ),
                 ],
@@ -136,7 +133,6 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                 itemCount: revenueEntries.length,
                 itemBuilder: (context, index) {
                   return Column(
-                    key: ValueKey(revenueEntries[index]),
                     children: [
                       _buildRevenueEntryForm(index),
                       if (index != revenueEntries.length - 1)
@@ -158,16 +154,34 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   Widget _buildRevenueEntryForm(int index) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              onPressed: () {
-                _deleteRevenueEntry(index);
+        IconButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("삭제"),
+                  content: Text("위판을 삭제하시겠습니까?"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("취소", style: body2(primaryYellow900)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        _deleteRevenueEntry(index);
+                        Navigator.pop(context);
+                      },
+                      child: Text("삭제", style: body2(primaryYellow900)),
+                    ),
+                  ],
+                );
               },
-              icon: Icon(Icons.remove_circle_outline),
-            ),
-          ],
+            );
+          },
+          icon: Icon(Icons.disabled_by_default_outlined),
         ),
         _buildRevenueFormRow(
           index: index,
@@ -209,9 +223,10 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                       });
                     },
                     decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "무게를 입력해주세요",
-                        hintStyle: body2(gray4)),
+                      border: InputBorder.none,
+                      hintText: "무게를 입력해주세요",
+                      hintStyle: body2(gray4),
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
@@ -235,9 +250,10 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                       });
                     },
                     decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "수입 금액을 입력해주세요",
-                        hintStyle: body2(gray4)),
+                      border: InputBorder.none,
+                      hintText: "수입 금액을 입력해주세요",
+                      hintStyle: body2(gray4),
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
@@ -327,7 +343,6 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                 itemCount: expenseEntries.length,
                 itemBuilder: (context, index) {
                   return Column(
-                    key: ValueKey(expenseEntries[index]),
                     children: [
                       _buildExpenseEntryForm(index),
                       if (index != expenseEntries.length - 1)
@@ -349,28 +364,47 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   Widget _buildExpenseEntryForm(int index) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-                onPressed: () {
-                  _deleteExpenseEntry(index);
-                },
-                icon: Icon(Icons.remove_circle_outline)),
-          ],
+        IconButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("삭제"),
+                  content: Text("지출내역을 삭제하시겠습니까?"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("취소", style: body2(primaryYellow900)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        _deleteExpenseEntry(index);
+                        Navigator.pop(context);
+                      },
+                      child: Text("삭제", style: body2(primaryYellow900)),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          icon: Icon(Icons.disabled_by_default_outlined),
         ),
         _buildExpenseFormRow(
           index: index,
           label: "구분",
           child: Container(
             child: DropdownButton<String>(
-              value: expenseEntries[index]['구분']?.isEmpty ?? true
+              value: expenseEntries[index]['어종']?.isEmpty ?? true
                   ? null
-                  : expenseEntries[index]['구분'],
+                  : expenseEntries[index]['어종'],
               hint: Text("지출 구분을 선택해주세요", style: body2(gray4)),
               onChanged: (value) {
                 setState(() {
-                  expenseEntries[index]['구분'] = value;
+                  expenseEntries[index]['어종'] = value;
                 });
               },
               items: <String>['유류비', '인건비', '어구', '기타']
@@ -400,9 +434,10 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                       });
                     },
                     decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "지출 금액을 입력해주세요",
-                        hintStyle: body2(gray4)),
+                      border: InputBorder.none,
+                      hintText: "지출 금액을 입력해주세요",
+                      hintStyle: body2(gray4),
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
