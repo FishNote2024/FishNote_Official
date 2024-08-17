@@ -114,14 +114,17 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   Text("위판", style: header4(gray8)),
                   Spacer(),
                   OutlinedButton(
-                    onPressed: _addRevenueEntry,
+                    onPressed: _addExpenseEntry,
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.transparent),
                       padding: EdgeInsets.zero,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [Text('위판 추가하기 ', style: body2(gray4))],
+                      children: [
+                        Text('위판 추가하기 ', style: body2(gray4)),
+                        Icon(Icons.add_circle_outline, color: gray4),
+                      ],
                     ),
                   ),
                 ],
