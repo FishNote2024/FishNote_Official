@@ -1,5 +1,5 @@
-import 'package:fish_note/home/view/home_custom_button.dart';
 import 'package:fish_note/home/view/net_wait_card.dart';
+import 'package:fish_note/home/view/vertical_outlined_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:fl_chart/fl_chart.dart';
