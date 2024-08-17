@@ -63,7 +63,34 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
           onPressed: () {
-            Navigator.pop(context);
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(
+                    "페이지에서 나가시겠습니까?",
+                    style: header3B(textBlack),
+                  ),
+                  content: Text("작성한 내용이 저장되지 않고 사라져요.\n정말 페이지에서 나가시겠습니까?",
+                      style: body2(gray6)),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text("머무르기", style: caption1(primaryBlue500)),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
+                      child: Text("나가기", style: caption1(primaryBlue500)),
+                    ),
+                  ],
+                );
+              },
+            );
           },
         ),
         actions: [
