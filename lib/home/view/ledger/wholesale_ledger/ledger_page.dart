@@ -1,3 +1,5 @@
+import 'package:fish_note/home/view/ledger/wholesale_ledger/add_ledger_page.dart';
+import 'package:fish_note/home/view/ledger/wholesale_ledger/ledger_model.dart';
 import 'package:fish_note/home/view/ledger/wholesale_ledger/line_chart_view.dart';
 import 'package:fish_note/home/view/ledger/wholesale_ledger/pie_chart_view.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -18,12 +20,21 @@ class _LedgerPageState extends State<LedgerPage> {
   DateTime? _selectedDay;
   int _selectedValue = 0;
 
+  // 임시로 데이터를 저장하는 Map
+  final Map<DateTime, IncomeExpense> _incomeExpenseData = {
+    DateTime.utc(2024, 8, 17): IncomeExpense(
+        date: DateTime.utc(2024, 8, 17), income: 5000, expense: 2000),
+    DateTime.utc(2024, 8, 15): IncomeExpense(
+        date: DateTime.utc(2024, 8, 15), income: 10000, expense: 8000),
+  };
+
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
       });
+      print('🗓 Selected Day: $selectedDay');
     }
   }
 
@@ -54,7 +65,19 @@ class _LedgerPageState extends State<LedgerPage> {
       lastDay: DateTime.utc(2030, 3, 14),
       focusedDay: _focusedDay,
       calendarFormat: CalendarFormat.week,
-      onDaySelected: _onDaySelected,
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
+
+        showModalBottomSheet(
+          context: context,
+          builder: (context) {
+            return _buildBottomSheetContent(selectedDay);
+          },
+        );
+      },
       locale: 'ko_KR',
       selectedDayPredicate: (day) {
         return isSameDay(_selectedDay, day);
@@ -88,6 +111,61 @@ class _LedgerPageState extends State<LedgerPage> {
           color: primaryYellow500,
           shape: BoxShape.circle,
         ),
+      ),
+    );
+  }
+
+  Widget _buildBottomSheetContent(DateTime selectedDay) {
+    // 디버깅을 위한 임시 코드
+    // final DateTime selectedDateOnly =
+    //     DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
+    // final incomeExpense = _incomeExpenseData[selectedDay];
+
+    return Container(
+      padding: const EdgeInsets.only(left: 18.0, right: 18, bottom: 40),
+      height: 340,
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // 디버깅을 위한 임시 코드
+          // Text('${DateFormat.yMMMMd('ko_KR').format(selectedDay.toLocal())}'),
+          // Text('수입: ${incomeExpense?.income.toString() ?? '0'}원'),
+          // Text('지출: ${incomeExpense?.expense.toString() ?? '0'}원'),
+          Spacer(),
+          Center(
+            child: Column(children: [
+              Image.asset('assets/icons/ledgerIcon.png', width: 130),
+              Text("오늘의 수입과 지출을 기록하세요!", style: body1(textBlack)),
+            ]),
+          ),
+          Spacer(),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddLedgerPage(
+                      selectedDate: selectedDay.toLocal(),
+                    ),
+                  ),
+                )
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryBlue500,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text('장부 추가', style: header4(Colors.white)),
+            ),
+          )
+        ],
       ),
     );
   }
