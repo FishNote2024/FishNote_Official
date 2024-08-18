@@ -1,4 +1,5 @@
 import 'package:fish_note/home/view/ledger/wholesale_ledger/add_ledger_page.dart';
+import 'package:fish_note/home/view/ledger/wholesale_ledger/ledger_detail_page.dart';
 import 'package:fish_note/home/view/ledger/wholesale_ledger/ledger_model.dart';
 import 'package:fish_note/home/view/ledger/wholesale_ledger/line_chart_view.dart';
 import 'package:fish_note/home/view/ledger/wholesale_ledger/pie_chart_view.dart';
@@ -328,7 +329,7 @@ class _LedgerPageState extends State<LedgerPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => AddLedgerPage(
+                                  builder: (context) => LedgerDetailPage(
                                     selectedDate: _selectedDay!.toLocal(),
                                   ),
                                 ),
