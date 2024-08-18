@@ -4,6 +4,7 @@ import 'package:fish_note/home/view/ledger/wholesale_ledger/line_chart_view.dart
 import 'package:fish_note/home/view/ledger/wholesale_ledger/pie_chart_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -310,10 +311,15 @@ class _LedgerPageState extends State<LedgerPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10.0, bottom: 24),
+                          child: SvgPicture.asset('assets/icons/topDivider.svg',
+                              width: 130),
+                        ),
                         Text(
                             '${DateFormat('yyyy.MM.dd').format(_selectedDay!.toLocal())}',
                             style: header3B(gray8)),
-                        SizedBox(height: 12),
+                        const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,
                           height: 33,
@@ -329,6 +335,7 @@ class _LedgerPageState extends State<LedgerPage> {
                               )
                             },
                             style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 side: BorderSide(color: primaryBlue500),
@@ -338,13 +345,13 @@ class _LedgerPageState extends State<LedgerPage> {
                                 Text('자세히 보기', style: header4(primaryBlue500)),
                           ),
                         ),
-                        SizedBox(height: 12),
+                        SizedBox(height: 16),
                         Row(
                           children: [
                             Text('매출', style: body1(gray4)),
                             const SizedBox(width: 12),
                             Text(
-                                '${_incomeExpenseData[selectedDateOnly]?..toString()}원',
+                                '${_incomeExpenseData[_selectedDay]?.income.toString()}원',
                                 style: header4(primaryBlue300))
                           ],
                         ),
@@ -378,21 +385,41 @@ class _LedgerPageState extends State<LedgerPage> {
                                 ),
                               ],
                             ),
-                            _buildTableRow('우럭 120kg', '2,000', '240,000원'),
-                            _buildTableRow('도다리 183kg', '988', '642,000원'),
-                            _buildTableRow('아귀 133kg', '1,230', '231,070원'),
                           ],
                         ),
-                        Divider(color: gray1, thickness: 1, endIndent: 156),
+                        _buildRevenueTable(),
+                        SizedBox(height: 30),
                         Row(
                           children: [
                             Text('지출', style: body1(gray4)),
                             const SizedBox(width: 12),
                             Text(
-                                '${_incomeExpenseData[selectedDateOnly]?.expense.toString()}원',
+                                '${_incomeExpenseData[_selectedDay]?.expense.toString()}원',
                                 style: header4(primaryYellow900))
                           ],
                         ),
+                        SizedBox(height: 16),
+                        Table(
+                          columnWidths: {
+                            0: FlexColumnWidth(1),
+                            1: FlexColumnWidth(2),
+                          },
+                          children: [
+                            TableRow(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 12.0),
+                                  child: Text('이름', style: caption1(gray4)),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 12.0),
+                                  child: Text('가격', style: caption1(gray4)),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        _buildExpenseTable(),
                       ],
                     ),
             ),
@@ -402,7 +429,39 @@ class _LedgerPageState extends State<LedgerPage> {
     );
   }
 
-  TableRow _buildTableRow(String item, String price, String total) {
+  Table _buildRevenueTable() {
+    List<TableRow> rows = [];
+
+    // Sample data
+    List<Map<String, String>> data = [
+      {'item': '우럭 120kg', 'price': '2,000', 'total': '240,000원'},
+      {'item': '도다리 183kg', 'price': '988', 'total': '642,000원'},
+      {'item': '아귀 133kg', 'price': '1,230', 'total': '231,070원'},
+    ];
+
+    for (var entry in data) {
+      rows.add(_buildRevenueTableRow(
+          entry['item']!, entry['price']!, entry['total']!));
+      rows.add(TableRow(children: [
+        Divider(thickness: 1, color: gray1),
+        Divider(thickness: 1, color: gray1),
+        Divider(thickness: 1, color: gray1),
+        Divider(thickness: 1, color: gray1),
+      ]));
+    }
+
+    return Table(
+      columnWidths: {
+        0: FlexColumnWidth(3),
+        1: FlexColumnWidth(2),
+        2: FlexColumnWidth(1),
+        3: FlexColumnWidth(3),
+      },
+      children: rows,
+    );
+  }
+
+  TableRow _buildRevenueTableRow(String item, String price, String total) {
     return TableRow(
       children: [
         Padding(
@@ -420,6 +479,45 @@ class _LedgerPageState extends State<LedgerPage> {
         Padding(
           padding: const EdgeInsets.all(0.0),
           child: Text(total, style: body2(black)),
+        ),
+      ],
+    );
+  }
+
+  Table _buildExpenseTable() {
+    List<TableRow> rows = [];
+
+    List<Map<String, String>> data = [
+      {'item': '인건비', 'price': '100,000원'},
+      {'item': '유류비', 'price': '50,000원'}
+    ];
+    for (var entry in data) {
+      rows.add(_buildExpenseTableRow(entry['item']!, entry['price']!));
+      rows.add(TableRow(children: [
+        Divider(thickness: 1, color: gray1),
+        Divider(thickness: 1, color: gray1),
+      ]));
+    }
+
+    return Table(
+      columnWidths: {
+        0: FlexColumnWidth(1),
+        1: FlexColumnWidth(2),
+      },
+      children: rows,
+    );
+  }
+
+  TableRow _buildExpenseTableRow(String item, String price) {
+    return TableRow(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Text(item, style: body2(black)),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(0.0),
+          child: Text('$price', style: body2(black)),
         ),
       ],
     );
