@@ -43,6 +43,7 @@ dependencies:
   kakao_flutter_sdk_user: ^1.9.4
   percent_indicator: ^4.2.3
   intl: ^0.17.0
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:
