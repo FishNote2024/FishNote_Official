@@ -128,7 +128,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           ),
         ),
         Container(
-          padding: EdgeInsets.fromLTRB(16, 6, 16, 16),
+          padding: EdgeInsets.fromLTRB(16, 6, 16, 6),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: gray1),
@@ -141,7 +141,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   Text("위판", style: header4(gray8)),
                   Spacer(),
                   OutlinedButton(
-                    onPressed: _addExpenseEntry,
+                    onPressed: _addRevenueEntry,
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.transparent),
                       padding: EdgeInsets.zero,
@@ -184,40 +184,12 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   Widget _buildRevenueEntryForm(int index) {
     return Column(
       children: [
-        IconButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("삭제"),
-                  content: Text("위판을 삭제하시겠습니까?"),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("취소", style: body2(primaryYellow900)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        _deleteRevenueEntry(index);
-                        Navigator.pop(context);
-                      },
-                      child: Text("삭제", style: body2(primaryYellow900)),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          icon: Icon(Icons.disabled_by_default_outlined),
-        ),
         _buildRevenueFormRow(
           index: index,
           label: "어종",
           child: Container(
             child: DropdownButton<String>(
+              isExpanded: true,
               value: revenueEntries[index]['어종']?.isEmpty ?? true
                   ? null
                   : revenueEntries[index]['어종'],
@@ -293,6 +265,51 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
             ),
           ),
         ),
+        Row(
+          children: [
+            Spacer(),
+            OutlinedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("삭제"),
+                      content: Text("위판을 삭제하시겠습니까?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("취소", style: body2(primaryYellow900)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _deleteRevenueEntry(index);
+                            Navigator.pop(context);
+                          },
+                          child: Text("삭제", style: body2(primaryYellow900)),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: Colors.transparent),
+                padding: EdgeInsets.zero,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('삭제하기 ', style: body2(alertRedBackground)),
+                  Icon(Icons.delete_forever_outlined,
+                      color: alertRedBackground),
+                ],
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -338,7 +355,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           ),
         ),
         Container(
-          padding: EdgeInsets.fromLTRB(16, 6, 16, 16),
+          padding: EdgeInsets.fromLTRB(16, 6, 16, 6),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: gray1),
@@ -394,40 +411,12 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   Widget _buildExpenseEntryForm(int index) {
     return Column(
       children: [
-        IconButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("삭제"),
-                  content: Text("지출내역을 삭제하시겠습니까?"),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("취소", style: body2(primaryYellow900)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        _deleteExpenseEntry(index);
-                        Navigator.pop(context);
-                      },
-                      child: Text("삭제", style: body2(primaryYellow900)),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          icon: Icon(Icons.disabled_by_default_outlined),
-        ),
         _buildExpenseFormRow(
           index: index,
           label: "구분",
           child: Container(
             child: DropdownButton<String>(
+              isExpanded: true,
               value: expenseEntries[index]['어종']?.isEmpty ?? true
                   ? null
                   : expenseEntries[index]['어종'],
@@ -476,6 +465,51 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
               ],
             ),
           ),
+        ),
+        Row(
+          children: [
+            Spacer(),
+            OutlinedButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("삭제"),
+                      content: Text("지출 내역을 삭제하시겠습니까?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text("취소", style: body2(primaryYellow900)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _deleteRevenueEntry(index);
+                            Navigator.pop(context);
+                          },
+                          child: Text("삭제", style: body2(primaryYellow900)),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: Colors.transparent),
+                padding: EdgeInsets.zero,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('삭제하기 ', style: body2(alertRedBackground)),
+                  Icon(Icons.delete_forever_outlined,
+                      color: alertRedBackground),
+                ],
+              ),
+            ),
+          ],
         ),
       ],
     );
