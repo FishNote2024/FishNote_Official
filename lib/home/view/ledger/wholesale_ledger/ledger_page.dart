@@ -266,6 +266,11 @@ class _LedgerPageState extends State<LedgerPage> {
       child: SingleChildScrollView(
         child: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10.0, bottom: 24),
+              child:
+                  SvgPicture.asset('assets/icons/topDivider.svg', width: 130),
+            ),
             Center(
               child: !hasData
                   ? Column(
@@ -311,11 +316,6 @@ class _LedgerPageState extends State<LedgerPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10.0, bottom: 24),
-                          child: SvgPicture.asset('assets/icons/topDivider.svg',
-                              width: 130),
-                        ),
                         Text(
                             '${DateFormat('yyyy.MM.dd').format(_selectedDay!.toLocal())}',
                             style: header3B(gray8)),
