@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../theme/colors.dart';
-import '../../theme/font.dart';
+import '../../../theme/colors.dart';
+import '../../../theme/font.dart';
 
 class MarketPrice extends StatelessWidget {
   const MarketPrice({super.key});

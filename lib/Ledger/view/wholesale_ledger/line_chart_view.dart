@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import '../../theme/colors.dart';
-import '../../theme/font.dart';
+import '../../../theme/colors.dart';
+import '../../../theme/font.dart';
 
 // 현재는 월간 기준입니다.
 class LineChartView extends StatefulWidget {

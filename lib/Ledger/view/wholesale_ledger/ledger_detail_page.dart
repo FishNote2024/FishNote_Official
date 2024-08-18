@@ -62,34 +62,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
           onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text(
-                    "페이지에서 나가시겠습니까?",
-                    style: header3B(textBlack),
-                  ),
-                  content: Text("작성한 내용이 저장되지 않고 사라져요.\n정말 페이지에서 나가시겠습니까?",
-                      style: body2(gray6)),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("머무르기", style: caption1(primaryBlue500)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                      child: Text("나가기", style: caption1(primaryBlue500)),
-                    ),
-                  ],
-                );
-              },
-            );
+            Navigator.pop(context);
           },
         ),
         actions: [
@@ -153,6 +126,8 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: Divider(color: gray1),
                         ),
+                      Divider(color: gray1),
+                      _buildRevenueEntryForm(index),
                     ],
                   );
                 },
@@ -170,83 +145,17 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
         _buildRevenueFormRow(
           index: index,
           label: "어종",
-          child: Container(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: revenueEntries[index]['어종']?.isEmpty ?? true
-                  ? null
-                  : revenueEntries[index]['어종'],
-              hint: Text("어종을 선택해주세요", style: body2(gray4)),
-              onChanged: (value) {
-                setState(() {
-                  revenueEntries[index]['어종'] = value;
-                });
-              },
-              items: <String>['광어', '아귀', '문어'].map<DropdownMenuItem<String>>(
-                (String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value, style: body2(textBlack)),
-                  );
-                },
-              ).toList(),
-              underline: SizedBox.shrink(),
-            ),
-          ),
+          child: Container(child: Text("광어")),
         ),
         _buildRevenueFormRow(
           index: index,
           label: "위판량",
-          child: Container(
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        revenueEntries[index]['위판량'] = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "무게를 입력해주세요",
-                      hintStyle: body2(gray4),
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Text("kg", style: body2(gray4)),
-              ],
-            ),
-          ),
+          child: Container(child: Text("10kg")),
         ),
         _buildRevenueFormRow(
           index: index,
           label: "위판 수익",
-          child: Container(
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        revenueEntries[index]['위판 수익'] = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "수입 금액을 입력해주세요",
-                      hintStyle: body2(gray4),
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Text("원", style: body2(gray4)),
-              ],
-            ),
-          ),
+          child: Container(child: Text("100,000원")),
         ),
       ],
     );
@@ -255,7 +164,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
   Widget _buildRevenueFormRow(
       {required String label, required Widget child, required int index}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
         children: [
           SizedBox(
@@ -265,11 +174,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
           Expanded(
             child: Container(
               height: 33,
-              padding: EdgeInsets.fromLTRB(10, 6, 10, 6),
-              decoration: BoxDecoration(
-                border: Border.all(color: gray4, width: 1),
-                borderRadius: BorderRadius.circular(4),
-              ),
+              padding: EdgeInsets.fromLTRB(0, 6, 10, 6),
               child: child,
             ),
           ),
@@ -339,57 +244,12 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
         _buildExpenseFormRow(
           index: index,
           label: "구분",
-          child: Container(
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: expenseEntries[index]['어종']?.isEmpty ?? true
-                  ? null
-                  : expenseEntries[index]['어종'],
-              hint: Text("지출 구분을 선택해주세요", style: body2(gray4)),
-              onChanged: (value) {
-                setState(() {
-                  expenseEntries[index]['어종'] = value;
-                });
-              },
-              items: <String>['유류비', '인건비', '어구', '기타']
-                  .map<DropdownMenuItem<String>>(
-                (String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value, style: body2(textBlack)),
-                  );
-                },
-              ).toList(),
-              underline: SizedBox.shrink(),
-            ),
-          ),
+          child: Text("연료비"),
         ),
         _buildExpenseFormRow(
           index: index,
           label: "비용",
-          child: Container(
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        expenseEntries[index]['비용'] = value;
-                      });
-                    },
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: "지출 금액을 입력해주세요",
-                      hintStyle: body2(gray4),
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-                SizedBox(width: 8),
-                Text("원", style: body2(gray4)),
-              ],
-            ),
-          ),
+          child: Container(child: Text("100,000원")),
         ),
       ],
     );
@@ -398,7 +258,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
   Widget _buildExpenseFormRow(
       {required String label, required Widget child, required int index}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
+      padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
         children: [
           SizedBox(
@@ -408,11 +268,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
           Expanded(
             child: Container(
               height: 33,
-              padding: EdgeInsets.fromLTRB(10, 6, 10, 6),
-              decoration: BoxDecoration(
-                border: Border.all(color: gray4, width: 1),
-                borderRadius: BorderRadius.circular(4),
-              ),
+              padding: EdgeInsets.fromLTRB(0, 6, 10, 6),
               child: child,
             ),
           ),

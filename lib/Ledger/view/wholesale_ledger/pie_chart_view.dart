@@ -2,7 +2,7 @@ import 'package:fish_note/theme/font.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../../theme/colors.dart';
+import '../../../theme/colors.dart';
 
 class PieChartView extends StatefulWidget {
   const PieChartView({super.key});
