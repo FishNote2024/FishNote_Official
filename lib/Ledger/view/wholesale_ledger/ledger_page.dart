@@ -286,7 +286,7 @@ class _LedgerPageState extends State<LedgerPage> {
                             Text("오늘의 수입과 지출을 기록하세요!", style: body1(textBlack)),
                           ]),
                         ),
-                        const SizedBox(height: 80),
+                        const SizedBox(height: 70),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
@@ -310,7 +310,7 @@ class _LedgerPageState extends State<LedgerPage> {
                             ),
                             child: Text('장부 추가', style: header4(Colors.white)),
                           ),
-                        )
+                        ),
                       ],
                     )
                   : Column(

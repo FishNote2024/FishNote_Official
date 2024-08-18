@@ -97,7 +97,9 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/ledger1');
+              },
               child: Text("수정완료", style: body2(primaryYellow900)),
             ),
           ),
