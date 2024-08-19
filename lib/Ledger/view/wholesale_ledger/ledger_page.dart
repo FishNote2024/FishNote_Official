@@ -186,10 +186,24 @@ class _LedgerPageState extends State<LedgerPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(DateFormat.yMMMM('ko_KR').format(_focusedDay),
-              style: header4(black)),
+          title: Center(
+            child: Row(
+              children: [
+                IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.arrow_back_ios, size: 14)),
+                Spacer(),
+                Text(DateFormat.yMMMM('ko_KR').format(_focusedDay),
+                    style: header4(black)),
+                Spacer(),
+                IconButton(
+                    onPressed: () {},
+                    icon: Icon(Icons.arrow_forward_ios, size: 14)),
+              ],
+            ),
+          ),
           content: SizedBox(
-            height: 180,
+            height: 220,
             width: 283,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -199,7 +213,7 @@ class _LedgerPageState extends State<LedgerPage> {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      childAspectRatio: 2,
+                      childAspectRatio: 1.5,
                     ),
                     itemCount: 12,
                     itemBuilder: (context, index) {
@@ -207,7 +221,8 @@ class _LedgerPageState extends State<LedgerPage> {
                         onTap: () {
                           Navigator.pop(context, index + 1);
                         },
-                        child: Center(child: Text('${index + 1}월')),
+                        child: Center(
+                            child: Text('${index + 1}월', style: body1(gray6))),
                       );
                     },
                   ),
