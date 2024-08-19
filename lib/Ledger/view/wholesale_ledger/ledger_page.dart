@@ -186,9 +186,10 @@ class _LedgerPageState extends State<LedgerPage> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('2024년 6월'),
+          title: Text(DateFormat.yMMMM('ko_KR').format(_focusedDay),
+              style: header4(black)),
           content: SizedBox(
-            height: 200,
+            height: 180,
             width: 283,
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -211,20 +212,20 @@ class _LedgerPageState extends State<LedgerPage> {
                     },
                   ),
                 ),
-                const Divider(),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: 5,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text('${index + 1}주차'),
-                        onTap: () {
-                          Navigator.pop(context, index + 1);
-                        },
-                      );
-                    },
-                  ),
-                ),
+                // const Divider(),
+                // Expanded(
+                //   child: ListView.builder(
+                //     itemCount: 5,
+                //     itemBuilder: (context, index) {
+                //       return ListTile(
+                //         title: Text('${index + 1}주차'),
+                //         onTap: () {
+                //           Navigator.pop(context, index + 1);
+                //         },
+                //       );
+                //     },
+                //   ),
+                // ),
               ],
             ),
           ),
