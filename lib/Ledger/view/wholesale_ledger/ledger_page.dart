@@ -579,6 +579,7 @@ class _LedgerPageState extends State<LedgerPage> {
                 Text('10,145,070원', style: header4(primaryBlue500))
               ],
             ),
+            SizedBox(height: 40)
           ],
         ),
       ],
