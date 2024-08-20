@@ -1,7 +1,7 @@
 
 import 'package:dio/dio.dart';
 import 'convertGridGps.dart';
-import 'date_calculate.dart';
+import 'weatherAPITimeSync.dart';
 
 class ApiService {
   Dio dio = Dio(BaseOptions(
@@ -11,9 +11,9 @@ class ApiService {
 
 
   Future<Map<String, dynamic>> fetchData({required double nx, required double ny}) async {
-    DateCalculate closestForecastTime = DateCalculate(DateTime.now());
-    String closestTime = closestForecastTime.getClosestTime();
-    String formattedDate = closestForecastTime.getFormattedDate();
+    WeatherAPITimeSync closestForecastTime = WeatherAPITimeSync();
+    String closestTime = closestForecastTime.getClosestTime(DateTime.now());
+    String formattedDate = closestForecastTime.getFormattedDate(DateTime.now());
     Map grid = ConvGridGps.gpsToGRID(nx, ny);
     try {
       final response = await dio.get(
