@@ -1,7 +1,5 @@
 import 'package:fish_note/Ledger/view/wholesale_ledger/line_chart_view.dart';
 import 'package:fish_note/Ledger/view/wholesale_ledger/pie_chart_view.dart';
-import 'package:fish_note/home/view/ledger/wholesale_ledger/line_chart_view.dart';
-import 'package:fish_note/home/view/ledger/wholesale_ledger/pie_chart_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
