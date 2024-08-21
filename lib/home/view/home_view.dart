@@ -6,6 +6,9 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../model/weather_api.dart';
+
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -15,11 +18,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with TickerProviderStateMixin {
   late final TabController _tabController;
+  late Future<Map<String, dynamic>> weatherData;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    ApiService apiService = ApiService();
+    weatherData = apiService.fetchData(nx : 36.190,ny : 129.358);
   }
 
   @override
@@ -104,24 +110,43 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8.0),
                     border: Border.all(color: gray2)),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                        weatherColumn(
-                            '14:00', Icons.wb_sunny, '1m/s', '→', '0.5m'),
-                      ],
-                    ),
-                  ],
+                child:  FutureBuilder<Map<String, dynamic>>(
+                  future: weatherData,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(child: Text('No data available'));
+                    }
+
+                    Map<String, dynamic> data = snapshot.data!;
+
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal, // 가로 스크롤
+                        child: Row(
+                        children: data.entries.map((entry) {
+                      String time = entry.key.substring(8, 10) + ":" + entry.key.substring(10, 12);
+                      Map<String, dynamic> weatherInfo = entry.value;
+
+                      String direction = _convertVecToDirection(int.parse(weatherInfo['VEC']));
+                      IconData icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
+
+                      return Padding(
+                        padding: const EdgeInsets.all(14.0),
+                        child: weatherColumn(
+                          time,
+                          icon,
+                          '${weatherInfo['WSD']}m/s',
+                          direction,
+                          '${weatherInfo['WAV']}m',
+                        ),
+                      );
+                    }).toList(),
+                        ),
+                    );
+                  }
                 ),
               ),
               const SizedBox(height: 16.0),
@@ -154,6 +179,25 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+
+  String _convertVecToDirection(int vec) {
+    if (vec >= 0 && vec < 45) return '↑';
+    if (vec >= 45 && vec < 135) return '→';
+    if (vec >= 135 && vec < 225) return '↓';
+    if (vec >= 225 && vec < 315) return '←';
+    return '↑';
+  }
+
+  IconData _getWeatherIcon(int sky) {
+    switch (sky) {
+      case 1: return Icons.wb_sunny;
+      case 2: return Icons.cloud;
+      case 3: return Icons.cloud_queue;
+      case 4: return Icons.grain; // 비 또는 눈 아이콘으로 변경 가능
+      default: return Icons.wb_sunny;
+    }
   }
 
   Widget weatherColumn(String time, IconData icon, String windSpeed,
