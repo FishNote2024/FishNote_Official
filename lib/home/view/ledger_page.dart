@@ -113,7 +113,6 @@ class _LedgerPageState extends State<LedgerPage>
                               FlSpot(6, 1.8),
                             ],
                             isCurved: true,
-                            // backg: [Colors.blue],
                             color: Colors.red,
                             barWidth: 4,
                             isStrokeCapRound: true,
@@ -198,11 +197,6 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
     try {
       // 기존 데이터 제거
       groupedData.clear();
-
-      // String requestUrl =
-      //     '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&fromDt=$baseDt&toDt=$baseDt&type=xml';
-      // String requestUrl =
-      //     '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&mxtrNm=%EA%B1%B0%EC%A0%9C%EC%88%98%EC%82%B0%EC%97%85%ED%98%91%EB%8F%99%EC%A1%B0%ED%95%A9&fshrNm=%EB%82%98%EC%9E%A0%EC%96%B4%EC%97%85&fromDt=$baseDt&toDt=$baseDt&type=xml';
       String requestUrl =
           '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&mxtrNm=$mxtrNm&fromDt=$baseDt&toDt=$baseDt&type=xml';
       var response = await dio.get(requestUrl);
@@ -210,6 +204,7 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
         var document = xml.XmlDocument.parse(response.data);
         final items = document.findAllElements('item');
 
+        // 추후 확정 기획을 바탕으로 계산식이 수정될 예정입니다.
         // 어종(mprcStdCodeNm)을 기준으로 그룹화 및 평균 계산
         for (var item in items) {
           String mprcStdCodeNm = item.findElements('mprcStdCodeNm').single.text;
@@ -231,14 +226,14 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
             }
           }
         }
-
-        setState(() {}); // 상태 갱신
+        setState(() {});
       }
     } catch (e) {
       print('Error fetching data: $e');
     }
   }
 
+  // 추후 UI가 수정될 예정입니다.
   @override
   Widget build(BuildContext context) {
     return Padding(
