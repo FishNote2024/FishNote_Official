@@ -1,12 +1,16 @@
-import 'package:fish_note/home/view/ledger_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/signUp/view/sign_up_view.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
+import 'package:intl/intl.dart';
+import 'home/view/ledger/tab_bar_view.dart';
 
-void main() {
-  KakaoSdk.init(nativeAppKey: '5df0c1f5ae7c5485d949731c13179fc3');
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  KakaoSdk.init(nativeAppKey: '0e7b8b40fe199f687f7766e0391aa083');
+  await initializeDateFormatting('ko_KR', null);
   runApp(const MyApp());
 }
 
@@ -42,12 +46,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => const MyHomePage(),
+        '/': (context) => const Home(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),
-        '/ledger1': (context) => const LedgerPage(initialTabIndex: 0),
-        '/ledger2': (context) => const LedgerPage(initialTabIndex: 1),
+        '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
+        '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
       },
     );
   }
