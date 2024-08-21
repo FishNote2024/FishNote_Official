@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:xml/xml.dart' as xml;
 
 class LedgerPage extends StatefulWidget {
@@ -64,8 +67,93 @@ class _LedgerPageState extends State<LedgerPage>
                     '30,245,070원',
                     style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   ),
+                  TableCalendar(
+                    firstDay: DateTime.utc(2020, 1, 1),
+                    lastDay: DateTime.utc(2030, 12, 31),
+                    focusedDay: DateTime.now(),
+                    calendarFormat: CalendarFormat.month,
+                  ),
+                  const SizedBox(height: 16.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: const [
+                      Text(
+                        '매출 50,245,070원',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                      Text(
+                        '지출 20,000,000원',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                      Text(
+                        '합계 30,245,070원',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                  const Text('매출 추이'),
+                  const SizedBox(height: 8.0),
+                  SizedBox(
+                    height: 200,
+                    child: LineChart(
+                      LineChartData(
+                        gridData: FlGridData(show: true),
+                        titlesData: FlTitlesData(show: true),
+                        borderData: FlBorderData(show: true),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: [
+                              FlSpot(0, 1),
+                              FlSpot(1, 1.5),
+                              FlSpot(2, 1.4),
+                              FlSpot(3, 3.4),
+                              FlSpot(4, 2),
+                              FlSpot(5, 2.2),
+                              FlSpot(6, 1.8),
+                            ],
+                            isCurved: true,
+                            color: Colors.red,
+                            barWidth: 4,
+                            isStrokeCapRound: true,
+                            belowBarData: BarAreaData(show: false),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 16.0),
                   const Text('매출 통계'),
+                  const SizedBox(height: 8.0),
+                  SizedBox(
+                    height: 200,
+                    child: PieChart(
+                      PieChartData(
+                        sections: [
+                          PieChartSectionData(
+                            color: Colors.orange,
+                            value: 44,
+                            title: '유류비 44%',
+                          ),
+                          PieChartSectionData(
+                            color: Colors.yellow,
+                            value: 30,
+                            title: '인건비 30%',
+                          ),
+                          PieChartSectionData(
+                            color: Colors.amber,
+                            value: 19,
+                            title: '어구 19%',
+                          ),
+                          PieChartSectionData(
+                            color: Colors.brown,
+                            value: 7,
+                            title: '기타 7%',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -88,12 +176,12 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
   final Dio dio = Dio();
   final String apiUrl =
       'http://apis.data.go.kr/1192000/select0030List/getselect0030List';
-  String baseDt = '20240818';
   final String apiKey =
       'P9snIt2gDleusE4uaQ9a1Tyx6/QaQRBJjRzr9H4ELGzbp263NM0Fvprpu1mr6Qqu6Efxqu35tgxg0JeKZtRnHA==';
+  String baseDt = '20240816';
 
   // 등록된 어종 목록
-  final List<String> registeredSpecies = ['문어', '돗돔', '눈볼대', '다금바리'];
+  final List<String> registeredSpecies = ['문어', '전복', '방어', '소라', '다금바리'];
   // 등록된 조합명
   final String mxtrNm = '거제수산업협동조합';
 
@@ -107,15 +195,17 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
 
   Future<void> fetchData() async {
     try {
+      // 기존 데이터 제거
       groupedData.clear();
       String requestUrl =
-          '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&type=xml';
+          '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&mxtrNm=$mxtrNm&fromDt=$baseDt&toDt=$baseDt&type=xml';
       var response = await dio.get(requestUrl);
-
       if (response.statusCode == 200) {
         var document = xml.XmlDocument.parse(response.data);
         final items = document.findAllElements('item');
 
+        // 추후 확정 기획을 바탕으로 계산식이 수정될 예정입니다.
+        // 어종(mprcStdCodeNm)을 기준으로 그룹화 및 평균 계산
         for (var item in items) {
           String mprcStdCodeNm = item.findElements('mprcStdCodeNm').single.text;
 
@@ -136,16 +226,14 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
             }
           }
         }
-
         setState(() {});
-      } else {
-        print('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching data: $e');
     }
   }
 
+  // 추후 UI가 수정될 예정입니다.
   @override
   Widget build(BuildContext context) {
     return Padding(

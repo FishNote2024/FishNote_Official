@@ -48,7 +48,8 @@ class _SignUpLocationState extends State<SignUpLocation> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8, horizontal: 16),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: backgroundWhite,
@@ -73,7 +74,8 @@ class _SignUpLocationState extends State<SignUpLocation> {
                           },
                           icon: SvgPicture.asset(
                             'assets/icons/current_location.svg',
-                            colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
+                            colorFilter: const ColorFilter.mode(
+                                primaryBlue500, BlendMode.srcIn),
                           ),
                           color: primaryBlue500,
                           iconSize: 18.5,
