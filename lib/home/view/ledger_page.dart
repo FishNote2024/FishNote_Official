@@ -181,7 +181,7 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
   String baseDt = '20240816';
 
   // 등록된 어종 목록
-  final List<String> registeredSpecies = ['문어', '전복', '방어', '소라'];
+  final List<String> registeredSpecies = ['문어', '전복', '방어', '소라', '다금바리'];
   // 등록된 조합명
   final String mxtrNm = '거제수산업협동조합';
 
