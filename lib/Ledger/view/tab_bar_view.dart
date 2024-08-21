@@ -1,7 +1,7 @@
-import 'package:fish_note/Ledger/view/wholesale_ledger/ledger_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import '../../home/view/ledger/wholesale_ledger/ledger_page.dart';
 import 'auction_price/market_price_table.dart';
 
 class LedgerTabBarView extends StatefulWidget {
@@ -49,7 +49,7 @@ class _LedgerTabBarViewState extends State<LedgerTabBarView>
         padding: const EdgeInsets.all(15.0),
         child: TabBarView(
           controller: _tabController,
-          children: [LedgerPage(), MarketPrice()],
+          children: [LedgerPage(initialTabIndex: 0), MarketPriceTable()],
         ),
       ),
     );

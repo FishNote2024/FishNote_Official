@@ -1,3 +1,4 @@
+import 'package:fish_note/onBoarding/on_boarding.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/signUp/view/sign_up_view.dart';
@@ -5,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:intl/intl.dart';
-import 'home/view/ledger/tab_bar_view.dart';
+import 'Ledger/view/tab_bar_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const Home(),
         '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
         '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
+        '/onBoarding': (context) => OnboardingScreen(),
       },
     );
   }
