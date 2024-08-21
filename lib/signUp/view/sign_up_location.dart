@@ -3,6 +3,7 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SignUpLocation extends StatefulWidget {
@@ -33,6 +34,16 @@ class _SignUpLocationState extends State<SignUpLocation> {
     _latController.dispose();
     _lngController.dispose();
     super.dispose();
+  }
+
+  Future<void> _getLocation() async {
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _latController.text = '${position.latitude}';
+      _lngController.text = '${position.longitude}';
+      _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
+      latlon = [position.latitude, position.longitude];
+    });
   }
 
   @override
@@ -168,7 +179,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButton(
-                          onPressed: () => {},
+                          onPressed: _getLocation,
                           icon: SvgPicture.asset(
                             'assets/icons/current_location.svg',
                             colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),

@@ -2,6 +2,7 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:geolocator/geolocator.dart';
 
 class NextButton extends StatelessWidget {
   const NextButton({
@@ -12,6 +13,24 @@ class NextButton extends StatelessWidget {
 
   final Object? value;
   final VoidCallback onNext;
+
+  Future<bool> _determinePermission() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.value(false);
+    }
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.value(false);
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
 
   void _showPermissionModal(BuildContext context) {
     showModalBottomSheet(
@@ -43,9 +62,10 @@ class NextButton extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 // 허용 버튼 클릭 시 동작 + @@권한 설정 기능@@
                 Navigator.pop(context);
+                await _determinePermission();
                 onNext();
               },
               style: TextButton.styleFrom(
