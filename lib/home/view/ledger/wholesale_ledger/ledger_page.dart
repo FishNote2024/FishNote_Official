@@ -1,3 +1,5 @@
+import 'package:fish_note/Ledger/view/wholesale_ledger/line_chart_view.dart';
+import 'package:fish_note/Ledger/view/wholesale_ledger/pie_chart_view.dart';
 import 'package:fish_note/home/view/ledger/wholesale_ledger/line_chart_view.dart';
 import 'package:fish_note/home/view/ledger/wholesale_ledger/pie_chart_view.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -7,7 +9,7 @@ import 'package:intl/intl.dart';
 import '../../../../theme/font.dart';
 
 class LedgerPage extends StatefulWidget {
-  const LedgerPage({super.key});
+  const LedgerPage({super.key, required int initialTabIndex});
 
   @override
   State<LedgerPage> createState() => _LedgerPageState();
