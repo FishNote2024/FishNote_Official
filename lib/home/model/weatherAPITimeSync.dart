@@ -1,13 +1,10 @@
-class DateCalculate {
-  final DateTime now;
-
-  DateCalculate(this.now);
+class WeatherAPITimeSync {
 
   // List of reference times
   List<String> referenceTimes = ['0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'];
 
   // Method to get the closest time, with 30-minute previous time consideration
-  String getClosestTime() {
+  String getClosestTime(DateTime now) {
     String closestTime = referenceTimes.reduce((a, b) {
       int timeDiff(String time) {
         DateTime parsedTime = DateTime(now.year, now.month, now.day,
@@ -36,8 +33,8 @@ class DateCalculate {
   }
 
 
-  String getFormattedDate() {
-    String closestTime = getClosestTime();
+  String getFormattedDate(DateTime now) {
+    String closestTime = getClosestTime(now);
     int closestTimeIndex = referenceTimes.indexOf(closestTime);
     DateTime closestDateTime = DateTime(now.year, now.month, now.day,
         int.parse(closestTime.substring(0, 2)), int.parse(closestTime.substring(2, 4)));
