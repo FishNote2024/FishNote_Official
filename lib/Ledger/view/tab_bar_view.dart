@@ -49,7 +49,7 @@ class _LedgerTabBarViewState extends State<LedgerTabBarView>
         padding: const EdgeInsets.all(15.0),
         child: TabBarView(
           controller: _tabController,
-          children: [LedgerPage(initialTabIndex: 0), MarketPrice()],
+          children: [LedgerPage(initialTabIndex: 0), MarketPriceTable()],
         ),
       ),
     );
