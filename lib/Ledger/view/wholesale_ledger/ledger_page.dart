@@ -107,7 +107,7 @@ class _LedgerPageState extends State<LedgerPage> {
               firstDay: DateTime.utc(2021, 10, 16),
               lastDay: DateTime.utc(2030, 3, 14),
               focusedDay: _focusedDay,
-              calendarFormat: CalendarFormat.month,
+              calendarFormat: CalendarFormat.week,
               onDaySelected: (selectedDay, focusedDay) {
                 _onDaySelected(selectedDay, focusedDay);
                 if (!isSameDay(_selectedDay, selectedDay)) {
