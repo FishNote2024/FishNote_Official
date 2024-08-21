@@ -1,3 +1,4 @@
+import 'package:fish_note/onBoarding/on_boarding.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/signUp/view/sign_up_view.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const Home(),
         '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
         '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
+        '/onBoarding': (context) => OnboardingScreen(),
       },
     );
   }
