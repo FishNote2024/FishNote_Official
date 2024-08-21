@@ -15,7 +15,7 @@ class SignUpLocation extends StatefulWidget {
 }
 
 class _SignUpLocationState extends State<SignUpLocation> {
-  List<double>? location;
+  List<double>? latlon;
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
   late WebViewController _controller;
@@ -26,6 +26,13 @@ class _SignUpLocationState extends State<SignUpLocation> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));
+  }
+
+  @override
+  void dispose() {
+    _latController.dispose();
+    _lngController.dispose();
+    super.dispose();
   }
 
   @override
@@ -60,7 +67,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                           _controller.runJavaScript(
                             'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
                           );
-                          location = [
+                          latlon = [
                             double.parse(_latController.text),
                             double.parse(_lngController.text)
                           ];
@@ -108,7 +115,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                           _controller.runJavaScript(
                             'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
                           );
-                          location = [
+                          latlon = [
                             double.parse(_latController.text),
                             double.parse(_lngController.text)
                           ];
@@ -161,15 +168,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButton(
-                          onPressed: () => {
-                            setState(() {
-                              // 현재 위치로 수정해야 함.
-                              _latController.text = '36.1036';
-                              _lngController.text = '129.3888';
-                              _controller.runJavaScript('fromAppToWeb("36.1036", "129.3888");');
-                              location = [36.1036, 129.3888];
-                            }),
-                          },
+                          onPressed: () => {},
                           icon: SvgPicture.asset(
                             'assets/icons/current_location.svg',
                             colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
@@ -190,7 +189,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                     ),
                     const SizedBox(height: 12),
                     // 한 번 하고 나면 다시 띄우지 않음
-                    NextButton(value: location, onNext: widget.onNext),
+                    NextButton(value: latlon, onNext: widget.onNext),
                   ],
                 ),
               ),
