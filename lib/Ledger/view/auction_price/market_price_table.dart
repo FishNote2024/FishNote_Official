@@ -49,19 +49,50 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
           String mprcStdCodeNm = item.findElements('mprcStdCodeNm').single.text;
 
           // 등록된 어종만 필터링
-          if (registeredSpecies.contains(mprcStdCodeNm)) {
-            double csmtUntpc =
-                double.parse(item.findElements('csmtUntpc').single.text);
+          // if (registeredSpecies.contains(mprcStdCodeNm)) {
+          //   double csmtUntpc =
+          //       double.parse(item.findElements('csmtUntpc').single.text);
 
-            if (groupedData.containsKey(mprcStdCodeNm)) {
-              groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
-              groupedData[mprcStdCodeNm]!['count'] += 1;
-            } else {
-              groupedData[mprcStdCodeNm] = {
-                'mprcStdCodeNm': mprcStdCodeNm,
-                'totalUntpc': csmtUntpc,
-                'count': 1,
-              };
+          //   if (groupedData.containsKey(mprcStdCodeNm)) {
+          //     groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
+          //     groupedData[mprcStdCodeNm]!['count'] += 1;
+          //   } else {
+          //     groupedData[mprcStdCodeNm] = {
+          //       'mprcStdCodeNm': mprcStdCodeNm,
+          //       'totalUntpc': csmtUntpc,
+          //       'count': 1,
+          //     };
+          //   }
+          // }
+          for (var item in items) {
+            String mprcStdCodeNm =
+                item.findElements('mprcStdCodeNm').single.text;
+
+            // 등록된 어종만 필터링
+            if (registeredSpecies.contains(mprcStdCodeNm)) {
+              double csmtUntpc =
+                  double.parse(item.findElements('csmtUntpc').single.text);
+              String goodsStndrdNm =
+                  item.findElements('goodsStndrdNm').single.text;
+              double csmtQy =
+                  double.parse(item.findElements('csmtQy').single.text);
+              String kdfshSttusNm =
+                  item.findElements('kdfshSttusNm').single.text;
+
+              if (groupedData.containsKey(mprcStdCodeNm)) {
+                groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
+                groupedData[mprcStdCodeNm]!['totalQy'] += csmtQy;
+                groupedData[mprcStdCodeNm]!['count'] += 1;
+              } else {
+                groupedData[mprcStdCodeNm] = {
+                  'mprcStdCodeNm': mprcStdCodeNm,
+                  'goodsStndrdNm': goodsStndrdNm,
+                  'totalUntpc': csmtUntpc,
+                  'totalQy': csmtQy,
+                  'count': 1,
+                  'kdfshSttusNm': kdfshSttusNm
+                };
+              }
             }
           }
         }
@@ -132,7 +163,10 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                 ),
               ],
             ),
-            Text("최근 경락시세", style: header3B().copyWith(height: 0.6)),
+            Text("오늘의 경락시세", style: header3B().copyWith(height: 0.6)),
+            SizedBox(height: 12),
+            Text("소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
+                style: caption1(gray4)),
             const SizedBox(height: 40),
             Table(
               border: TableBorder(
@@ -146,11 +180,25 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                   children: [
                     Padding(
                       padding: EdgeInsets.fromLTRB(4, 12, 0, 12),
-                      child: Text('등록된 주요 어종', style: body2(gray5)),
+                      child: Text('주요 어종', style: body2(gray5)),
                     ),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(4, 12, 0, 12),
-                      child: Text('최근 시세 (1kg당)', style: body2(gray5)),
+                      padding: EdgeInsets.fromLTRB(8, 12, 0, 12),
+                      child: Text('규격', style: body2(gray5)),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft, // 텍스트를 왼쪽으로 정렬
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        child: Text('수량/단위', style: body2(gray5)),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight, // 텍스트를 왼쪽으로 정렬
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        child: Text('가격', style: body2(gray5)),
+                      ),
                     ),
                   ],
                 ),
@@ -164,13 +212,29 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                             Border(bottom: BorderSide(color: gray1, width: 1))),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(entry.value['mprcStdCodeNm'],
+                        padding: const EdgeInsets.fromLTRB(4.0, 8.0, 8.0, 8.0),
+                        child: Text(
+                          '(${entry.value['kdfshSttusNm'][0]}) ${entry.value['mprcStdCodeNm']}',
+                          style: body1(textBlack),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(10.0, 8.0, 0.0, 8.0),
+                        child: Text(entry.value['goodsStndrdNm'],
                             style: body1(textBlack)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('$avgUntpc원', style: body1(textBlack)),
+                        padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
+                        child: Text(entry.value['mprcStdCodeNm'],
+                            style: body1(textBlack)),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
+                          child: Text('$avgUntpc원', style: body1(textBlack)),
+                        ),
                       ),
                     ],
                   );
