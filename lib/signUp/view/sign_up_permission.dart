@@ -2,7 +2,6 @@ import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SignUpPermission extends StatefulWidget {
   const SignUpPermission({super.key, required this.onNext});
@@ -14,45 +13,107 @@ class SignUpPermission extends StatefulWidget {
 }
 
 class _SignUpPermissionState extends State<SignUpPermission> {
+  bool _fullAgree = false;
+  bool _serviceAgree = false;
+  bool _privacyAgree = false;
+  bool _locationAgree = false;
+  bool _ageAgree = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: NextButton(value: "", onNext: widget.onNext),
+      bottomNavigationBar: NextButton(value: _fullAgree ? "agree" : "", onNext: widget.onNext),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 16),
-          Text('피시노트는 기록을 위해\n아래 권한이 필요해요', style: header1B()),
-          const SizedBox(height: 8),
-          Text('권한을 허용하지 않으면\n피시노트의 해상지도 기능을 사용하실 수 없습니다.', style: body1(gray6)),
-          const SizedBox(height: 38),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: SvgPicture.asset(
-                      'assets/icons/location.svg',
-                      colorFilter: const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                      width: 24,
-                      height: 24,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('위치', style: header3B()),
-                      const SizedBox(height: 4),
-                      Text('조업 일지 작성, 현재 위치 조회를 위해\n위치 정보가 필수로 사용됩니다', style: body2()),
-                    ],
-                  ),
-                ],
-              ),
+          Text("약관에 동의하고\n조업일지를 무료로 이용하세요", style: header1B()),
+          const SizedBox(height: 48),
+          CheckboxListTile(
+            title: const Text("전체 약관에 동의합니다"),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+              side: const BorderSide(color: gray2),
             ),
+            controlAffinity: ListTileControlAffinity.leading,
+            checkColor: backgroundWhite,
+            activeColor: primaryBlue500,
+            value: _fullAgree,
+            onChanged: (value) => {
+              setState(() {
+                _serviceAgree = value!;
+                _privacyAgree = value;
+                _locationAgree = value;
+                _ageAgree = value;
+                _fullAgree = value;
+              })
+            },
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: () => {
+                  setState(() {
+                    _serviceAgree = !_serviceAgree;
+                    _fullAgree = _ageAgree && _serviceAgree && _privacyAgree && _locationAgree;
+                  }),
+                },
+                label: Text("서비스 이용약관 (필수)", style: body2(gray8)),
+                icon: Icon(Icons.check_rounded, color: _serviceAgree ? primaryBlue400 : gray2),
+              ),
+              TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: () => {
+                  setState(() {
+                    _privacyAgree = !_privacyAgree;
+                    _fullAgree = _ageAgree && _serviceAgree && _privacyAgree && _locationAgree;
+                  }),
+                },
+                label: Text("개인정보 처리방침 (필수)", style: body2(gray8)),
+                icon: Icon(Icons.check_rounded, color: _privacyAgree ? primaryBlue400 : gray2),
+              ),
+              TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton.icon(
+                onPressed: () => {
+                  setState(() {
+                    _locationAgree = !_locationAgree;
+                    _fullAgree = _ageAgree && _serviceAgree && _privacyAgree && _locationAgree;
+                  }),
+                },
+                label: Text("위치정보 서비스 이용약관 (필수)", style: body2(gray8)),
+                icon: Icon(Icons.check_rounded, color: _locationAgree ? primaryBlue400 : gray2),
+              ),
+              TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              TextButton.icon(
+                onPressed: () => {
+                  setState(() {
+                    _ageAgree = !_ageAgree;
+                    _fullAgree = _ageAgree && _serviceAgree && _privacyAgree && _locationAgree;
+                  }),
+                },
+                label: Text("만 14세 이상입니다 (필수)", style: body2(gray8)),
+                icon: Icon(Icons.check_rounded, color: _ageAgree ? primaryBlue400 : gray2),
+              ),
+            ],
           ),
         ],
       ),

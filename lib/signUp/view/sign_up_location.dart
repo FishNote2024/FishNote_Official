@@ -56,9 +56,9 @@ class _SignUpLocationState extends State<SignUpLocation> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('정확한 계산을 위해\n조업 정보를 알려주세요!', style: header1B()),
+              Text('반자동 조업일지 작성을 위해\n위치를 지정해주세요!', style: header1B()),
               const SizedBox(height: 8),
-              Text('데이터 분석 이외에 다른 용도로 사용되지 않아요.', style: body1(gray6)),
+              Text('매번 조업위치를 입력하는 번거로움을 줄여드려요.', style: body1(gray6)),
               const SizedBox(height: 19),
               Text('주요 조업 위치를 지정해주세요', style: header3B()),
               const SizedBox(height: 17),
@@ -69,6 +69,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: TextField(
+                      onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                       controller: _latController,
                       cursorColor: primaryBlue500,
                       keyboardType: TextInputType.number,
@@ -117,6 +118,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: TextField(
+                      onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                       controller: _lngController,
                       cursorColor: primaryBlue500,
                       keyboardType: TextInputType.number,

@@ -37,11 +37,12 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
             const SizedBox(height: 16),
             Text('정확한 계산을 위해\n조업 정보를 알려주세요!', style: header1B()),
             const SizedBox(height: 8),
-            Text('조업일지, 조업장부 작성 이외에 사용되지 않아요.', style: body1(gray6)),
+            Text('한 번 입력하면 조업일지를 빠르게 작성할 수 있어요.', style: body1(gray6)),
             const SizedBox(height: 19),
             Text('주 어종을 선택해주세요.', style: header3B()),
             const SizedBox(height: 16),
             TextField(
+              onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
               controller: _controller,
               cursorColor: primaryBlue500,
               style: const TextStyle(color: Colors.black),
@@ -204,7 +205,7 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('검색결과 ${speciesList.length}건', style: body1(gray6)),
+                        Text('검색결과 ${speciesList.length}건', style: body2(gray6)),
                         const SizedBox(height: 8),
                         Expanded(
                           child: ListView.separated(

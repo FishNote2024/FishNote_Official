@@ -33,17 +33,17 @@ class _SignUpViewState extends State<SignUpView> {
   Widget _getPage() {
     switch (_currentPage) {
       case 0:
-        return SignUpYearExperience(onNext: _nextPage);
-      case 1:
-        return SignUpAgeRange(onNext: _nextPage);
-      case 2:
-        return SignUpAffiliation(onNext: _nextPage);
-      case 3:
-        return SignUpSpecies(onNext: _nextPage);
-      case 4:
-        return SignUpTechnique(onNext: _nextPage);
-      case 5:
         return SignUpPermission(onNext: _nextPage);
+      case 1:
+        return SignUpYearExperience(onNext: _nextPage);
+      case 2:
+        return SignUpAgeRange(onNext: _nextPage);
+      case 3:
+        return SignUpAffiliation(onNext: _nextPage);
+      case 4:
+        return SignUpSpecies(onNext: _nextPage);
+      case 5:
+        return SignUpTechnique(onNext: _nextPage);
       case 6:
         return SignUpLocation(onNext: _nextPage);
       default:
