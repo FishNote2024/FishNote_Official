@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../theme/colors.dart';
 import '../../../../theme/font.dart';
 import 'package:dio/dio.dart';
@@ -43,24 +44,45 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
         var document = xml.XmlDocument.parse(response.data);
         final items = document.findAllElements('item');
 
-        // 추후 확정 기획을 바탕으로 계산식이 수정될 예정입니다.
-        // 어종(mprcStdCodeNm)을 기준으로 그룹화 및 평균 계산
         for (var item in items) {
           String mprcStdCodeNm = item.findElements('mprcStdCodeNm').single.text;
 
-          // 등록된 어종만 필터링
           if (registeredSpecies.contains(mprcStdCodeNm)) {
             double csmtUntpc =
                 double.parse(item.findElements('csmtUntpc').single.text);
+            String goodsStndrdNm =
+                item.findElements('goodsStndrdNm').single.text;
+            double csmtQy =
+                double.parse(item.findElements('csmtQy').single.text);
+            String kdfshSttusNm = item.findElements('kdfshSttusNm').single.text;
+            String goodsUnitNm = item.findElements('goodsUnitNm').single.text;
 
             if (groupedData.containsKey(mprcStdCodeNm)) {
               groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
+              groupedData[mprcStdCodeNm]!['totalQy'] += csmtQy;
               groupedData[mprcStdCodeNm]!['count'] += 1;
+
+              // 고가, 저가 갱신
+              groupedData[mprcStdCodeNm]!['maxUntpc'] =
+                  (csmtUntpc > groupedData[mprcStdCodeNm]!['maxUntpc'])
+                      ? csmtUntpc
+                      : groupedData[mprcStdCodeNm]!['maxUntpc'];
+
+              groupedData[mprcStdCodeNm]!['minUntpc'] =
+                  (csmtUntpc < groupedData[mprcStdCodeNm]!['minUntpc'])
+                      ? csmtUntpc
+                      : groupedData[mprcStdCodeNm]!['minUntpc'];
             } else {
               groupedData[mprcStdCodeNm] = {
                 'mprcStdCodeNm': mprcStdCodeNm,
+                'goodsStndrdNm': goodsStndrdNm,
                 'totalUntpc': csmtUntpc,
+                'totalQy': csmtQy,
                 'count': 1,
+                'kdfshSttusNm': kdfshSttusNm,
+                'maxUntpc': csmtUntpc,
+                'minUntpc': csmtUntpc,
+                'goodsUnitNm': goodsUnitNm,
               };
             }
           }
@@ -105,7 +127,6 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
     _overlayEntry = null;
   }
 
-  // 추후 UI가 수정될 예정입니다.
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -132,9 +153,19 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                 ),
               ],
             ),
-            Text("최근 경락시세", style: header3B().copyWith(height: 0.6)),
+            Text("오늘의 경락시세", style: header3B().copyWith(height: 0.6)),
+            SizedBox(height: 12),
+            Text("소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
+                style: caption1(gray4)),
             const SizedBox(height: 40),
             Table(
+              columnWidths: {
+                0: FlexColumnWidth(2),
+                1: FlexColumnWidth(1),
+                2: FlexColumnWidth(3),
+                3: FlexColumnWidth(1),
+                4: FlexColumnWidth(3),
+              },
               border: TableBorder(
                   horizontalInside: BorderSide(color: gray1),
                   verticalInside: BorderSide(color: Colors.transparent)),
@@ -146,32 +177,107 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                   children: [
                     Padding(
                       padding: EdgeInsets.fromLTRB(4, 12, 0, 12),
-                      child: Text('등록된 주요 어종', style: body2(gray5)),
+                      child: Text('주요 어종', style: body2(gray5)),
                     ),
                     Padding(
                       padding: EdgeInsets.fromLTRB(4, 12, 0, 12),
-                      child: Text('최근 시세 (1kg당)', style: body2(gray5)),
+                      child: Text('규격', style: body2(gray5)),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(12, 12, 0, 12),
+                        child: Text('수량/단위', style: body2(gray5)),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        child: Text(''),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        child: Text('가격', style: body2(gray5)),
+                      ),
                     ),
                   ],
                 ),
                 ...groupedData.entries.map((entry) {
                   final avgUntpc =
                       (entry.value['totalUntpc'] / entry.value['count'])
-                          .toStringAsFixed(2);
+                          .toInt();
+                  final maxUntpc = entry.value['maxUntpc']?.toInt() ?? 'N/A';
+                  final minUntpc = entry.value['minUntpc']?.toInt() ?? 'N/A';
                   return TableRow(
                     decoration: BoxDecoration(
                         border:
                             Border(bottom: BorderSide(color: gray1, width: 1))),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(entry.value['mprcStdCodeNm'],
-                            style: body1(textBlack)),
+                        padding: const EdgeInsets.only(
+                            left: 4.0, top: 30, bottom: 30),
+                        child: Text(
+                          '(${entry.value['kdfshSttusNm'][0]})${entry.value['mprcStdCodeNm']}',
+                          style: body1(textBlack),
+                        ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text('$avgUntpc원', style: body1(textBlack)),
+                        padding: const EdgeInsets.only(
+                            left: 10.0, top: 30, bottom: 30),
+                        child: Text(entry.value['goodsStndrdNm'],
+                            style: body1(gray5)),
                       ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 12.0, top: 30, bottom: 30),
+                        child: Text(entry.value['goodsUnitNm'],
+                            style: body1(gray5)),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 1.0),
+                            child: SvgPicture.asset('assets/icons/up.svg'),
+                          ),
+                          SizedBox(height: 15),
+                          SvgPicture.asset('assets/icons/avg.svg'),
+                          SizedBox(height: 15),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 1.0),
+                            child: SvgPicture.asset('assets/icons/down.svg'),
+                          ),
+                          SizedBox(height: 20),
+                        ],
+                      ),
+                      Column(children: [
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Spacer(),
+                            Text('$maxUntpc원', style: body1(textBlack)),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Spacer(),
+                            Text('$avgUntpc원', style: body1(textBlack)),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Spacer(),
+                            Text('$minUntpc원', style: body1(textBlack)),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                      ]),
                     ],
                   );
                 }).toList(),
