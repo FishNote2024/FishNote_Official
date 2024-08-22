@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../theme/colors.dart';
 import '../../../../theme/font.dart';
 import 'package:dio/dio.dart';
@@ -43,56 +44,41 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
         var document = xml.XmlDocument.parse(response.data);
         final items = document.findAllElements('item');
 
-        // 추후 확정 기획을 바탕으로 계산식이 수정될 예정입니다.
-        // 어종(mprcStdCodeNm)을 기준으로 그룹화 및 평균 계산
         for (var item in items) {
           String mprcStdCodeNm = item.findElements('mprcStdCodeNm').single.text;
 
-          // 등록된 어종만 필터링
-          // if (registeredSpecies.contains(mprcStdCodeNm)) {
-          //   double csmtUntpc =
-          //       double.parse(item.findElements('csmtUntpc').single.text);
+          if (registeredSpecies.contains(mprcStdCodeNm)) {
+            double csmtUntpc =
+                double.parse(item.findElements('csmtUntpc').single.text);
+            String goodsStndrdNm =
+                item.findElements('goodsStndrdNm').single.text;
+            double csmtQy =
+                double.parse(item.findElements('csmtQy').single.text);
+            String kdfshSttusNm = item.findElements('kdfshSttusNm').single.text;
 
-          //   if (groupedData.containsKey(mprcStdCodeNm)) {
-          //     groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
-          //     groupedData[mprcStdCodeNm]!['count'] += 1;
-          //   } else {
-          //     groupedData[mprcStdCodeNm] = {
-          //       'mprcStdCodeNm': mprcStdCodeNm,
-          //       'totalUntpc': csmtUntpc,
-          //       'count': 1,
-          //     };
-          //   }
-          // }
-          for (var item in items) {
-            String mprcStdCodeNm =
-                item.findElements('mprcStdCodeNm').single.text;
+            if (groupedData.containsKey(mprcStdCodeNm)) {
+              groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
+              groupedData[mprcStdCodeNm]!['totalQy'] += csmtQy;
+              groupedData[mprcStdCodeNm]!['count'] += 1;
 
-            // 등록된 어종만 필터링
-            if (registeredSpecies.contains(mprcStdCodeNm)) {
-              double csmtUntpc =
-                  double.parse(item.findElements('csmtUntpc').single.text);
-              String goodsStndrdNm =
-                  item.findElements('goodsStndrdNm').single.text;
-              double csmtQy =
-                  double.parse(item.findElements('csmtQy').single.text);
-              String kdfshSttusNm =
-                  item.findElements('kdfshSttusNm').single.text;
-
-              if (groupedData.containsKey(mprcStdCodeNm)) {
-                groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
-                groupedData[mprcStdCodeNm]!['totalQy'] += csmtQy;
-                groupedData[mprcStdCodeNm]!['count'] += 1;
-              } else {
-                groupedData[mprcStdCodeNm] = {
-                  'mprcStdCodeNm': mprcStdCodeNm,
-                  'goodsStndrdNm': goodsStndrdNm,
-                  'totalUntpc': csmtUntpc,
-                  'totalQy': csmtQy,
-                  'count': 1,
-                  'kdfshSttusNm': kdfshSttusNm
-                };
+              // 고가, 저가 갱신
+              if (csmtUntpc > groupedData[mprcStdCodeNm]!['maxUntpc']) {
+                groupedData[mprcStdCodeNm]!['maxUntpc'] = csmtUntpc;
               }
+              if (csmtUntpc < groupedData[mprcStdCodeNm]!['minUntpc']) {
+                groupedData[mprcStdCodeNm]!['minUntpc'] = csmtUntpc;
+              }
+            } else {
+              groupedData[mprcStdCodeNm] = {
+                'mprcStdCodeNm': mprcStdCodeNm,
+                'goodsStndrdNm': goodsStndrdNm,
+                'totalUntpc': csmtUntpc,
+                'totalQy': csmtQy,
+                'count': 1,
+                'kdfshSttusNm': kdfshSttusNm,
+                'maxUntpc': csmtUntpc, // 초기값 설정
+                'minUntpc': csmtUntpc, // 초기값 설정
+              };
             }
           }
         }
@@ -136,7 +122,6 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
     _overlayEntry = null;
   }
 
-  // 추후 UI가 수정될 예정입니다.
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -187,14 +172,14 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                       child: Text('규격', style: body2(gray5)),
                     ),
                     Align(
-                      alignment: Alignment.centerLeft, // 텍스트를 왼쪽으로 정렬
+                      alignment: Alignment.centerLeft,
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
                         child: Text('수량/단위', style: body2(gray5)),
                       ),
                     ),
                     Align(
-                      alignment: Alignment.centerRight, // 텍스트를 왼쪽으로 정렬
+                      alignment: Alignment.centerRight,
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
                         child: Text('가격', style: body2(gray5)),
@@ -206,6 +191,8 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                   final avgUntpc =
                       (entry.value['totalUntpc'] / entry.value['count'])
                           .toStringAsFixed(2);
+                  final maxUntpc = entry.value['maxUntpc'].toStringAsFixed(2);
+                  final minUntpc = entry.value['minUntpc'].toStringAsFixed(2);
                   return TableRow(
                     decoration: BoxDecoration(
                         border:
@@ -228,14 +215,31 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                         child: Text(entry.value['mprcStdCodeNm'],
                             style: body1(textBlack)),
                       ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
-                          child: Text('$avgUntpc원', style: body1(textBlack)),
+                      Column(children: [
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            SvgPicture.asset('assets/icons/up.svg'),
+                            SizedBox(width: 10),
+                            Text('$maxUntpc원', style: body1(textBlack)),
+                          ],
                         ),
-                      ),
+                        Row(
+                          children: [
+                            SvgPicture.asset('assets/icons/avg.svg'),
+                            SizedBox(width: 10),
+                            Text('$avgUntpc원', style: body1(textBlack)),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            SvgPicture.asset('assets/icons/down.svg'),
+                            SizedBox(width: 10),
+                            Text('$minUntpc원', style: body1(textBlack)),
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                      ]),
                     ],
                   );
                 }).toList(),
