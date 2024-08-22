@@ -55,6 +55,7 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
             double csmtQy =
                 double.parse(item.findElements('csmtQy').single.text);
             String kdfshSttusNm = item.findElements('kdfshSttusNm').single.text;
+            String goodsUnitNm = item.findElements('goodsUnitNm').single.text;
 
             if (groupedData.containsKey(mprcStdCodeNm)) {
               groupedData[mprcStdCodeNm]!['totalUntpc'] += csmtUntpc;
@@ -62,12 +63,15 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
               groupedData[mprcStdCodeNm]!['count'] += 1;
 
               // 고가, 저가 갱신
-              if (csmtUntpc > groupedData[mprcStdCodeNm]!['maxUntpc']) {
-                groupedData[mprcStdCodeNm]!['maxUntpc'] = csmtUntpc;
-              }
-              if (csmtUntpc < groupedData[mprcStdCodeNm]!['minUntpc']) {
-                groupedData[mprcStdCodeNm]!['minUntpc'] = csmtUntpc;
-              }
+              groupedData[mprcStdCodeNm]!['maxUntpc'] =
+                  (csmtUntpc > groupedData[mprcStdCodeNm]!['maxUntpc'])
+                      ? csmtUntpc
+                      : groupedData[mprcStdCodeNm]!['maxUntpc'];
+
+              groupedData[mprcStdCodeNm]!['minUntpc'] =
+                  (csmtUntpc < groupedData[mprcStdCodeNm]!['minUntpc'])
+                      ? csmtUntpc
+                      : groupedData[mprcStdCodeNm]!['minUntpc'];
             } else {
               groupedData[mprcStdCodeNm] = {
                 'mprcStdCodeNm': mprcStdCodeNm,
@@ -76,8 +80,9 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                 'totalQy': csmtQy,
                 'count': 1,
                 'kdfshSttusNm': kdfshSttusNm,
-                'maxUntpc': csmtUntpc, // 초기값 설정
-                'minUntpc': csmtUntpc, // 초기값 설정
+                'maxUntpc': csmtUntpc,
+                'minUntpc': csmtUntpc,
+                'goodsUnitNm': goodsUnitNm,
               };
             }
           }
@@ -154,6 +159,13 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                 style: caption1(gray4)),
             const SizedBox(height: 40),
             Table(
+              columnWidths: {
+                0: FlexColumnWidth(2),
+                1: FlexColumnWidth(1),
+                2: FlexColumnWidth(3),
+                3: FlexColumnWidth(1),
+                4: FlexColumnWidth(3),
+              },
               border: TableBorder(
                   horizontalInside: BorderSide(color: gray1),
                   verticalInside: BorderSide(color: Colors.transparent)),
@@ -168,14 +180,21 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                       child: Text('주요 어종', style: body2(gray5)),
                     ),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(8, 12, 0, 12),
+                      padding: EdgeInsets.fromLTRB(4, 12, 0, 12),
                       child: Text('규격', style: body2(gray5)),
                     ),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        padding: EdgeInsets.fromLTRB(12, 12, 0, 12),
                         child: Text('수량/단위', style: body2(gray5)),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        child: Text(''),
                       ),
                     ),
                     Align(
@@ -190,51 +209,70 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                 ...groupedData.entries.map((entry) {
                   final avgUntpc =
                       (entry.value['totalUntpc'] / entry.value['count'])
-                          .toStringAsFixed(2);
-                  final maxUntpc = entry.value['maxUntpc'].toStringAsFixed(2);
-                  final minUntpc = entry.value['minUntpc'].toStringAsFixed(2);
+                          .toInt();
+                  final maxUntpc = entry.value['maxUntpc']?.toInt() ?? 'N/A';
+                  final minUntpc = entry.value['minUntpc']?.toInt() ?? 'N/A';
                   return TableRow(
                     decoration: BoxDecoration(
                         border:
                             Border(bottom: BorderSide(color: gray1, width: 1))),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(4.0, 8.0, 8.0, 8.0),
+                        padding: const EdgeInsets.only(
+                            left: 4.0, top: 30, bottom: 30),
                         child: Text(
-                          '(${entry.value['kdfshSttusNm'][0]}) ${entry.value['mprcStdCodeNm']}',
+                          '(${entry.value['kdfshSttusNm'][0]})${entry.value['mprcStdCodeNm']}',
                           style: body1(textBlack),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(10.0, 8.0, 0.0, 8.0),
+                        padding: const EdgeInsets.only(
+                            left: 10.0, top: 30, bottom: 30),
                         child: Text(entry.value['goodsStndrdNm'],
-                            style: body1(textBlack)),
+                            style: body1(gray5)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(0.0, 8.0, 8.0, 8.0),
-                        child: Text(entry.value['mprcStdCodeNm'],
-                            style: body1(textBlack)),
+                        padding: const EdgeInsets.only(
+                            left: 12.0, top: 30, bottom: 30),
+                        child: Text(entry.value['goodsUnitNm'],
+                            style: body1(gray5)),
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          SizedBox(height: 20),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 1.0),
+                            child: SvgPicture.asset('assets/icons/up.svg'),
+                          ),
+                          SizedBox(height: 15),
+                          SvgPicture.asset('assets/icons/avg.svg'),
+                          SizedBox(height: 15),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 1.0),
+                            child: SvgPicture.asset('assets/icons/down.svg'),
+                          ),
+                          SizedBox(height: 20),
+                        ],
                       ),
                       Column(children: [
                         SizedBox(height: 10),
                         Row(
                           children: [
-                            SvgPicture.asset('assets/icons/up.svg'),
-                            SizedBox(width: 10),
+                            Spacer(),
                             Text('$maxUntpc원', style: body1(textBlack)),
                           ],
                         ),
                         Row(
                           children: [
-                            SvgPicture.asset('assets/icons/avg.svg'),
-                            SizedBox(width: 10),
+                            Spacer(),
                             Text('$avgUntpc원', style: body1(textBlack)),
                           ],
                         ),
                         Row(
                           children: [
-                            SvgPicture.asset('assets/icons/down.svg'),
-                            SizedBox(width: 10),
+                            Spacer(),
                             Text('$minUntpc원', style: body1(textBlack)),
                           ],
                         ),
