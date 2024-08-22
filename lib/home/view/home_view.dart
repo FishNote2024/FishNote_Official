@@ -35,7 +35,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     DateTime currentDate = DateTime.now();
-    double screenWidth = MediaQuery.of(context).size.width;
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -75,8 +75,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       Text('서해 바다 50KM', style: body2()),
                     ],
                   ),
-                  Text(
-                      '${currentDate.year}.${currentDate.month}.${currentDate.day}',
+                  Text('${currentDate.year}.${currentDate.month}.${currentDate.day}',
                       style: body2()),
                 ],
               ),
@@ -112,11 +111,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     future: weatherData,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       } else if (snapshot.hasError) {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(child: Text('No data available'));
+                        return const Center(child: Text('No data available'));
                       }
 
                       Map<String, dynamic> data = snapshot.data!;
@@ -125,15 +124,13 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         scrollDirection: Axis.horizontal, // 가로 스크롤
                         child: Row(
                           children: data.entries.map((entry) {
-                            String time = entry.key.substring(8, 10) +
-                                ":" +
-                                entry.key.substring(10, 12);
+                            String time =
+                                "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
                             Map<String, dynamic> weatherInfo = entry.value;
 
-                            String direction = _convertVecToDirection(
-                                int.parse(weatherInfo['VEC']));
-                            IconData icon =
-                                _getWeatherIcon(int.parse(weatherInfo['SKY']));
+                            String direction =
+                                _convertVecToDirection(int.parse(weatherInfo['VEC']));
+                            IconData icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
 
                             return Padding(
                               padding: const EdgeInsets.all(14.0),
@@ -153,21 +150,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               const SizedBox(height: 16.0),
               Row(children: [
                 VerticalOutlinedButton(
-                    iconPath: 'assets/icons/buttonIcon_star.svg',
-                    text: "즐겨찾기",
-                    onPressed: () {}),
-                SizedBox(width: 12),
+                    iconPath: 'assets/icons/buttonIcon_star.svg', text: "즐겨찾기", onPressed: () {}),
+                const SizedBox(width: 12),
                 VerticalOutlinedButton(
-                    iconPath: 'assets/icons/buttonIcon_note.svg',
-                    text: "일지",
-                    onPressed: () {}),
-                SizedBox(width: 12),
+                    iconPath: 'assets/icons/buttonIcon_note.svg', text: "일지", onPressed: () {}),
+                const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_calculate.svg',
                     text: "장부",
-                    onPressed: () =>
-                        {Navigator.pushNamed(context, '/ledger1')}),
-                SizedBox(width: 12),
+                    onPressed: () => {Navigator.pushNamed(context, '/ledger1')}),
+                const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_price.svg',
                     text: "시세",
@@ -205,8 +197,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  Widget weatherColumn(String time, IconData icon, String windSpeed,
-      String direction, String waveHeight) {
+  Widget weatherColumn(
+      String time, IconData icon, String windSpeed, String direction, String waveHeight) {
     return Column(
       children: [
         Text(time),
@@ -225,9 +217,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           padding: const EdgeInsets.only(top: 14.0),
           child: Container(
               height: 150,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: primaryBlue500),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(5), color: primaryBlue500),
               child: Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Row(
@@ -253,28 +244,28 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 ),
               )),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Row(
           children: [
             IntrinsicWidth(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                     border: Border(
                   bottom: BorderSide(
                     color: primaryBlue500,
                     width: 2.0,
                   ),
                 )),
-                padding: EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.only(bottom: 4),
                 alignment: Alignment.topLeft,
                 child: Text(" 양망대기 ", style: header4(primaryBlue500)),
               ),
             ),
-            Spacer()
+            const Spacer()
           ],
         ),
-        SizedBox(height: 8),
-        NetWaitCard()
+        const SizedBox(height: 8),
+        const NetWaitCard()
       ],
     );
   }

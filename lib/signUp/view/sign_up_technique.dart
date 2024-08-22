@@ -1,4 +1,5 @@
 import 'package:fish_note/signUp/components/next_button.dart';
+import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -15,36 +16,8 @@ class SignUpTechnique extends StatefulWidget {
 class _SignUpTechniqueState extends State<SignUpTechnique> {
   final TextEditingController _controller = TextEditingController();
   bool isNotSearch = true;
-  String? technique;
+  Set<String> selectedList = {};
   List<String> searchResult = [];
-  List<String> primaryTechniques = [
-    "가자미어업",
-    "건간망 어업",
-    "기선권현망 어업",
-    "기타통발 어업",
-    "끌낚시 어업",
-    "낭장망 어업",
-    "문어단지 어업",
-    "미역어업",
-    "방치망 어업",
-    "병어 어업",
-    "선망 어업",
-    "새우조망 어업",
-    "안강망 어업",
-    "자망 어업",
-    "자리돔들망 어업",
-    "쌍끌이 기선저인망 어업",
-    "연승 어업",
-    "외끌이 기선저인망 어업",
-    "외줄낚시 어업",
-    "패류껍질 어업",
-    "트롤 어업",
-    "정치망 어업",
-    "초망 어업",
-    "죽방렴 어업",
-    "주목망 어업",
-    "장어통발 어업"
-  ];
 
   @override
   void dispose() {
@@ -60,15 +33,15 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
         const SizedBox(height: 16),
         Text('정확한 계산을 위해\n조업 정보를 알려주세요!', style: header1B()),
         const SizedBox(height: 8),
-        Text('조업일지, 조업장부 작성 이외에 사용되지 않아요.', style: body1(gray6)),
+        Text('한 번 입력하면 조업일지를 빠르게 작성할 수 있어요.', style: body1(gray6)),
         const SizedBox(height: 19),
         Text('주로 사용하는 어법을 선택해주세요', style: header3B()),
         const SizedBox(height: 16),
         TextField(
+          onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
           controller: _controller,
           cursorColor: primaryBlue500,
-          readOnly: technique != null,
-          style: TextStyle(color: _controller.text == technique ? Colors.white : Colors.black),
+          style: const TextStyle(color: Colors.black),
           onChanged: (value) => setState(() {
             if (_controller.text.isEmpty) {
               isNotSearch = true;
@@ -84,7 +57,7 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
           }),
           decoration: InputDecoration(
             filled: true,
-            fillColor: _controller.text == technique ? primaryBlue500 : backgroundWhite,
+            fillColor: backgroundWhite,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 width: 1,
@@ -109,22 +82,43 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
             hintText: '어법 이름을 입력해주세요',
             hintStyle: body1(gray3),
             contentPadding: const EdgeInsets.all(16),
-            suffixIcon: _controller.text == technique
-                ? IconButton(
-                    icon: const Icon(Icons.close_rounded),
-                    color: Colors.white,
-                    onPressed: () => {
-                      setState(() {
-                        _controller.text = "";
-                        isNotSearch = true;
-                        technique = null;
-                      }),
-                    },
-                  )
-                : const Icon(Icons.search),
+            suffixIcon: const Icon(Icons.search),
           ),
         ),
         const SizedBox(height: 20),
+        Text('선택 내역', style: body2(gray6)),
+        const SizedBox(height: 8),
+        selectedList.isEmpty
+            ? Text('아직 선택된 어법이 없어요', style: body2(gray2))
+            : SizedBox(
+                height: 36,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedList.length,
+                  itemBuilder: (context, index) => TextButton.icon(
+                    iconAlignment: IconAlignment.end,
+                    label: Text(
+                      selectedList.elementAt(index),
+                      style: body3(Colors.white),
+                    ),
+                    onPressed: () => {
+                      setState(() {
+                        selectedList.remove(selectedList.elementAt(index));
+                      }),
+                    },
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    style: TextButton.styleFrom(
+                      backgroundColor: primaryBlue500,
+                    ),
+                  ),
+                  separatorBuilder: (context, index) => const SizedBox(width: 8),
+                ),
+              ),
+        const SizedBox(height: 23),
         Expanded(
           child: isNotSearch
               ? Column(
@@ -148,8 +142,7 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                             ),
                             onTap: () => {
                               setState(() {
-                                technique = primaryTechniques[index];
-                                _controller.text = primaryTechniques[index];
+                                selectedList.add(primaryTechniques[index]);
                               }),
                             },
                           ),
@@ -167,12 +160,12 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('검색결과 ${searchResult.length + 1}건', style: body1(gray6)),
+                    Text('검색결과 ${searchResult.length + 1}건', style: body2(gray6)),
                     const SizedBox(height: 8),
                     InkWell(
                       onTap: () => {
                         setState(() {
-                          technique = _controller.text;
+                          selectedList.add(_controller.text);
                         }),
                       },
                       child: Container(
@@ -199,8 +192,7 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                         itemBuilder: (context, index) => InkWell(
                           onTap: () => {
                             setState(() {
-                              technique = searchResult[index];
-                              _controller.text = primaryTechniques[index];
+                              selectedList.add(searchResult[index]);
                             }),
                           },
                           child: Container(
@@ -222,7 +214,7 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                   ],
                 ),
         ),
-        NextButton(value: technique, onNext: widget.onNext),
+        NextButton(value: selectedList, onNext: widget.onNext),
       ],
     );
   }
