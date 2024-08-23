@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fish_note/firebase_options.dart';
+import 'package:fish_note/myPage/view/index.dart';
 import 'package:fish_note/onBoarding/on_boarding.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
@@ -49,7 +50,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: backgroundBlue,
         useMaterial3: true,
       ),
-      initialRoute: '/',
+      initialRoute: '/myPage',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const MyHomePage(),
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
         '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
         '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
         '/onBoarding': (context) => OnboardingScreen(),
+        '/myPage': (context) => const MyPage(),
       },
     );
   }
