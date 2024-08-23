@@ -1,3 +1,6 @@
+import 'package:fish_note/myPage/view/index.dart';
+import 'package:fish_note/net/view/net_tab_view.dart';
+import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fish_note/firebase_options.dart';
 import 'package:fish_note/myPage/view/index.dart';
@@ -50,7 +53,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: backgroundBlue,
         useMaterial3: true,
       ),
-      initialRoute: '/myPage',
+      initialRoute: '/home',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const MyHomePage(),
@@ -60,6 +63,8 @@ class MyApp extends StatelessWidget {
         '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
         '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
         '/onBoarding': (context) => OnboardingScreen(),
+        '/netPage1': (context) => const NetTabBarView(initialTabIndex: 0),
+        '/netPage2': (context) => const NetTabBarView(initialTabIndex: 1),
         '/myPage': (context) => const MyPage(),
       },
     );

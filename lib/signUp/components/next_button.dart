@@ -58,7 +58,8 @@ class _NextButtonState extends State<NextButton> {
           children: <Widget>[
             SvgPicture.asset(
               'assets/icons/location.svg',
-              colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
+              colorFilter:
+                  const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
               width: 24,
               height: 24,
             ),
@@ -83,7 +84,8 @@ class _NextButtonState extends State<NextButton> {
               },
               style: TextButton.styleFrom(
                 foregroundColor: textBlack,
-                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
               ),
               child: Text('허용', style: header4()),
             ),
@@ -94,7 +96,8 @@ class _NextButtonState extends State<NextButton> {
               },
               style: TextButton.styleFrom(
                 foregroundColor: textBlack,
-                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
               ),
               child: Text('허용 안함', style: header4()),
             ),
@@ -128,7 +131,8 @@ class _NextButtonState extends State<NextButton> {
               ),
               const SizedBox(height: 18),
               TextField(
-                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                onTapOutside: (event) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
                 controller: _controller,
                 cursorColor: primaryBlue500,
                 style: const TextStyle(color: Colors.black),
@@ -176,7 +180,7 @@ class _NextButtonState extends State<NextButton> {
                   elevation: 0,
                   backgroundColor: primaryBlue500,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: Text('등록하기', style: header4(backgroundWhite)),
@@ -199,14 +203,16 @@ class _NextButtonState extends State<NextButton> {
                   ? null
                   : widget.onNext,
       style: ElevatedButton.styleFrom(
-        backgroundColor: widget.value == null || widget.value == "" ? gray2 : primaryBlue500,
+        backgroundColor:
+            widget.value == null || widget.value == "" ? gray2 : primaryBlue500,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      child: Text(widget.value == "" || widget.value == "agree" ? "동의하고 가입하기" : '다음',
+      child: Text(
+          widget.value == "" || widget.value == "agree" ? "동의하고 가입하기" : '다음',
           style: header3R(Colors.white)),
     );
   }
