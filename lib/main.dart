@@ -57,9 +57,9 @@ class MyApp extends StatelessWidget {
         '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
         '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
         '/onBoarding': (context) => OnboardingScreen(),
-        '/netPage': (context) => const NetTabBarView(initialTabIndex: 0),
+        '/netPage1': (context) => const NetTabBarView(initialTabIndex: 0),
+        '/netPage2': (context) => const NetTabBarView(initialTabIndex: 1),
         '/myPage': (context) => const MyPage(),
-        '/addNet': (context) => const AddThrowNetPage(),
       },
     );
   }
