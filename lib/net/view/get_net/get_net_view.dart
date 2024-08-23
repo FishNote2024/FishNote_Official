@@ -9,8 +9,10 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class GetNetView extends StatefulWidget {
-  final NetRecord record;
-  const GetNetView({Key? key, required this.record}) : super(key: key);
+  final NetRecord? record; // Make this nullable
+  final List<String>? fishList; // Add this optional parameter
+
+  const GetNetView({Key? key, this.record, this.fishList}) : super(key: key);
 
   @override
   State<GetNetView> createState() => _GetNetViewState();
@@ -33,33 +35,13 @@ class _GetNetViewState extends State<GetNetView> {
   Widget _getPage() {
     switch (_currentPage) {
       case 1:
-        return GetNetFish(onNext: _nextPage);
+        return GetNetFish(onNext: _nextPage, fishList: widget.fishList);
       case 2:
-        return GetNetAddFish(onNext: _nextPage);
+        return GetNetAddFish();
       case 3:
         return GetNetNote(onNext: _nextPage);
       default:
         return GetNetNote(onNext: _nextPage);
-    }
-  }
-
-  void _handleNext(int caseNumber) {
-    if (caseNumber == 2) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GetNetAddFish(
-              onNext: _nextPage,
-            ),
-          ));
-    } else if (caseNumber == 3) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GetNetNote(
-              onNext: _nextPage,
-            ),
-          ));
     }
   }
 
@@ -83,7 +65,7 @@ class _GetNetViewState extends State<GetNetView> {
           ),
           centerTitle: true,
           title: Text(
-              '${DateFormat('MM월dd일(E)', 'ko_KR').format(widget.record.date)} 기록하기',
+              '${DateFormat('MM월dd일(E)', 'ko_KR').format(DateTime.now())} 기록하기',
               style: body1(textBlack))),
       body: _currentPage != _totalPages - 1
           ? Padding(

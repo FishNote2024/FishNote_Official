@@ -4,9 +4,13 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 
 class GetNetFish extends StatefulWidget {
-  const GetNetFish({super.key, required this.onNext});
+  const GetNetFish(
+      {super.key,
+      required this.onNext,
+      this.fishList}); // Add this optional parameter
 
   final VoidCallback onNext;
+  final List<String>? fishList; // Add this optional parameter
 
   @override
   State<GetNetFish> createState() => _GetNetFishState();
@@ -15,12 +19,23 @@ class GetNetFish extends StatefulWidget {
 class _GetNetFishState extends State<GetNetFish> {
   final TextEditingController _controller = TextEditingController();
   Set<String> selectedList = {};
-  final List<String> speciesList = [
+  List<String> speciesList = [
     '갈치',
     '고등어',
     '방어',
     '문어',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Add the received fishList to the speciesList
+    if (widget.fishList != null && widget.fishList!.isNotEmpty) {
+      speciesList.addAll(widget.fishList!);
+      // Optionally, remove duplicates
+      speciesList = speciesList.toSet().toList();
+    }
+  }
 
   @override
   void dispose() {
@@ -69,7 +84,8 @@ class _GetNetFishState extends State<GetNetFish> {
             const SizedBox(height: 32),
             Expanded(
               child: ListView.builder(
-                itemCount: speciesList.length + 1,
+                itemCount:
+                    speciesList.length + 1, // +1 for the "Add species" button
                 itemBuilder: (context, index) {
                   if (index < speciesList.length) {
                     String species = speciesList[index];
@@ -110,21 +126,34 @@ class _GetNetFishState extends State<GetNetFish> {
                       ),
                     );
                   } else {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: gray2,
-                          width: 1.0,
+                    return Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: gray2,
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: ListTile(
+                            leading: Icon(Icons.add_circle_outline,
+                                color: primaryBlue500),
+                            title: Text("어종 추가하기",
+                                style: header3R(primaryBlue500)),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GetNetAddFish(),
+                                ),
+                              );
+                            },
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: ListTile(
-                        leading: Icon(Icons.add_circle_outline,
-                            color: primaryBlue500),
-                        title: Text("어종 추가하기", style: header3R(primaryBlue500)),
-                        onTap: widget.onNext,
-                      ),
+                        SizedBox(height: 30),
+                      ],
                     );
                   }
                 },
