@@ -1,3 +1,4 @@
+import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:fish_note/onBoarding/on_boarding.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: backgroundBlue,
         useMaterial3: true,
       ),
-      initialRoute: '/',
+      initialRoute: '/home',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const MyHomePage(),
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
         '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
         '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
         '/onBoarding': (context) => OnboardingScreen(),
+        '/netPage': (context) => const NetTabBarView(initialTabIndex: 0),
       },
     );
   }
