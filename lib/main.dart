@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:fish_note/firebase_options.dart';
 import 'package:fish_note/myPage/view/index.dart';
 import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
@@ -16,6 +18,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   KakaoSdk.init(nativeAppKey: '0e7b8b40fe199f687f7766e0391aa083');
   await initializeDateFormatting('ko_KR', null);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
