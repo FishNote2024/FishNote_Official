@@ -1,5 +1,5 @@
 import 'package:fish_note/net/view/get_net/after_get_net_page.dart';
-import 'package:fish_note/net/view/get_net/before_get_net_page.dart';
+import 'package:fish_note/net/view/throw_net/before_get_net_page.dart';
 import 'package:fish_note/net/view/throw_net/throw_net_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';

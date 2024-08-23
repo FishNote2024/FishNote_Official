@@ -1,5 +1,6 @@
 import 'package:fish_note/myPage/view/index.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
+import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:fish_note/onBoarding/on_boarding.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
@@ -58,6 +59,7 @@ class MyApp extends StatelessWidget {
         '/onBoarding': (context) => OnboardingScreen(),
         '/netPage': (context) => const NetTabBarView(initialTabIndex: 0),
         '/myPage': (context) => const MyPage(),
+        '/addNet': (context) => const AddThrowNetPage(),
       },
     );
   }
