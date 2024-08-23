@@ -55,7 +55,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           actions: [
             IconButton(
               icon: SvgPicture.asset('assets/icons/profile.svg'),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/myPage');
+              },
             ),
           ],
         ),

@@ -1,3 +1,4 @@
+import 'package:fish_note/myPage/view/index.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:fish_note/onBoarding/on_boarding.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
         '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
         '/onBoarding': (context) => OnboardingScreen(),
         '/netPage': (context) => const NetTabBarView(initialTabIndex: 0),
+        '/myPage': (context) => const MyPage(),
       },
     );
   }
