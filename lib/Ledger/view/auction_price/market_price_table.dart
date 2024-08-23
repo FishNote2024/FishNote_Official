@@ -127,6 +127,15 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
     _overlayEntry = null;
   }
 
+  String _formatGoodsUnitNm(String goodsUnitNm) {
+    // 정규식으로 괄호 안 문자만 빼기
+    final match = RegExp(r'상자\((.*?)\)').firstMatch(goodsUnitNm);
+    if (match != null && match.groupCount > 0) {
+      return match.group(1)!;
+    }
+    return goodsUnitNm;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -210,8 +219,8 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                   final avgUntpc =
                       (entry.value['totalUntpc'] / entry.value['count'])
                           .toInt();
-                  final maxUntpc = entry.value['maxUntpc']?.toInt() ?? 'N/A';
-                  final minUntpc = entry.value['minUntpc']?.toInt() ?? 'N/A';
+                  final maxUntpc = entry.value['maxUntpc']?.toInt() ?? '-';
+                  final minUntpc = entry.value['minUntpc']?.toInt() ?? '-';
                   return TableRow(
                     decoration: BoxDecoration(
                         border:
@@ -233,9 +242,11 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(
-                            left: 12.0, top: 30, bottom: 30),
-                        child: Text(entry.value['goodsUnitNm'],
-                            style: body1(gray5)),
+                            left: 16.0, top: 30, bottom: 30),
+                        child: Text(
+                          _formatGoodsUnitNm(entry.value['goodsUnitNm']),
+                          style: body1(gray5),
+                        ),
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.end,

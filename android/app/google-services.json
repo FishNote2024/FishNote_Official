@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "932658214936",
+    "project_id": "fish-note-7d48e",
+    "storage_bucket": "fish-note-7d48e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932658214936:android:68e120d96844189b2b2b6d",
+        "android_client_info": {
+          "package_name": "com.example.fish_note"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsBAGJTxevg6di-gxJ8G37uRndTQQbB4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
