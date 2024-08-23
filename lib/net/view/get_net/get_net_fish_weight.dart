@@ -18,6 +18,7 @@ class GetNetFishWeight extends StatefulWidget {
 }
 
 class _GetNetFishWeightState extends State<GetNetFishWeight> {
+  Map<String, TextEditingController> _controllers = {};
   final TextEditingController _controller = TextEditingController();
   Set<String> selectedList = {};
   List<String> speciesList = [
@@ -30,17 +31,20 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
   @override
   void initState() {
     super.initState();
-    // Add the received fishList to the speciesList
+    for (String species in speciesList) {
+      _controllers[species] = TextEditingController();
+    }
     if (widget.fishList != null && widget.fishList!.isNotEmpty) {
       speciesList.addAll(widget.fishList!);
-      // Optionally, remove duplicates
       speciesList = speciesList.toSet().toList();
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    for (var controller in _controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -95,14 +99,11 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Container(
+                          height: 60,
                           decoration: BoxDecoration(
-                            color: selectedList.contains(species)
-                                ? primaryBlue500
-                                : Colors.white,
+                            color: Colors.white,
                             border: Border.all(
-                              color: selectedList.contains(species)
-                                  ? primaryBlue500
-                                  : gray2,
+                              color: gray2,
                               width: 1.0,
                             ),
                             borderRadius: BorderRadius.circular(8.0),
@@ -112,17 +113,12 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                               children: [
                                 Text(
                                   species,
-                                  style: header3R(
-                                    selectedList.contains(species)
-                                        ? Colors.white
-                                        : textBlack,
-                                  ),
+                                  style: header3R(textBlack),
                                 ),
                                 Spacer(),
                                 Container(
                                   width: 180,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
+                                  height: 33,
                                   decoration: BoxDecoration(
                                     border: Border.all(
                                       color: gray3,
@@ -131,24 +127,29 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(8),
                                   ),
-                                  child: Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Text(
-                                      'kg',
-                                      style: body1(gray8),
+                                  child: TextField(
+                                    controller: _controllers[species],
+                                    keyboardType: TextInputType.number,
+                                    decoration: InputDecoration(
+                                      border: InputBorder.none,
+                                      hintText: '- ',
+                                      isDense: false,
+                                      suffixText: ' kg  ',
                                     ),
+                                    textAlign: TextAlign.end,
+                                    style: body1(textBlack),
                                   ),
                                 ),
                               ],
                             ),
                             onTap: () {
-                              setState(() {
-                                if (selectedList.contains(species)) {
-                                  selectedList.remove(species);
-                                } else {
-                                  selectedList.add(species);
-                                }
-                              });
+                              // setState(() {
+                              //   if (selectedList.contains(species)) {
+                              //     selectedList.remove(species);
+                              //   } else {
+                              //     selectedList.add(species);
+                              //   }
+                              // });
                             },
                           ),
                         ),
