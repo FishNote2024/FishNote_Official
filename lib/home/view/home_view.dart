@@ -177,7 +177,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               const SizedBox(height: 16.0),
               GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/netPage');
+                    Navigator.pushNamed(context, '/netPage1');
                   },
                   child: writeFishingLogCard()),
             ],

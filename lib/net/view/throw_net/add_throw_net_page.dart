@@ -1,4 +1,5 @@
 import 'package:fish_note/signUp/components/bottom_button.dart';
+import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,8 @@ import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class AddThrowNetPage extends StatefulWidget {
-  const AddThrowNetPage({super.key});
+  const AddThrowNetPage({super.key, required this.onNext});
+  final VoidCallback onNext;
 
   @override
   State<AddThrowNetPage> createState() => _AddThrowNetPageState();
@@ -231,14 +233,13 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                       ),
                       const SizedBox(height: 12),
                       BottomButton(
-                        text: '다음',
-                        onPressed: () {
-                          // if (latlon != null) {
-                          //   Navigator.pushNamed(context, '/addNet',
-                          //       arguments: latlon);
-                          // }
-                        },
-                      ),
+                          text: "투망완료",
+                          onPressed: () {
+                            if (latlon != null) {
+                              Navigator.pushReplacementNamed(
+                                  context, '/netPage1');
+                            }
+                          })
                     ],
                   ),
                 ),
