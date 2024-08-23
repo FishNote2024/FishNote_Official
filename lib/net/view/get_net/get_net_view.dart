@@ -1,6 +1,7 @@
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
+import 'package:fish_note/net/view/get_net/get_net_fish_weight.dart';
 import 'package:fish_note/net/view/get_net/get_net_note.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -9,8 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class GetNetView extends StatefulWidget {
-  final NetRecord? record; // Make this nullable
-  final List<String>? fishList; // Add this optional parameter
+  final NetRecord? record;
+  final List<String>? fishList;
 
   const GetNetView({Key? key, this.record, this.fishList}) : super(key: key);
 
@@ -22,7 +23,7 @@ class _GetNetViewState extends State<GetNetView> {
   int _currentPage = 1;
   final int _totalPages = 4;
 
-  void _nextPage() {
+  void _nextPage([List<String>? selectedFish]) {
     setState(() {
       if (_currentPage < _totalPages - 1) {
         _currentPage += 1;
@@ -30,14 +31,33 @@ class _GetNetViewState extends State<GetNetView> {
         Navigator.pushReplacementNamed(context, '/home');
       }
     });
+
+    if (_currentPage == 2 && selectedFish != null) {
+      // Pass the selected fish list to GetNetFishWeight
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GetNetFishWeight(
+            onNext: _nextPage,
+            selectedFish: selectedFish, // Pass the selected fish list here
+          ),
+        ),
+      );
+    }
   }
 
   Widget _getPage() {
     switch (_currentPage) {
       case 1:
-        return GetNetFish(onNext: _nextPage, fishList: widget.fishList);
+        return GetNetFish(
+          onNext: _nextPage,
+          fishList: widget.fishList,
+        );
       case 2:
-        return GetNetAddFish();
+        return GetNetFishWeight(
+          onNext: _nextPage,
+          selectedFish: ['람', '아 진짜', '그만'],
+        );
       case 3:
         return GetNetNote(onNext: _nextPage);
       default:

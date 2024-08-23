@@ -4,13 +4,10 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 
 class GetNetFish extends StatefulWidget {
-  const GetNetFish(
-      {super.key,
-      required this.onNext,
-      this.fishList}); // Add this optional parameter
+  const GetNetFish({super.key, required this.onNext, this.fishList});
 
   final VoidCallback onNext;
-  final List<String>? fishList; // Add this optional parameter
+  final List<String>? fishList;
 
   @override
   State<GetNetFish> createState() => _GetNetFishState();
@@ -84,8 +81,7 @@ class _GetNetFishState extends State<GetNetFish> {
             const SizedBox(height: 32),
             Expanded(
               child: ListView.builder(
-                itemCount:
-                    speciesList.length + 1, // +1 for the "Add species" button
+                itemCount: speciesList.length + 1,
                 itemBuilder: (context, index) {
                   if (index < speciesList.length) {
                     String species = speciesList[index];

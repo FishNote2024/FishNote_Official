@@ -19,7 +19,7 @@ List<NetRecord> netRecords = [
       daysSince: 10,
       species: []),
   NetRecord(
-      date: DateTime(2024, 6, 29, 6, 0),
+      date: DateTime(2024, 6, 30, 6, 0),
       locationName: '하얀부표',
       daysSince: 10,
       species: []),
