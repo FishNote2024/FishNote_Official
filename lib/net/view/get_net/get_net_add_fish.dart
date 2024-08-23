@@ -17,8 +17,8 @@ class GetNetAddFish extends StatefulWidget {
 
 class _GetNetAddFishState extends State<GetNetAddFish> {
   final TextEditingController _controller = TextEditingController();
-  Set<String> selectedList = {}; // Set to store selected species
-  List<String> speciesList = []; // List to store filtered species from search
+  Set<String> selectedList = {};
+  List<String> speciesList = [];
 
   @override
   void dispose() {
@@ -46,20 +46,18 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: selectedList
-                  .isNotEmpty // Ensure the button is enabled only if something is selected
+          onPressed: selectedList.isNotEmpty
               ? () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => GetNetView(
-                        fishList:
-                            selectedList.toList(), // Pass selected species list
+                        fishList: selectedList.toList(),
                       ),
                     ),
                   );
                 }
-              : null, // Disable the button if no selection
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: selectedList.isEmpty ? gray2 : primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 16),
