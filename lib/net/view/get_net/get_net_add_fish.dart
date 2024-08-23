@@ -1,25 +1,24 @@
+import 'package:fish_note/net/view/get_net/get_net_fish.dart';
+import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
-import 'package:flutter/material.dart';
-import 'package:fish_note/net/model/net_record.dart';
 import 'package:intl/intl.dart';
 
 class GetNetAddFish extends StatefulWidget {
-  const GetNetAddFish({super.key, required this.onNext});
+  const GetNetAddFish({super.key});
 
-  final VoidCallback onNext;
   @override
   State<GetNetAddFish> createState() => _GetNetAddFishState();
 }
 
 class _GetNetAddFishState extends State<GetNetAddFish> {
   final TextEditingController _controller = TextEditingController();
-  Set<String> selectedList = {};
-  List<String> speciesList = [];
+  Set<String> selectedList = {}; // Set to store selected species
+  List<String> speciesList = []; // List to store filtered species from search
 
   @override
   void dispose() {
@@ -29,24 +28,51 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Scaffold(
-        bottomNavigationBar: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ElevatedButton(
-            onPressed: selectedList.isEmpty ? null : () => widget.onNext,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: selectedList.isEmpty ? gray2 : primaryBlue500,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text('다음', style: header1B(Colors.white)),
-          ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: backgroundBlue,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, size: 15, color: gray7),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        body: SingleChildScrollView(
+        centerTitle: true,
+        title: Text(
+          '${DateFormat('MM월dd일(E)', 'ko_KR').format(DateTime.now())} 기록하기',
+          style: body1(textBlack),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ElevatedButton(
+          onPressed: selectedList
+                  .isNotEmpty // Ensure the button is enabled only if something is selected
+              ? () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GetNetView(
+                        fishList:
+                            selectedList.toList(), // Pass selected species list
+                      ),
+                    ),
+                  );
+                }
+              : null, // Disable the button if no selection
+          style: ElevatedButton.styleFrom(
+            backgroundColor: selectedList.isEmpty ? gray2 : primaryBlue500,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Text('다음', style: header1B(Colors.white)),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: SingleChildScrollView(
           padding: const EdgeInsets.only(bottom: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -54,8 +80,10 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
               const SizedBox(height: 16),
               Text('어종을 모두 선택해주세요', style: header1B()),
               const SizedBox(height: 8),
-              Text('오늘 어획한 어종을 모두 선택해주세요.\n리스트에 없는 어종은 추가하여 선택 가능합니다.',
-                  style: body1(gray6)),
+              Text(
+                '오늘 어획한 어종을 모두 선택해주세요.\n리스트에 없는 어종은 추가하여 선택 가능합니다.',
+                style: body1(gray6),
+              ),
               const SizedBox(height: 19),
               Text('주 어종을 선택해주세요.', style: header3B()),
               const SizedBox(height: 16),
@@ -152,12 +180,13 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(4)),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: gray2,
-                                  )),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(4)),
+                                border: Border.all(
+                                  width: 1,
+                                  color: gray2,
+                                ),
+                              ),
                               child: ListView.separated(
                                 itemBuilder: (context, index) => InkWell(
                                   child: Padding(
@@ -191,12 +220,13 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(4)),
-                                  border: Border.all(
-                                    width: 1,
-                                    color: gray2,
-                                  )),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(4)),
+                                border: Border.all(
+                                  width: 1,
+                                  color: gray2,
+                                ),
+                              ),
                               child: ListView.separated(
                                 itemBuilder: (context, index) => InkWell(
                                   child: Padding(

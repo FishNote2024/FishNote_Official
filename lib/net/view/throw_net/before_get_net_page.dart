@@ -23,13 +23,18 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
     NetRecord(
         date: DateTime(2024, 6, 29, 6, 0),
         locationName: '문어대가리',
-        daysSince: 10),
+        daysSince: 10,
+        species: []),
     NetRecord(
-        date: DateTime(2024, 8, 23, 6, 0), locationName: '하얀부표', daysSince: 10),
+        date: DateTime(2024, 8, 23, 6, 0),
+        locationName: '하얀부표',
+        daysSince: 10,
+        species: []),
     NetRecord(
         date: DateTime(2024, 8, 23, 4, 0),
         locationName: '아왕빡세네',
-        daysSince: 10),
+        daysSince: 10,
+        species: []),
   ];
 
   @override
