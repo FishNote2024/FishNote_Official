@@ -1,4 +1,5 @@
 import 'package:fish_note/myPage/view/index.dart';
+import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:fish_note/onBoarding/on_boarding.dart';

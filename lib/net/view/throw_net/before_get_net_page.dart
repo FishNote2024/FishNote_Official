@@ -1,5 +1,6 @@
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
+import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:fish_note/signUp/components/bottom_button.dart';
 import 'package:fish_note/signUp/components/next_button.dart';
@@ -85,7 +86,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const GetNetFish(),
+                                    builder: (context) =>
+                                        GetNetView(record: record),
                                   ),
                                 );
                               },

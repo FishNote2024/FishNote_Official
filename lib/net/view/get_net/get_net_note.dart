@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class GetNetNote extends StatefulWidget {
-  const GetNetNote({super.key});
+  const GetNetNote({super.key, required this.onNext});
+  final VoidCallback onNext;
 
   @override
   State<GetNetNote> createState() => _GetNetNoteState();
