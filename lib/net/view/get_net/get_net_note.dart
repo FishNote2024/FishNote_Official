@@ -18,15 +18,15 @@ class _GetNetNoteState extends State<GetNetNote> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: selectedList.isEmpty ? null : widget.onNext,
+          onPressed: widget.onNext,
           style: ElevatedButton.styleFrom(
-            backgroundColor: selectedList.isEmpty ? gray2 : primaryBlue500,
+            backgroundColor: primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: Text('다음', style: header1B(Colors.white)),
+          child: Text('양망완료', style: header1B(Colors.white)),
         ),
       ),
       body: Padding(
@@ -42,50 +42,27 @@ class _GetNetNoteState extends State<GetNetNote> {
               style: body1(gray6),
             ),
             const SizedBox(height: 32),
-            Expanded(
-              child: ListView.builder(
-                itemCount: selectedList.length + 1,
-                itemBuilder: (context, index) {
-                  if (index < selectedList.length) {
-                    String species = selectedList[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: selectedList.contains(species)
-                              ? primaryBlue500
-                              : Colors.white,
-                          border: Border.all(
-                            color: selectedList.contains(species)
-                                ? primaryBlue500
-                                : gray2,
-                            width: 1.0,
-                          ),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: ListTile(
-                          title: Text(
-                            species,
-                            style: header3R(
-                              selectedList.contains(species)
-                                  ? Colors.white
-                                  : textBlack,
-                            ),
-                          ),
-                          onTap: () {
-                            setState(() {
-                              if (selectedList.contains(species)) {
-                                selectedList.remove(species);
-                              } else {
-                                selectedList.add(species);
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                    );
-                  }
+            SizedBox(
+              height: 418,
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    selectedList = [value];
+                  });
                 },
+                maxLines: 35,
+                decoration: InputDecoration(
+                  hintText: '이곳에 메모를 입력해주세요.\n메모는 스킵 가능합니다.',
+                  hintStyle: body1(gray6),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: gray2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: primaryBlue500),
+                  ),
+                ),
               ),
             ),
           ],

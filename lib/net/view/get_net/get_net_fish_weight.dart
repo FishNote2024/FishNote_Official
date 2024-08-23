@@ -20,6 +20,7 @@ class GetNetFishWeight extends StatefulWidget {
 class _GetNetFishWeightState extends State<GetNetFishWeight> {
   Map<String, TextEditingController> _controllers = {};
   final TextEditingController _controller = TextEditingController();
+  bool allFieldsFilled = false;
   Set<String> selectedList = {};
   List<String> speciesList = [
     '갈치',
@@ -33,19 +34,34 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
     super.initState();
     for (String species in speciesList) {
       _controllers[species] = TextEditingController();
-    }
-    if (widget.fishList != null && widget.fishList!.isNotEmpty) {
-      speciesList.addAll(widget.fishList!);
-      speciesList = speciesList.toSet().toList();
+      // 리스너를 추가하여 값 변경 시 상태 업데이트
+      _controllers[species]!.addListener(_updateButtonState);
     }
   }
 
   @override
   void dispose() {
+    // 생성된 모든 controllers를 dispose
     for (var controller in _controllers.values) {
       controller.dispose();
     }
     super.dispose();
+  }
+
+  void _updateButtonState() {
+    // 모든 필드가 채워졌는지 확인
+    bool allFilled =
+        _controllers.values.every((controller) => controller.text.isNotEmpty);
+
+    setState(() {
+      allFieldsFilled = allFilled;
+
+      if (allFilled) {
+        selectedList = _controllers.entries
+            .map((entry) => '${entry.key} ${entry.value.text} kg')
+            .toSet();
+      }
+    });
   }
 
   void _addSpecies(String species) {
@@ -63,10 +79,9 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: selectedList.isEmpty
-              ? null
-              : () => widget
-                  .onNext(selectedList.toList()), // Pass the selected fish list
+          onPressed: allFieldsFilled
+              ? () => widget.onNext(selectedList.toList())
+              : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: selectedList.isEmpty ? gray2 : primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 16),
