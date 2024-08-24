@@ -1,3 +1,4 @@
+import 'package:fish_note/journal/view/journal_view.dart';
 import 'package:fish_note/login/view/home_view.dart';
 import 'package:fish_note/myPage/view/index.dart';
 import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
@@ -58,7 +59,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/home',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => const HomeView(),
+        '/': (context) => const MyHomePage(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),
@@ -68,6 +69,7 @@ class MyApp extends StatelessWidget {
         '/netPage1': (context) => const NetTabBarView(initialTabIndex: 0),
         '/netPage2': (context) => const NetTabBarView(initialTabIndex: 1),
         '/myPage': (context) => const MyPage(),
+        '/journal': (context) => const JournalView(),
       },
     );
   }
