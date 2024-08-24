@@ -1,27 +1,23 @@
-import 'package:fish_note/signUp/components/bottom_button.dart';
-import 'package:fish_note/signUp/components/next_button.dart';
+import 'package:fish_note/myPage/components/bottom_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class AddThrowNetPage extends StatefulWidget {
-  const AddThrowNetPage({super.key});
+class MyPageLocation extends StatefulWidget {
+  const MyPageLocation({super.key});
 
   @override
-  State<AddThrowNetPage> createState() => _AddThrowNetPageState();
+  State<MyPageLocation> createState() => _MyPageLocationState();
 }
 
-class _AddThrowNetPageState extends State<AddThrowNetPage> {
+class _MyPageLocationState extends State<MyPageLocation> {
   List<double>? latlon;
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
   late WebViewController _controller;
-  String todayDate = DateFormat('M월 d일 (E)', 'ko_KR').format(DateTime.now());
 
   @override
   void initState() {
@@ -48,107 +44,14 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
     });
   }
 
-  void _showLocationModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      isScrollControlled: true,
-      backgroundColor: backgroundWhite,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '위치의 별명을 입력해주세요',
-                style: header3B(),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                '해당 위치에 대한 자신만의 별명을 지어주세요.',
-                style: body1(gray6),
-              ),
-              const SizedBox(height: 18),
-              TextField(
-                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-                controller: _nameController,
-                cursorColor: primaryBlue500,
-                style: const TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: backgroundWhite,
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  disabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  hintText: '별명을 입력해주세요',
-                  hintStyle: body1(gray3),
-                  contentPadding: const EdgeInsets.all(16),
-                ),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: _nameController.text.isEmpty
-                    ? () => {}
-                    : () {
-                        // 허용 안함 버튼 클릭 시 동작
-                        Navigator.pop(context);
-                        // 별명 등록 로직 추가
-                        Navigator.pop(context);
-                      },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  elevation: 0,
-                  backgroundColor: primaryBlue500,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text('투망완료', style: header4(backgroundWhite)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: backgroundBlue,
+        surfaceTintColor: backgroundBlue,
+        title: Text('주요 조업 위치 변경하기', style: body2()),
         centerTitle: true,
-        title: Text("$todayDate 기록하기", style: body2(textBlack)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, size: 15, color: gray7),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -158,14 +61,12 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('투망 위치를 확인해주세요', style: header1B()),
-                const SizedBox(height: 8),
-                Text('지도에서 위치를 직접 선택하거나\n위도 경도를 직접 입력해서 위치를 조정할 수 있습니다.', style: body1(gray6)),
+                Text('주요 조업 위치를 지정해주세요', style: header3B()),
                 const SizedBox(height: 17),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('위도', style: header3B(gray8)),
+                    Text('위도', style: body1()),
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
@@ -214,7 +115,7 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                       ),
                     ),
                     const SizedBox(width: 20),
-                    Text('경도', style: header3B(gray8)),
+                    Text('경도', style: body1()),
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
@@ -271,13 +172,13 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
             child: Stack(
               children: [
                 WebViewWidget(controller: _controller),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Row(
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
@@ -300,10 +201,13 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           )
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      BottomButton(text: "다음", onPressed: () => _showLocationModal(context)),
-                    ],
-                  ),
+                    ),
+                    // 한 번 하고 나면 다시 띄우지 않음
+                    BottomButton(
+                        text: "해당 위치로 수정하기",
+                        value: latlon,
+                        onPressed: () => Navigator.pop(context)),
+                  ],
                 ),
               ],
             ),
