@@ -1,5 +1,6 @@
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_view.dart';
+import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fish_note/signUp/components/next_button.dart';
@@ -34,7 +35,10 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, size: 15, color: gray7),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => NetTabBarView(initialTabIndex: 0)));
           },
         ),
         centerTitle: true,
