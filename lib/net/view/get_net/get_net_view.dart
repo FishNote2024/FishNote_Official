@@ -3,6 +3,7 @@ import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish_weight.dart';
 import 'package:fish_note/net/view/get_net/get_net_note.dart';
+import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,7 @@ class _GetNetViewState extends State<GetNetView> {
             icon: const Icon(Icons.arrow_back_ios, size: 15, color: gray7),
             onPressed: () {
               setState(() {
-                if (_currentPage > 0) {
+                if (_currentPage > 1) {
                   _currentPage -= 1;
                 } else {
                   Navigator.pop(context);
