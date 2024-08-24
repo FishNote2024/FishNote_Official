@@ -11,11 +11,7 @@ class MyPageWithdrawal extends StatefulWidget {
 }
 
 class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
-  bool _fullAgree = false;
-  bool _serviceAgree = false;
-  bool _privacyAgree = false;
-  bool _locationAgree = false;
-  bool _ageAgree = false;
+  bool _agree = false;
 
   @override
   Widget build(BuildContext context) {
@@ -23,24 +19,34 @@ class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
       appBar: AppBar(
         backgroundColor: backgroundBlue,
         surfaceTintColor: backgroundBlue,
-        title: Text('회원 탈퇴', style: body2()),
-        centerTitle: true,
       ),
       bottomNavigationBar: BottomButton(
         text: "탈퇴하기",
-        value: _fullAgree ? "agree" : null,
+        value: _agree ? "agree" : null,
         onPressed: () => Navigator.pushReplacementNamed(context, '/'),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 16),
             Text("탈퇴 전 안내사항", style: header1B()),
-            const SizedBox(height: 48),
+            const SizedBox(height: 16),
+            const Divider(color: gray2),
+            const SizedBox(height: 32),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("1. 탈퇴한 계정의 모든 기록은 탈퇴 직후\n모두 파기되며 복구되지 않습니다.", style: body1()),
+                  const SizedBox(height: 24),
+                  Text("2. 피시노트 앱 회원 탈퇴 후 재가입을 원하는 경우\n카카오톡 간편로그인을 통해 재가입 가능합니다.", style: body1()),
+                ],
+              ),
+            ),
             CheckboxListTile(
-              title: const Text("전체 약관에 동의합니다"),
+              title: Text("탈퇴 전 안내사항을 모두 확인했습니다.", style: body1()),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5),
                 side: const BorderSide(color: gray2),
@@ -48,82 +54,12 @@ class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
               controlAffinity: ListTileControlAffinity.leading,
               checkColor: backgroundWhite,
               activeColor: primaryBlue500,
-              value: _fullAgree,
+              value: _agree,
               onChanged: (value) => {
                 setState(() {
-                  _serviceAgree = value!;
-                  _privacyAgree = value;
-                  _locationAgree = value;
-                  _ageAgree = value;
-                  _fullAgree = value;
+                  _agree = value!;
                 })
               },
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton.icon(
-                  onPressed: () => {
-                    setState(() {
-                      _serviceAgree = !_serviceAgree;
-                      _fullAgree = _ageAgree && _serviceAgree && _privacyAgree && _locationAgree;
-                    }),
-                  },
-                  label: Text("서비스 이용약관 (필수)", style: body2(gray8)),
-                  icon: Icon(Icons.check_rounded, color: _serviceAgree ? primaryBlue400 : gray2),
-                ),
-                TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton.icon(
-                  onPressed: () => {
-                    setState(() {
-                      _privacyAgree = !_privacyAgree;
-                      _fullAgree = _ageAgree && _serviceAgree && _privacyAgree && _locationAgree;
-                    }),
-                  },
-                  label: Text("개인정보 처리방침 (필수)", style: body2(gray8)),
-                  icon: Icon(Icons.check_rounded, color: _privacyAgree ? primaryBlue400 : gray2),
-                ),
-                TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton.icon(
-                  onPressed: () => {
-                    setState(() {
-                      _locationAgree = !_locationAgree;
-                      _fullAgree = _ageAgree && _serviceAgree && _privacyAgree && _locationAgree;
-                    }),
-                  },
-                  label: Text("위치정보 서비스 이용약관 (필수)", style: body2(gray8)),
-                  icon: Icon(Icons.check_rounded, color: _locationAgree ? primaryBlue400 : gray2),
-                ),
-                TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                TextButton.icon(
-                  onPressed: () => {
-                    setState(() {
-                      _ageAgree = !_ageAgree;
-                      _fullAgree = _ageAgree && _serviceAgree && _privacyAgree && _locationAgree;
-                    }),
-                  },
-                  label: Text("만 14세 이상입니다 (필수)", style: body2(gray8)),
-                  icon: Icon(Icons.check_rounded, color: _ageAgree ? primaryBlue400 : gray2),
-                ),
-              ],
             ),
           ],
         ),
