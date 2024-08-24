@@ -18,7 +18,9 @@ class _GetNetNoteState extends State<GetNetNote> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: widget.onNext,
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/netPage2');
+          },
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 16),
