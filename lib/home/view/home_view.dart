@@ -77,8 +77,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       Text('서해 바다 50KM', style: body2()),
                     ],
                   ),
-                  Text(
-                      '${currentDate.year}.${currentDate.month}.${currentDate.day}',
+                  Text('${currentDate.year}.${currentDate.month}.${currentDate.day}',
                       style: body2()),
                 ],
               ),
@@ -131,10 +130,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
                             Map<String, dynamic> weatherInfo = entry.value;
 
-                            String direction = _convertVecToDirection(
-                                int.parse(weatherInfo['VEC']));
-                            IconData icon =
-                                _getWeatherIcon(int.parse(weatherInfo['SKY']));
+                            String direction =
+                                _convertVecToDirection(int.parse(weatherInfo['VEC']));
+                            IconData icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
 
                             return Padding(
                               padding: const EdgeInsets.all(14.0),
@@ -156,18 +154,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_star.svg',
                     text: "즐겨찾기",
-                    onPressed: () {}),
+                    onPressed: () => {Navigator.pushNamed(context, '/favorites')}),
                 const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_note.svg',
                     text: "일지",
-                    onPressed: () {}),
+                    onPressed: () => {Navigator.pushNamed(context, '/journal')}),
                 const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_calculate.svg',
                     text: "장부",
-                    onPressed: () =>
-                        {Navigator.pushNamed(context, '/ledger1')}),
+                    onPressed: () => {Navigator.pushNamed(context, '/ledger1')}),
                 const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_price.svg',
@@ -210,8 +207,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  Widget weatherColumn(String time, IconData icon, String windSpeed,
-      String direction, String waveHeight) {
+  Widget weatherColumn(
+      String time, IconData icon, String windSpeed, String direction, String waveHeight) {
     return Column(
       children: [
         Text(time),
@@ -230,9 +227,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           padding: const EdgeInsets.only(top: 14.0),
           child: Container(
               height: 150,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: primaryBlue500),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(5), color: primaryBlue500),
               child: Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Row(

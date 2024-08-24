@@ -1,4 +1,3 @@
-import 'package:fish_note/myPage/components/bottom_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -6,14 +5,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class MyPageLocation extends StatefulWidget {
-  const MyPageLocation({super.key});
+class FavoritesView extends StatefulWidget {
+  const FavoritesView({super.key});
 
   @override
-  State<MyPageLocation> createState() => _MyPageLocationState();
+  State<FavoritesView> createState() => _FavoritesViewState();
 }
 
-class _MyPageLocationState extends State<MyPageLocation> {
+class _FavoritesViewState extends State<FavoritesView> {
   List<double>? latlon;
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
@@ -50,7 +49,7 @@ class _MyPageLocationState extends State<MyPageLocation> {
       appBar: AppBar(
         backgroundColor: backgroundBlue,
         surfaceTintColor: backgroundBlue,
-        title: Text('주요 조업 위치 변경하기', style: body2()),
+        title: Text('해상 지도', style: body2()),
         centerTitle: true,
       ),
       body: Column(
@@ -61,8 +60,8 @@ class _MyPageLocationState extends State<MyPageLocation> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('주요 조업 위치를 지정해주세요', style: header3B()),
-                const SizedBox(height: 17),
+                Text('지도에서 위치를 직접 선택하거나\n위도 경도를 직접 입력해서 위치를 조정할 수 있습니다.', style: body1()),
+                const SizedBox(height: 24),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -177,17 +176,15 @@ class _MyPageLocationState extends State<MyPageLocation> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(right: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           IconButton(
-                            onPressed: _getLocation,
-                            icon: SvgPicture.asset(
-                              'assets/icons/current_location.svg',
-                              colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
-                            ),
-                            iconSize: 18.5,
+                            onPressed: () => {},
+                            icon: const Icon(Icons.star_rate_rounded),
+                            color: primaryBlue500,
+                            iconSize: 24,
                             style: IconButton.styleFrom(
                               backgroundColor: backgroundWhite,
                               shape: const CircleBorder(
@@ -197,15 +194,26 @@ class _MyPageLocationState extends State<MyPageLocation> {
                                 ),
                               ),
                             ),
-                          )
+                          ),
+                          IconButton(
+                            onPressed: _getLocation,
+                            icon: SvgPicture.asset(
+                              'assets/icons/current_location.svg',
+                              colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
+                            ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: backgroundWhite,
+                              shape: const CircleBorder(
+                                side: BorderSide(
+                                  color: gray2,
+                                  width: 1,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                    // 한 번 하고 나면 다시 띄우지 않음
-                    BottomButton(
-                        text: "해당 위치로 수정하기",
-                        value: latlon,
-                        onPressed: () => Navigator.pop(context)),
                   ],
                 ),
               ],

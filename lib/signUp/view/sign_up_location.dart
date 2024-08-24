@@ -186,7 +186,6 @@ class _SignUpLocationState extends State<SignUpLocation> {
                             'assets/icons/current_location.svg',
                             colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
                           ),
-                          color: primaryBlue500,
                           iconSize: 18.5,
                           style: IconButton.styleFrom(
                             backgroundColor: backgroundWhite,
