@@ -1,12 +1,9 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_fish.dart';
+import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
-import 'package:fish_note/signUp/components/bottom_button.dart';
-import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 class BeforeGetNetPage extends StatefulWidget {
@@ -19,9 +16,21 @@ class BeforeGetNetPage extends StatefulWidget {
 class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
   List<double>? latlon;
   List<NetRecord> netRecords = [
-    NetRecord(date: DateTime(2024, 6, 29, 6, 0), locationName: '문어대가리', daysSince: 10),
-    NetRecord(date: DateTime(2024, 8, 23, 6, 0), locationName: '하얀부표', daysSince: 10),
-    NetRecord(date: DateTime(2024, 8, 23, 4, 0), locationName: '아왕빡세네', daysSince: 10),
+    NetRecord(
+        date: DateTime(2024, 8, 25, 6, 0),
+        locationName: '문어대가리',
+        daysSince: 10,
+        species: []),
+    NetRecord(
+        date: DateTime(2024, 8, 24, 6, 0),
+        locationName: '하얀부표',
+        daysSince: 10,
+        species: []),
+    NetRecord(
+        date: DateTime(2024, 8, 23, 4, 0),
+        locationName: '아왕빡세네',
+        daysSince: 10,
+        species: []),
   ];
 
   @override
@@ -47,15 +56,17 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                         children: [
                           Align(
                             alignment: Alignment.topRight,
-                            child:
-                                Text('${record.daysSince}일째 투망 중', style: header4(primaryBlue500)),
+                            child: Text('${record.daysSince}일째 투망 중',
+                                style: header4(primaryBlue500)),
                           ),
                           const SizedBox(height: 16),
                           Row(
                             children: [
                               Text('투망시간', style: body3(gray5)),
                               const SizedBox(width: 16),
-                              Text(DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date),
+                              Text(
+                                  DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
+                                      .format(record.date),
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -64,7 +75,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                             children: [
                               Text('위치별명', style: body3(gray5)),
                               const SizedBox(width: 16),
-                              Text(record.locationName, style: body1(textBlack)),
+                              Text(record.locationName,
+                                  style: body1(textBlack)),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -76,7 +88,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const GetNetFish(),
+                                    builder: (context) =>
+                                        GetNetView(record: record),
                                   ),
                                 );
                               },
@@ -84,7 +97,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                 elevation: 0,
                                 backgroundColor: primaryYellow500,
                                 shape: RoundedRectangleBorder(
-                                  side: const BorderSide(color: primaryYellow600),
+                                  side:
+                                      const BorderSide(color: primaryYellow600),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),

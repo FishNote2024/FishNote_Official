@@ -161,7 +161,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_note.svg',
                     text: "일지",
-                    onPressed: () {}),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/journal');
+                    }),
                 const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_calculate.svg',
