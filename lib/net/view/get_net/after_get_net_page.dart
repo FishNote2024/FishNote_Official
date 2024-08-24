@@ -96,7 +96,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               Text('어획량', style: body3(gray5)),
                               SizedBox(width: 27),
                               Text(
-                                  '${record.amount.isNaN ? record.amount : "없음"}',
+                                  '${record.amount.isNaN ? "없음" : record.amount} kg',
                                   style: body1(textBlack)),
                             ],
                           ),
