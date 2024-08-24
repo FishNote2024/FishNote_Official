@@ -19,16 +19,9 @@ class BeforeGetNetPage extends StatefulWidget {
 class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
   List<double>? latlon;
   List<NetRecord> netRecords = [
-    NetRecord(
-        date: DateTime(2024, 6, 29, 6, 0),
-        locationName: '문어대가리',
-        daysSince: 10),
-    NetRecord(
-        date: DateTime(2024, 8, 23, 6, 0), locationName: '하얀부표', daysSince: 10),
-    NetRecord(
-        date: DateTime(2024, 8, 23, 4, 0),
-        locationName: '아왕빡세네',
-        daysSince: 10),
+    NetRecord(date: DateTime(2024, 6, 29, 6, 0), locationName: '문어대가리', daysSince: 10),
+    NetRecord(date: DateTime(2024, 8, 23, 6, 0), locationName: '하얀부표', daysSince: 10),
+    NetRecord(date: DateTime(2024, 8, 23, 4, 0), locationName: '아왕빡세네', daysSince: 10),
   ];
 
   @override
@@ -54,16 +47,15 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                         children: [
                           Align(
                             alignment: Alignment.topRight,
-                            child: Text('${record.daysSince}일째 투망 중',
-                                style: header4(primaryBlue500)),
+                            child:
+                                Text('${record.daysSince}일째 투망 중', style: header4(primaryBlue500)),
                           ),
                           const SizedBox(height: 16),
                           Row(
                             children: [
                               Text('투망시간', style: body3(gray5)),
-                              SizedBox(width: 16),
-                              Text(
-                                  '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date)}',
+                              const SizedBox(width: 16),
+                              Text(DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date),
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -71,9 +63,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                           Row(
                             children: [
                               Text('위치별명', style: body3(gray5)),
-                              SizedBox(width: 16),
-                              Text('${record.locationName}',
-                                  style: body1(textBlack)),
+                              const SizedBox(width: 16),
+                              Text(record.locationName, style: body1(textBlack)),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -89,15 +80,15 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                   ),
                                 );
                               },
-                              child: Text('양망하기', style: header3B(textBlack)),
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
                                 backgroundColor: primaryYellow500,
                                 shape: RoundedRectangleBorder(
-                                  side: BorderSide(color: primaryYellow600),
+                                  side: const BorderSide(color: primaryYellow600),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
+                              child: Text('양망하기', style: header3B(textBlack)),
                             ),
                           ),
                         ],
@@ -113,7 +104,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset('assets/icons/ledgerIcon.png', width: 130),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text("오늘도 만선하세요!", style: header3R(textBlack))
                 ],
               ),
@@ -122,14 +113,13 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
         padding: const EdgeInsets.only(bottom: 16.0),
         child: OutlinedButton(
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const AddThrowNetPage(),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AddThrowNetPage(),
+              ),
+            );
           },
-          child: Text("기록하기", style: header1B(Colors.white)),
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -137,6 +127,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+          child: Text("기록하기", style: header1B(Colors.white)),
         ),
       ),
     );
