@@ -1,3 +1,4 @@
+import 'package:fish_note/login/view/home_view.dart';
 import 'package:fish_note/myPage/view/index.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
@@ -56,7 +57,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/home',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => const MyHomePage(),
+        '/': (context) => const HomeView(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),
