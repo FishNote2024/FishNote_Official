@@ -89,7 +89,7 @@ class _LedgerPageState extends State<LedgerPage> {
           SlidingUpPanel(
             controller: _panelController,
             panel: _buildSlidingUpPanelContent(),
-            minHeight: 330,
+            minHeight: 460,
             maxHeight: 1000,
             borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
           ),
@@ -107,15 +107,44 @@ class _LedgerPageState extends State<LedgerPage> {
               firstDay: DateTime.utc(2021, 10, 16),
               lastDay: DateTime.utc(2030, 3, 14),
               focusedDay: _focusedDay,
-              calendarFormat: CalendarFormat.week,
+              calendarFormat: CalendarFormat.month,
+              // onDaySelected: (selectedDay, focusedDay) {
+              //   _onDaySelected(selectedDay, focusedDay);
+              //   if (!isSameDay(_selectedDay, selectedDay)) {
+              //     setState(() {
+              //       _selectedDay = selectedDay;
+              //       _focusedDay = focusedDay;
+              //     });
+              //     _panelController.show(); // 패널 열기
+              //   } else {
+              //     if (!_panelController.isPanelShown) {
+              //       _panelController.show();
+              //     } else {
+              //       _panelController.hide();
+              //     }
+              //   }
+              // },
               onDaySelected: (selectedDay, focusedDay) {
+                final today = DateTime.now();
+
+                // Normalize the selectedDay and today to compare only the date part
+                final normalizedSelectedDay = DateTime(
+                    selectedDay.year, selectedDay.month, selectedDay.day);
+                final normalizedToday =
+                    DateTime(today.year, today.month, today.day);
+
+                // If selectedDay is after today, do nothing
+                if (normalizedSelectedDay.isAfter(normalizedToday)) {
+                  return;
+                }
+
                 _onDaySelected(selectedDay, focusedDay);
                 if (!isSameDay(_selectedDay, selectedDay)) {
                   setState(() {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
                   });
-                  _panelController.show(); // 패널 열기
+                  _panelController.show(); // Open panel
                 } else {
                   if (!_panelController.isPanelShown) {
                     _panelController.show();
@@ -124,6 +153,7 @@ class _LedgerPageState extends State<LedgerPage> {
                   }
                 }
               },
+
               locale: 'ko_KR',
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDay, day);
@@ -294,7 +324,7 @@ class _LedgerPageState extends State<LedgerPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 80),
+                        const SizedBox(height: 140),
                         Center(
                           child: Column(children: [
                             Image.asset('assets/icons/ledgerIcon.png',
@@ -302,7 +332,7 @@ class _LedgerPageState extends State<LedgerPage> {
                             Text("오늘의 수입과 지출을 기록하세요!", style: body1(textBlack)),
                           ]),
                         ),
-                        const SizedBox(height: 70),
+                        const SizedBox(height: 130),
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
