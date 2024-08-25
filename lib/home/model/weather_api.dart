@@ -10,10 +10,8 @@ class ApiService {
   ));
 
 
-  Future<Map<String, dynamic>> fetchData({required double nx, required double ny}) async {
-    WeatherAPITimeSync closestForecastTime = WeatherAPITimeSync();
-    String closestTime = closestForecastTime.getClosestTime(DateTime.now());
-    String formattedDate = closestForecastTime.getFormattedDate(DateTime.now());
+  Future<Map<String, dynamic>> fetchData({required double nx, required double ny, required String closestTime, required String formattedDate} ) async {
+
     Map grid = ConvGridGps.gpsToGRID(nx, ny);
     try {
       final response = await dio.get(
@@ -29,7 +27,6 @@ class ApiService {
           'ServiceKey' : 'WV3QZ/dUdCnsFxVfeuEYMjxvg7LmB7NYusrOHeg8jES82fxxPaDjXyXQuzu/Zfz19CXmhShTRb4wTbYpiOskHA=='
         },
       );
-
       return parseWeatherData(response.data);
     } catch (e) {
       // 에러 핸들링
@@ -46,8 +43,8 @@ class ApiService {
       String category = item['category'];
       dynamic value = item['fcstValue'];
 
-      // POP = 강수확률, WAV = 파고, VEC = 풍향, WSD = 풍속, SKY = 하늘상태, PCP =강수량
-      if (['POP', 'WAV', 'VEC', 'WSD', 'SKY', 'PCP'].contains(category)) {
+      // WAV = 파고, VEC = 풍향, WSD = 풍속, SKY = 하늘상태, PCP =강수량 POP= 강수확률, TMP = 기온
+      if (['POP', 'WAV', 'VEC', 'WSD', 'SKY', 'PCP','TMP'].contains(category)) {
         if (!resultMap.containsKey(time)) {
           resultMap[time] = {};
         }

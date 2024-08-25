@@ -29,13 +29,14 @@ class _JournalViewState extends State<JournalView> {
   }
   // 이벤트 데이터 (예시)
   final List<FishDaily> _events = [
-    FishDaily(DateTime.utc(2024, 8, 18, 7, 30), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m'),
-    FishDaily(DateTime.utc(2024, 8, 18, 19, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m'),
-    FishDaily(DateTime.utc(2024, 8, 19, 8, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m'),
-    FishDaily(DateTime.utc(2024, 8, 20, 9, 0), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m'),
-    FishDaily(DateTime.utc(2024, 8, 20, 12, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m'),
-    FishDaily(DateTime.utc(2024, 8, 20, 13, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m'),
-    FishDaily(DateTime.utc(2024, 8, 20, 16, 30), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m'),
+    FishDaily(DateTime.utc(2024, 8, 18, 7, 30), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "하얀부표"),
+    FishDaily(DateTime.utc(2024, 8, 18, 19, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "문어대가리"),
+    FishDaily(DateTime.utc(2024, 8, 19, 8, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "빨간부표"),
+    FishDaily(DateTime.utc(2024, 8, 20, 9, 0), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "말머리"),
+    FishDaily(DateTime.utc(2024, 8, 20, 12, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "오징어클럽"),
+    FishDaily(DateTime.utc(2024, 8, 20, 13, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "광어핫플"),
+    FishDaily(DateTime.utc(2024, 8, 20, 16, 30), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "닉네임"),
+
   ];
 
   @override
@@ -246,20 +247,17 @@ class _JournalViewState extends State<JournalView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat('HH:mm').format(event.datetime) + ' $action 기록',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                              color :primaryBlue500
-                          ),
+                          DateFormat('HH:mm').format(event.datetime) + ' ${event.locationName}',
+                          style: header3B(primaryBlue500),
                         ),
                         SizedBox(height: 16),
-                        Text('$action 시간 : ' + DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.datetime),
+                        Text('투망 시간 : ' + DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.datetime),
+
                               style: body2(gray8)
                             ),
                         SizedBox(height: 4),
                         Text(
-                              '$action 위치 : 위도 ${event.location['lat']} 경도 ${event.location['lng']}',
+                              '투망 위치 : 위도 ${event.location['lat']} 경도 ${event.location['lng']}',
                               style: TextStyle(fontSize: 14),
                             ),
                         SizedBox(height: 16.5),
