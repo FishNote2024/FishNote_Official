@@ -13,7 +13,8 @@ class FavoritesInformation extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: backgroundBlue,
         surfaceTintColor: backgroundBlue,
-        actions: const [SizedBox.shrink()],
+        actions: const [SizedBox(width: 50)],
+        centerTitle: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -21,7 +22,10 @@ class FavoritesInformation extends StatelessWidget {
             Text('위도 ${latlon![0]} 경도 ${latlon![1]}', style: body2()),
           ],
         ),
-        centerTitle: true,
+      ),
+      body: const Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [],
       ),
     );
   }
