@@ -17,6 +17,7 @@ class _FavoritesViewState extends State<FavoritesView> {
   List<double>? latlon;
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   late WebViewController _controller;
 
   @override
@@ -25,7 +26,9 @@ class _FavoritesViewState extends State<FavoritesView> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel("toApp", onMessageReceived: (JavaScriptMessage message) {
-        message.message == "marker touched" ? showLocationBottomSheet(context, latlon) : null;
+        message.message == "marker touched"
+            ? showLocationBottomSheet(context, latlon, _nameController)
+            : null;
       })
       ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));
   }
