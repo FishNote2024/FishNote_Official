@@ -40,6 +40,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: backgroundBlue,
           toolbarHeight: 80,
           leadingWidth: 80,
           leading: Padding(
@@ -159,7 +160,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_note.svg',
                     text: "일지",
-                    onPressed: () => {Navigator.pushNamed(context, '/journal')}),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/journal');
+                    }),
                 const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_calculate.svg',
