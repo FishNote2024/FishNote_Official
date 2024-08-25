@@ -1,5 +1,7 @@
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_view.dart';
+
+import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -62,9 +64,10 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                           Row(
                             children: [
                               Text('투망시간', style: body3(gray5)),
-                              SizedBox(width: 16),
+                              const SizedBox(width: 16),
                               Text(
-                                  '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date)}',
+                                  DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
+                                      .format(record.date),
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -72,8 +75,9 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                           Row(
                             children: [
                               Text('위치별명', style: body3(gray5)),
-                              SizedBox(width: 16),
-                              Text('${record.locationName}',
+
+                              const SizedBox(width: 16),
+                              Text(record.locationName,
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -91,15 +95,17 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                   ),
                                 );
                               },
-                              child: Text('양망하기', style: header3B(textBlack)),
+
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
                                 backgroundColor: primaryYellow500,
                                 shape: RoundedRectangleBorder(
-                                  side: BorderSide(color: primaryYellow600),
+                                  side:
+                                      const BorderSide(color: primaryYellow600),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
+                              child: Text('양망하기', style: header3B(textBlack)),
                             ),
                           ),
                         ],
@@ -115,7 +121,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset('assets/icons/ledgerIcon.png', width: 130),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text("오늘도 만선하세요!", style: header3R(textBlack))
                 ],
               ),
@@ -124,14 +130,14 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
         padding: const EdgeInsets.only(bottom: 16.0),
         child: OutlinedButton(
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const AddThrowNetPage(),
-            //   ),
-            // );
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const AddThrowNetPage(),
+              ),
+            );
           },
-          child: Text("기록하기", style: header1B(Colors.white)),
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -139,6 +145,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+          child: Text("기록하기", style: header1B(Colors.white)),
         ),
       ),
     );

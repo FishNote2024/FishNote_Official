@@ -1,3 +1,5 @@
+
+import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/net/view/get_net/after_get_net_page.dart';
 import 'package:fish_note/net/view/throw_net/before_get_net_page.dart';
 import 'package:fish_note/net/view/throw_net/throw_net_page.dart';
@@ -37,7 +39,8 @@ class _NetTabBarViewState extends State<NetTabBarView>
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, size: 15, color: gray7),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Home()));
           },
         ),
         bottom: TabBar(

@@ -36,6 +36,7 @@ class _JournalViewState extends State<JournalView> {
     FishDaily(DateTime.utc(2024, 8, 20, 12, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "오징어클럽"),
     FishDaily(DateTime.utc(2024, 8, 20, 13, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "광어핫플"),
     FishDaily(DateTime.utc(2024, 8, 20, 16, 30), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "닉네임"),
+
   ];
 
   @override
@@ -251,6 +252,7 @@ class _JournalViewState extends State<JournalView> {
                         ),
                         SizedBox(height: 16),
                         Text('투망 시간 : ' + DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.datetime),
+
                               style: body2(gray8)
                             ),
                         SizedBox(height: 4),

@@ -32,7 +32,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     ApiService apiService = ApiService();
-
     WeatherAPITimeSync closestForecastTime = WeatherAPITimeSync();
     String closestTime = closestForecastTime.getClosestTime(DateTime
         .now()); //'0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'
@@ -67,6 +66,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             _initialTime.add(Duration(minutes: (scrollPosition / 1).round()));
       });
     });
+
   }
 
   @override
@@ -83,6 +83,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: backgroundBlue,
           toolbarHeight: 80,
           leadingWidth: 80,
           leading: Padding(
@@ -289,6 +290,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
+
               ),
               const SizedBox(height: 16.0),
               Row(children: [
