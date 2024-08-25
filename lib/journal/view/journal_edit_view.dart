@@ -407,6 +407,7 @@ class _JournalEditViewState extends State<JournalEditView> {
     required String? value,  // value를 nullable로 변경
     required List<String> items,  // 리스트 타입 명시
     required Function(String?) onChanged,
+  }) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
