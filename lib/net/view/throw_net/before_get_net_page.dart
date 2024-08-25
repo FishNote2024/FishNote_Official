@@ -1,5 +1,6 @@
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_view.dart';
+
 import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -74,6 +75,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                           Row(
                             children: [
                               Text('위치별명', style: body3(gray5)),
+
                               const SizedBox(width: 16),
                               Text(record.locationName,
                                   style: body1(textBlack)),
@@ -93,6 +95,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                   ),
                                 );
                               },
+
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
                                 backgroundColor: primaryYellow500,
@@ -127,6 +130,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
         padding: const EdgeInsets.only(bottom: 16.0),
         child: OutlinedButton(
           onPressed: () {
+
             Navigator.push(
               context,
               MaterialPageRoute(
