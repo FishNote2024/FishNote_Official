@@ -1,3 +1,4 @@
+import 'package:fish_note/favorites/components/modal_bottom_sheet.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,9 @@ class _FavoritesViewState extends State<FavoritesView> {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..addJavaScriptChannel("toApp", onMessageReceived: (JavaScriptMessage message) {
+        message.message == "marker touched" ? showLocationBottomSheet(context, latlon) : null;
+      })
       ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));
   }
 
@@ -181,7 +185,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           IconButton(
-                            onPressed: () => {},
+                            onPressed: () => showFavoriteBottomSheet(context),
                             icon: const Icon(Icons.star_rate_rounded),
                             color: primaryBlue500,
                             iconSize: 24,

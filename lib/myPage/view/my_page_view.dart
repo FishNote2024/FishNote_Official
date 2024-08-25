@@ -8,8 +8,8 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import '../components/logout_dialog.dart';
 
-class MyPage extends StatelessWidget {
-  const MyPage({super.key});
+class MyPageView extends StatelessWidget {
+  const MyPageView({super.key});
 
   void _showLogoutDialog(BuildContext context) {
     showDialog(
