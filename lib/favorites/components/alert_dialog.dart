@@ -69,6 +69,7 @@ Widget buildCancelDialog(BuildContext context, bool isFavorite) {
       TextButton(
         onPressed: () {
           Navigator.of(context).pop(); // 다이얼로그 닫기
+          Navigator.of(context).pop();
         },
         child: Text('취소하기', style: body2(primaryBlue500)),
       ),
@@ -76,7 +77,6 @@ Widget buildCancelDialog(BuildContext context, bool isFavorite) {
         onPressed: () {
           // 제거 로직 추가
           Navigator.of(context).pop(); // 다이얼로그 닫기
-          Navigator.of(context).pop();
         },
         child: Text(isFavorite ? '계속 추가하기' : '계속 수정하기', style: body2(primaryBlue500)),
       ),
