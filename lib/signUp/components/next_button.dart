@@ -175,10 +175,7 @@ class _NextButtonState extends State<NextButton> {
                         Navigator.pop(context);
                         if (widget.value is List<double>) {
                           // 위치 정보 등록 로직 추가
-                          provider.setLocation({
-                            'latlon': widget.value!,
-                            'nickname': _controller.text,
-                          });
+                          provider.setLocation(widget.value as List<double>, _controller.text);
                         }
                         // 별명 등록 로직 추가
                         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);

@@ -6,7 +6,10 @@ class UserInformationProvider with ChangeNotifier {
   String _affiliation = '';
   Set<String> _species = {};
   Set<String> _technique = {};
-  Map<String, Object> _location = {};
+  final Map<String, Object> _location = {
+    'latlon': [],
+    'name': '',
+  };
 
   // Getters
   String get ageRange => _ageRange;
@@ -42,8 +45,9 @@ class UserInformationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setLocation(Map<String, Object> location) {
-    _location = location;
+  void setLocation(List<double> latlon, String name) {
+    _location['latlon'] = latlon;
+    _location['name'] = name;
     notifyListeners();
   }
 }
