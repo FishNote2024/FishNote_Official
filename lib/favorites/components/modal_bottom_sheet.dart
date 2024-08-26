@@ -173,79 +173,86 @@ void showLocationModal(BuildContext context, TextEditingController controller, b
     ),
     isScrollControlled: true,
     backgroundColor: backgroundWhite,
-    builder: (context) => Padding(
-      padding: const EdgeInsets.all(24),
+    builder: (context) => PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        showDialog(context: context, builder: (context) => buildCancelDialog(context, isFavorite));
+      },
       child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Text(
-              isFavorite ? '즐겨찾기에 등록할 별명을 입력해주세요' : '주요 조업 위치의 별명을 입력해주세요',
-              style: header3B(),
-            ),
-            const SizedBox(height: 18),
-            TextField(
-              onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-              controller: controller,
-              cursorColor: primaryBlue500,
-              style: const TextStyle(color: Colors.black),
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: backgroundWhite,
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 1,
-                    color: primaryBlue500,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                ),
-                disabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 1,
-                    color: primaryBlue500,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 1,
-                    color: primaryBlue500,
-                  ),
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                ),
-                hintText: '지역 별명을 입력해주세요',
-                hintStyle: body1(gray3),
-                contentPadding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                isFavorite ? '즐겨찾기에 등록할 별명을 입력해주세요' : '주요 조업 위치의 별명을 입력해주세요',
+                style: header3B(),
               ),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: controller.text.isEmpty
-                  ? () => {}
-                  : () {
-                      // 별명 등록 로직 추가
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      showSnackBar(
-                        context,
-                        isFavorite ? '해당 위치가 즐겨찾기에 추가되었습니다' : '해당 위치가 주요 조업 위치로 변경되었습니다',
-                      );
-                    },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                elevation: 0,
-                backgroundColor: primaryBlue500,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+              const SizedBox(height: 18),
+              TextField(
+                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                controller: controller,
+                cursorColor: primaryBlue500,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: backgroundWhite,
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: primaryBlue500,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                  disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: primaryBlue500,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: primaryBlue500,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                  hintText: '지역 별명을 입력해주세요',
+                  hintStyle: body1(gray3),
+                  contentPadding: const EdgeInsets.all(16),
                 ),
               ),
-              child: Text('등록하기', style: header4(backgroundWhite)),
-            ),
-          ],
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: controller.text.isEmpty
+                    ? () => {}
+                    : () {
+                        // 별명 등록 로직 추가
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        showSnackBar(
+                          context,
+                          isFavorite ? '해당 위치가 즐겨찾기에 추가되었습니다' : '해당 위치가 주요 조업 위치로 변경되었습니다',
+                        );
+                      },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  elevation: 0,
+                  backgroundColor: primaryBlue500,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text('등록하기', style: header4(backgroundWhite)),
+              ),
+            ],
+          ),
         ),
       ),
     ),
