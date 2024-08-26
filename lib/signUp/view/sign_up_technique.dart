@@ -3,6 +3,9 @@ import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../model/user_information_provider.dart';
 
 class SignUpTechnique extends StatefulWidget {
   const SignUpTechnique({super.key, required this.onNext});
@@ -27,9 +30,14 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
     return Scaffold(
-      bottomNavigationBar:
-          NextButton(value: selectedList.isEmpty ? null : selectedList, onNext: widget.onNext),
+      bottomNavigationBar: NextButton(
+        value: selectedList.isEmpty ? null : selectedList,
+        onNext: widget.onNext,
+        save: () => userInformationProvider.setTechnique(selectedList),
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

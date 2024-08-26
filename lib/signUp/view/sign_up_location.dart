@@ -201,7 +201,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                     ),
                     const SizedBox(height: 12),
                     // 한 번 하고 나면 다시 띄우지 않음
-                    NextButton(value: latlon, onNext: widget.onNext),
+                    NextButton(value: latlon, onNext: widget.onNext, save: () {}),
                   ],
                 ),
               ),

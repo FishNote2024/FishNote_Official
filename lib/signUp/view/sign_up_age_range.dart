@@ -2,6 +2,9 @@ import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../model/user_information_provider.dart';
 
 class SignUpAgeRange extends StatefulWidget {
   const SignUpAgeRange({super.key, required this.onNext});
@@ -19,8 +22,14 @@ class _SignUpAgeRangeState extends State<SignUpAgeRange> {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
     return Scaffold(
-      bottomNavigationBar: NextButton(value: dropdownValue, onNext: widget.onNext),
+      bottomNavigationBar: NextButton(
+        value: dropdownValue,
+        onNext: widget.onNext,
+        save: () => userInformationProvider.setAgeRange(dropdownValue!),
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

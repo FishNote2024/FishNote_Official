@@ -3,16 +3,21 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
+
+import '../model/user_information_provider.dart';
 
 class NextButton extends StatefulWidget {
   const NextButton({
     super.key,
     required this.value,
     required this.onNext,
+    required this.save,
   });
 
   final Object? value;
   final VoidCallback onNext;
+  final VoidCallback save;
 
   @override
   State<NextButton> createState() => _NextButtonState();
@@ -104,7 +109,7 @@ class _NextButtonState extends State<NextButton> {
     );
   }
 
-  void _showLocationModal(BuildContext context) {
+  void _showLocationModal(BuildContext context, UserInformationProvider provider) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -170,6 +175,10 @@ class _NextButtonState extends State<NextButton> {
                         Navigator.pop(context);
                         if (widget.value is List<double>) {
                           // 위치 정보 등록 로직 추가
+                          provider.setLocation({
+                            'latlon': widget.value!,
+                            'nickname': _controller.text,
+                          });
                         }
                         // 별명 등록 로직 추가
                         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
@@ -193,14 +202,19 @@ class _NextButtonState extends State<NextButton> {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
     return ElevatedButton(
       onPressed: widget.value is List<double>
-          ? () => _showLocationModal(context)
+          ? () => _showLocationModal(context, userInformationProvider)
           : widget.value == "agree"
               ? () => _showPermissionModal(context)
               : widget.value == null || widget.value == ""
                   ? null
-                  : widget.onNext,
+                  : () {
+                      widget.save();
+                      widget.onNext();
+                    },
       style: ElevatedButton.styleFrom(
         backgroundColor: widget.value == null || widget.value == "" ? gray2 : primaryBlue500,
         foregroundColor: Colors.white,

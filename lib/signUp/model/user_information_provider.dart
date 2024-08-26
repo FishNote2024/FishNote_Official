@@ -4,16 +4,16 @@ class UserInformationProvider with ChangeNotifier {
   String _ageRange = '';
   String _yearExperience = '';
   String _affiliation = '';
-  List<String> _species = [];
-  List<String> _technique = [];
+  Set<String> _species = {};
+  Set<String> _technique = {};
   Map<String, Object> _location = {};
 
   // Getters
   String get ageRange => _ageRange;
   String get yearExperience => _yearExperience;
   String get affiliation => _affiliation;
-  List<String> get species => _species;
-  List<String> get technique => _technique;
+  Set<String> get species => _species;
+  Set<String> get technique => _technique;
   Map<String, Object> get location => _location;
 
   // Setters with notifyListeners to update UI when data changes
@@ -32,12 +32,12 @@ class UserInformationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setSpecies(List<String> species) {
+  void setSpecies(Set<String> species) {
     _species = species;
     notifyListeners();
   }
 
-  void setTechnique(List<String> technique) {
+  void setTechnique(Set<String> technique) {
     _technique = technique;
     notifyListeners();
   }

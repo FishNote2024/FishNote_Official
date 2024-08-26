@@ -6,7 +6,9 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fish_note/home/model/weatherAPITimeSync.dart';
+import 'package:provider/provider.dart';
 
+import '../../signUp/model/user_information_provider.dart';
 import '../model/weather_api.dart';
 
 class Home extends StatefulWidget {
@@ -23,7 +25,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
   bool _hasJumped = false;
   int differenceInMinutes = 0;
-
   final DateTime _initialTime = DateTime.now();
   DateTime _currentTime = DateTime.now();
 
@@ -71,6 +72,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+    print(userInformationProvider.yearExperience);
+    print(userInformationProvider.ageRange);
+    print(userInformationProvider.affiliation);
+    print(userInformationProvider.species);
+    print(userInformationProvider.technique);
+    print(userInformationProvider.location);
+
     DateTime currentDate = DateTime.now();
     return DefaultTabController(
       length: 2,
