@@ -217,7 +217,6 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                     ],
                   ),
           ),
-          NextButton(value: selectedList, onNext: widget.onNext),
         ],
       ),
     );

@@ -58,8 +58,7 @@ class _NextButtonState extends State<NextButton> {
           children: <Widget>[
             SvgPicture.asset(
               'assets/icons/location.svg',
-              colorFilter:
-                  const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
+              colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
               width: 24,
               height: 24,
             ),
@@ -84,8 +83,7 @@ class _NextButtonState extends State<NextButton> {
               },
               style: TextButton.styleFrom(
                 foregroundColor: textBlack,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
               ),
               child: Text('허용', style: header4()),
             ),
@@ -96,8 +94,7 @@ class _NextButtonState extends State<NextButton> {
               },
               style: TextButton.styleFrom(
                 foregroundColor: textBlack,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
               ),
               child: Text('허용 안함', style: header4()),
             ),
@@ -131,8 +128,7 @@ class _NextButtonState extends State<NextButton> {
               ),
               const SizedBox(height: 18),
               TextField(
-                onTapOutside: (event) =>
-                    FocusManager.instance.primaryFocus?.unfocus(),
+                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                 controller: _controller,
                 cursorColor: primaryBlue500,
                 style: const TextStyle(color: Colors.black),
@@ -172,8 +168,11 @@ class _NextButtonState extends State<NextButton> {
                     : () {
                         // 허용 안함 버튼 클릭 시 동작
                         Navigator.pop(context);
+                        if (widget.value is List<double>) {
+                          // 위치 정보 등록 로직 추가
+                        }
                         // 별명 등록 로직 추가
-                        Navigator.pushReplacementNamed(context, '/home');
+                        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
                       },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -203,16 +202,14 @@ class _NextButtonState extends State<NextButton> {
                   ? null
                   : widget.onNext,
       style: ElevatedButton.styleFrom(
-        backgroundColor:
-            widget.value == null || widget.value == "" ? gray2 : primaryBlue500,
+        backgroundColor: widget.value == null || widget.value == "" ? gray2 : primaryBlue500,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      child: Text(
-          widget.value == "" || widget.value == "agree" ? "동의하고 가입하기" : '다음',
+      child: Text(widget.value == "" || widget.value == "agree" ? "동의하고 가입하기" : '다음',
           style: header3R(Colors.white)),
     );
   }
