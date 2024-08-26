@@ -162,18 +162,15 @@ class _FavoritesInformationState extends State<FavoritesInformation> {
                                         IconData icon =
                                             _getWeatherIcon(int.parse(weatherInfo['SKY']));
 
-                                        return Padding(
-                                          padding: const EdgeInsets.all(0.0),
-                                          child: weatherColumn(
-                                              time,
-                                              icon,
-                                              '${weatherInfo['TMP']}°C',
-                                              '${weatherInfo['POP']}%',
-                                              '${weatherInfo['WSD']}m/s',
-                                              direction,
-                                              rain,
-                                              '${weatherInfo['WAV']}m'),
-                                        );
+                                        return weatherColumn(
+                                            time,
+                                            icon,
+                                            '${weatherInfo['TMP']}°C',
+                                            '${weatherInfo['POP']}%',
+                                            '${weatherInfo['WSD']}m/s',
+                                            direction,
+                                            rain,
+                                            '${weatherInfo['WAV']}m');
                                       }).toList(),
                                     ),
                                   ),
@@ -186,7 +183,7 @@ class _FavoritesInformationState extends State<FavoritesInformation> {
                 ),
               ),
               const Positioned(
-                left: 65,
+                left: 90,
                 top: 0,
                 bottom: 0,
                 child: SizedBox(
@@ -200,21 +197,19 @@ class _FavoritesInformationState extends State<FavoritesInformation> {
                 ),
               ),
               Positioned(
+                left: 53,
                 bottom: 0,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 28),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-                    decoration: BoxDecoration(
-                      color: primaryBlue500,
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
-                    child: Text(
-                      '현재 ${_currentTime.hour.toString().padLeft(2, '0')}:${_currentTime.minute.toString().padLeft(2, '0')}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+                  decoration: BoxDecoration(
+                    color: primaryBlue500,
+                    borderRadius: BorderRadius.circular(20.0),
+                  ),
+                  child: Text(
+                    '현재 ${_currentTime.hour.toString().padLeft(2, '0')}:${_currentTime.minute.toString().padLeft(2, '0')}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
