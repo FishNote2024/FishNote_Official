@@ -3,16 +3,21 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
+
+import '../model/user_information_provider.dart';
 
 class NextButton extends StatefulWidget {
   const NextButton({
     super.key,
     required this.value,
     required this.onNext,
+    required this.save,
   });
 
   final Object? value;
   final VoidCallback onNext;
+  final VoidCallback save;
 
   @override
   State<NextButton> createState() => _NextButtonState();
@@ -58,8 +63,7 @@ class _NextButtonState extends State<NextButton> {
           children: <Widget>[
             SvgPicture.asset(
               'assets/icons/location.svg',
-              colorFilter:
-                  const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
+              colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
               width: 24,
               height: 24,
             ),
@@ -84,8 +88,7 @@ class _NextButtonState extends State<NextButton> {
               },
               style: TextButton.styleFrom(
                 foregroundColor: textBlack,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
               ),
               child: Text('허용', style: header4()),
             ),
@@ -96,8 +99,7 @@ class _NextButtonState extends State<NextButton> {
               },
               style: TextButton.styleFrom(
                 foregroundColor: textBlack,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 16),
               ),
               child: Text('허용 안함', style: header4()),
             ),
@@ -107,7 +109,7 @@ class _NextButtonState extends State<NextButton> {
     );
   }
 
-  void _showLocationModal(BuildContext context) {
+  void _showLocationModal(BuildContext context, UserInformationProvider provider) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -131,8 +133,7 @@ class _NextButtonState extends State<NextButton> {
               ),
               const SizedBox(height: 18),
               TextField(
-                onTapOutside: (event) =>
-                    FocusManager.instance.primaryFocus?.unfocus(),
+                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                 controller: _controller,
                 cursorColor: primaryBlue500,
                 style: const TextStyle(color: Colors.black),
@@ -172,8 +173,12 @@ class _NextButtonState extends State<NextButton> {
                     : () {
                         // 허용 안함 버튼 클릭 시 동작
                         Navigator.pop(context);
+                        if (widget.value is List<double>) {
+                          // 위치 정보 등록 로직 추가
+                          provider.setLocation(widget.value as List<double>, _controller.text);
+                        }
                         // 별명 등록 로직 추가
-                        Navigator.pushReplacementNamed(context, '/home');
+                        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
                       },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -194,25 +199,28 @@ class _NextButtonState extends State<NextButton> {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
     return ElevatedButton(
       onPressed: widget.value is List<double>
-          ? () => _showLocationModal(context)
+          ? () => _showLocationModal(context, userInformationProvider)
           : widget.value == "agree"
               ? () => _showPermissionModal(context)
               : widget.value == null || widget.value == ""
                   ? null
-                  : widget.onNext,
+                  : () {
+                      widget.save();
+                      widget.onNext();
+                    },
       style: ElevatedButton.styleFrom(
-        backgroundColor:
-            widget.value == null || widget.value == "" ? gray2 : primaryBlue500,
+        backgroundColor: widget.value == null || widget.value == "" ? gray2 : primaryBlue500,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      child: Text(
-          widget.value == "" || widget.value == "agree" ? "동의하고 가입하기" : '다음',
+      child: Text(widget.value == "" || widget.value == "agree" ? "동의하고 가입하기" : '다음',
           style: header3R(Colors.white)),
     );
   }

@@ -22,7 +22,8 @@ class _SignUpPermissionState extends State<SignUpPermission> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: NextButton(value: _fullAgree ? "agree" : "", onNext: widget.onNext),
+      bottomNavigationBar:
+          NextButton(value: _fullAgree ? "agree" : "", onNext: widget.onNext, save: () {}),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

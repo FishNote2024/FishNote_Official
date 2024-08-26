@@ -25,7 +25,7 @@ class _SignUpViewState extends State<SignUpView> {
       if (_currentPage < _totalPages - 1) {
         _currentPage += 1;
       } else {
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.pushReplacementNamed(context, '/signUp');
       }
     });
   }

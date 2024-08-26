@@ -5,6 +5,9 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+
+import '../model/user_information_provider.dart';
 
 class SignUpAffiliation extends StatefulWidget {
   const SignUpAffiliation({super.key, required this.onNext});
@@ -46,8 +49,14 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
     return Scaffold(
-      bottomNavigationBar: NextButton(value: affiliation, onNext: widget.onNext),
+      bottomNavigationBar: NextButton(
+        value: affiliation,
+        onNext: widget.onNext,
+        save: () => userInformationProvider.setAffiliation(affiliation!),
+      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
