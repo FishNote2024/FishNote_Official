@@ -33,15 +33,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     _tabController = TabController(length: 2, vsync: this);
     ApiService apiService = ApiService();
     WeatherAPITimeSync closestForecastTime = WeatherAPITimeSync();
-    String closestTime = closestForecastTime.getClosestTime(DateTime
-        .now()); //'0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'
-    String formattedDate =
-        closestForecastTime.getFormattedDate(DateTime.now()); //'20240809'
+    String closestTime = closestForecastTime.getClosestTime(
+        DateTime.now()); //'0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'
+    String formattedDate = closestForecastTime.getFormattedDate(DateTime.now()); //'20240809'
     weatherData = apiService.fetchData(
-        nx: 36.190,
-        ny: 129.358,
-        closestTime: closestTime,
-        formattedDate: formattedDate);
+        nx: 36.190, ny: 129.358, closestTime: closestTime, formattedDate: formattedDate);
 
 // 날짜 문자열을 DateTime 객체로 변환
     int year = int.parse(formattedDate.substring(0, 4));
@@ -60,13 +56,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
     _scrollController.addListener(() {
       setState(() {
-        double scrollPosition =
-            _scrollController.position.pixels - differenceInMinutes + 88;
-        _currentTime =
-            _initialTime.add(Duration(minutes: (scrollPosition / 1).round()));
+        double scrollPosition = _scrollController.position.pixels - differenceInMinutes + 88;
+        _currentTime = _initialTime.add(Duration(minutes: (scrollPosition / 1).round()));
       });
     });
-
   }
 
   @override
@@ -121,8 +114,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       Text('서해 바다 50KM', style: body2()),
                     ],
                   ),
-                  Text(
-                      '${currentDate.year}.${currentDate.month}.${currentDate.day}',
+                  Text('${currentDate.year}.${currentDate.month}.${currentDate.day}',
                       style: body2()),
                 ],
               ),
@@ -159,25 +151,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     child: FutureBuilder<Map<String, dynamic>>(
                         future: weatherData,
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator());
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
                           } else if (snapshot.hasError) {
-                            return Center(
-                                child: Text('Error: ${snapshot.error}'));
-                          } else if (!snapshot.hasData ||
-                              snapshot.data!.isEmpty) {
-                            return const Center(
-                                child: Text('No data available'));
+                            return Center(child: Text('Error: ${snapshot.error}'));
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return const Center(child: Text('No data available'));
                           }
 
                           data = snapshot.data!;
 
                           if (!_hasJumped) {
                             WidgetsBinding.instance.addPostFrameCallback((_) {
-                              _scrollController
-                                  .jumpTo(differenceInMinutes.toDouble() - 88);
+                              _scrollController.jumpTo(differenceInMinutes.toDouble() - 88);
                             });
                             _hasJumped = true;
                           }
@@ -192,36 +178,32 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                   Column(
                                     children: [
                                       Text('시간', style: caption2(gray4)),
-                                      SizedBox(height: 13.0),
+                                      const SizedBox(height: 13.0),
                                       Text('날씨', style: caption2(gray4)),
-                                      SizedBox(height: 13.0),
+                                      const SizedBox(height: 13.0),
                                       Text('풍속', style: caption2(gray4)),
-                                      SizedBox(height: 13.0),
+                                      const SizedBox(height: 13.0),
                                       Text('풍향', style: caption2(gray4)),
-                                      SizedBox(height: 13.0),
+                                      const SizedBox(height: 13.0),
                                       Text('파고', style: caption2(gray4)),
                                     ],
                                   ),
-                                  SizedBox(width: 8),
+                                  const SizedBox(width: 8),
                                   // const SizedBox(width: 8.0), // 제목과 데이터 간의 간격 추가
-                                  SizedBox(
+                                  const SizedBox(
                                       width: 1,
-                                      child: Divider(
-                                          color: gray1,
-                                          height: 158,
-                                          thickness: 300)),
+                                      child: Divider(color: gray1, height: 158, thickness: 300)),
                                   const SizedBox(width: 8.0),
                                   Row(
                                     children: data.entries.map((entry) {
                                       String time =
                                           "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
-                                      Map<String, dynamic> weatherInfo =
-                                          entry.value;
+                                      Map<String, dynamic> weatherInfo = entry.value;
 
-                                      String direction = _convertVecToDirection(
-                                          int.parse(weatherInfo['VEC']));
-                                      IconData icon = _getWeatherIcon(
-                                          int.parse(weatherInfo['SKY']));
+                                      String direction =
+                                          _convertVecToDirection(int.parse(weatherInfo['VEC']));
+                                      IconData icon =
+                                          _getWeatherIcon(int.parse(weatherInfo['SKY']));
 
                                       return Padding(
                                         padding: const EdgeInsets.all(0.0),
@@ -246,7 +228,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => WeatherDetailView(data: data, differenceInMinutes: differenceInMinutes),
+                        builder: (context) =>
+                            WeatherDetailView(data: data, differenceInMinutes: differenceInMinutes),
                       ),
                     );
                   },
@@ -254,8 +237,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 FutureBuilder<Map<String, dynamic>>(
                   future: weatherData,
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.done &&
-                        snapshot.hasData) {
+                    if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                       return const Positioned(
                         left: 65,
                         top: 0,
@@ -276,28 +258,27 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.only(left: 28),
                 child: Container(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: 12.0, vertical: 6.0), // 텍스트 주위의 여백 설정
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0), // 텍스트 주위의 여백 설정
                   decoration: BoxDecoration(
                     color: primaryBlue500, // 배경 색상
                     borderRadius: BorderRadius.circular(20.0), // 둥근 모서리 설정
                   ),
                   child: Text(
-                    '현재 ${_currentTime.hour.toString().padLeft(2,'0')}:${_currentTime.minute.toString().padLeft(2, '0')}',
-                    style: TextStyle(
+                    '현재 ${_currentTime.hour.toString().padLeft(2, '0')}:${_currentTime.minute.toString().padLeft(2, '0')}',
+                    style: const TextStyle(
                       color: Colors.white, // 텍스트 색상 설정
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-
               ),
               const SizedBox(height: 16.0),
               Row(children: [
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_star.svg',
                     text: "즐겨찾기",
-                    onPressed: () {}),
+                    onPressed: () => {Navigator.pushNamed(context, '/favorites')}),
                 const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_note.svg',
@@ -309,8 +290,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_calculate.svg',
                     text: "장부",
-                    onPressed: () =>
-                        {Navigator.pushNamed(context, '/ledger1')}),
+                    onPressed: () => {Navigator.pushNamed(context, '/ledger1')}),
                 const SizedBox(width: 12),
                 VerticalOutlinedButton(
                     iconPath: 'assets/icons/buttonIcon_price.svg',
@@ -353,8 +333,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  Widget weatherColumn(String time, IconData icon, String windSpeed,
-      String direction, String waveHeight) {
+  Widget weatherColumn(
+      String time, IconData icon, String windSpeed, String direction, String waveHeight) {
     return SizedBox(
       width: 60,
       child: Column(
@@ -368,8 +348,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           Text(direction),
           const SizedBox(height: 8),
           Text(waveHeight),
-          Padding(
-            padding: const EdgeInsets.only(left: 59),
+          const Padding(
+            padding: EdgeInsets.only(left: 59),
             child: SizedBox(
               width: 1,
               child: Divider(
@@ -391,9 +371,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           padding: const EdgeInsets.only(top: 14.0),
           child: Container(
               height: 150,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: primaryBlue500),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(5), color: primaryBlue500),
               child: Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Row(
