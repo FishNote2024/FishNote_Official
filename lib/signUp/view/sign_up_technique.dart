@@ -149,11 +149,16 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                             itemBuilder: (context, index) => InkWell(
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
-                                child: Text(primaryTechniques[index], style: body1()),
+                                child: Text(primaryTechniques[index],
+                                    style: selectedList.contains(primaryTechniques[index])
+                                        ? body1(primaryBlue500)
+                                        : body1()),
                               ),
                               onTap: () => {
                                 setState(() {
-                                  selectedList.add(primaryTechniques[index]);
+                                  if (selectedList.length < 5) {
+                                    selectedList.add(primaryTechniques[index]);
+                                  }
                                 }),
                               },
                             ),
@@ -176,7 +181,9 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                       InkWell(
                         onTap: () => {
                           setState(() {
-                            selectedList.add(_controller.text);
+                            if (selectedList.length < 5) {
+                              selectedList.add(_controller.text);
+                            }
                           }),
                         },
                         child: Container(
@@ -203,7 +210,9 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                           itemBuilder: (context, index) => InkWell(
                             onTap: () => {
                               setState(() {
-                                selectedList.add(searchResult[index]);
+                                if (selectedList.length < 5) {
+                                  selectedList.add(searchResult[index]);
+                                }
                               }),
                             },
                             child: Container(
@@ -215,7 +224,10 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                                   color: primaryBlue100,
                                 ),
                               ),
-                              child: Text(searchResult[index], style: body1()),
+                              child: Text(searchResult[index],
+                                  style: selectedList.contains(primaryTechniques[index])
+                                      ? body1(primaryBlue500)
+                                      : body1()),
                             ),
                           ),
                           separatorBuilder: (context, index) => const SizedBox(height: 8),

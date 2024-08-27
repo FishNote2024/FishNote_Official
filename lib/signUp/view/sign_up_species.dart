@@ -157,7 +157,9 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                                 ),
                                 onTap: () => {
                                   setState(() {
-                                    selectedList.add(top10[index]);
+                                    if (selectedList.length < 5) {
+                                      selectedList.add(top10[index]);
+                                    }
                                   }),
                                 },
                               ),
@@ -193,7 +195,9 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                                 ),
                                 onTap: () => {
                                   setState(() {
-                                    selectedList.add(fishList[index]);
+                                    if (selectedList.length < 5) {
+                                      selectedList.add(fishList[index]);
+                                    }
                                   }),
                                 },
                               ),
@@ -220,7 +224,9 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                             itemBuilder: (context, index) => InkWell(
                               onTap: () => {
                                 setState(() {
-                                  selectedList.add(speciesList[index]);
+                                  if (selectedList.length < 5) {
+                                    selectedList.add(speciesList[index]);
+                                  }
                                 }),
                               },
                               child: Container(
