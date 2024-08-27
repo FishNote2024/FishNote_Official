@@ -1,3 +1,5 @@
+import 'package:fish_note/net/model/net_record.dart';
+import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/signUp/components/bottom_button.dart';
 import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class AddThrowNetPage extends StatefulWidget {
@@ -21,11 +24,19 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
   final TextEditingController _lngController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   late WebViewController _controller;
+  late NetRecordProvider netRecordProvider;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
+  // }
   String todayDate = DateFormat('M월 d일 (E)', 'ko_KR').format(DateTime.now());
 
   @override
   void initState() {
     super.initState();
+    netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));
@@ -39,11 +50,13 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
   }
 
   Future<void> _getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     setState(() {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
-      _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
+      _controller.runJavaScript(
+          'fromAppToWeb("${position.latitude}", "${position.longitude}");');
       latlon = [position.latitude, position.longitude];
     });
   }
@@ -77,7 +90,8 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
               ),
               const SizedBox(height: 18),
               TextField(
-                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                onTapOutside: (event) =>
+                    FocusManager.instance.primaryFocus?.unfocus(),
                 controller: _nameController,
                 cursorColor: primaryBlue500,
                 style: const TextStyle(color: Colors.black),
@@ -115,10 +129,12 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                 onPressed: _nameController.text.isEmpty
                     ? () => {}
                     : () {
-                        // 허용 안함 버튼 클릭 시 동작
-                        Navigator.pop(context);
-                        // 별명 등록 로직 추가
-                        Navigator.pop(context);
+                        netRecordProvider.setLocationName(_nameController.text);
+                        print("👉🏻 ${netRecordProvider.locationName}");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => GetNetView()),
+                        );
                       },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
@@ -160,7 +176,8 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
               children: [
                 Text('투망 위치를 확인해주세요', style: header1B()),
                 const SizedBox(height: 8),
-                Text('지도에서 위치를 직접 선택하거나\n위도 경도를 직접 입력해서 위치를 조정할 수 있습니다.', style: body1(gray6)),
+                Text('지도에서 위치를 직접 선택하거나\n위도 경도를 직접 입력해서 위치를 조정할 수 있습니다.',
+                    style: body1(gray6)),
                 const SizedBox(height: 17),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -169,13 +186,15 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
-                        onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                        onTapOutside: (event) =>
+                            FocusManager.instance.primaryFocus?.unfocus(),
                         controller: _latController,
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
                         onChanged: (value) => setState(() {
-                          if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
+                          if (_latController.text.isNotEmpty &&
+                              _lngController.text.isNotEmpty) {
                             _controller.runJavaScript(
                               'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
                             );
@@ -191,9 +210,12 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: _latController.text.isEmpty ? gray2 : primaryBlue500,
+                              color: _latController.text.isEmpty
+                                  ? gray2
+                                  : primaryBlue500,
                             ),
-                            borderRadius: const BorderRadius.all(Radius.circular(5)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(5)),
                           ),
                           disabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
@@ -205,9 +227,12 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: _latController.text.isEmpty ? gray2 : primaryBlue500,
+                              color: _latController.text.isEmpty
+                                  ? gray2
+                                  : primaryBlue500,
                             ),
-                            borderRadius: const BorderRadius.all(Radius.circular(5)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(5)),
                           ),
                           contentPadding: const EdgeInsets.all(16),
                         ),
@@ -218,13 +243,15 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
-                        onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                        onTapOutside: (event) =>
+                            FocusManager.instance.primaryFocus?.unfocus(),
                         controller: _lngController,
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
                         onChanged: (value) => setState(() {
-                          if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
+                          if (_latController.text.isNotEmpty &&
+                              _lngController.text.isNotEmpty) {
                             _controller.runJavaScript(
                               'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
                             );
@@ -240,9 +267,12 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: _lngController.text.isEmpty ? gray2 : primaryBlue500,
+                              color: _lngController.text.isEmpty
+                                  ? gray2
+                                  : primaryBlue500,
                             ),
-                            borderRadius: const BorderRadius.all(Radius.circular(5)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(5)),
                           ),
                           disabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
@@ -254,9 +284,12 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: _lngController.text.isEmpty ? gray2 : primaryBlue500,
+                              color: _lngController.text.isEmpty
+                                  ? gray2
+                                  : primaryBlue500,
                             ),
-                            borderRadius: const BorderRadius.all(Radius.circular(5)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(5)),
                           ),
                           contentPadding: const EdgeInsets.all(16),
                         ),
@@ -284,7 +317,8 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                             onPressed: _getLocation,
                             icon: SvgPicture.asset(
                               'assets/icons/current_location.svg',
-                              colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
+                              colorFilter: const ColorFilter.mode(
+                                  primaryBlue500, BlendMode.srcIn),
                             ),
                             color: primaryBlue500,
                             iconSize: 18.5,
@@ -301,7 +335,9 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      BottomButton(text: "다음", onPressed: () => _showLocationModal(context)),
+                      BottomButton(
+                          text: "다음",
+                          onPressed: () => _showLocationModal(context)),
                     ],
                   ),
                 ),
