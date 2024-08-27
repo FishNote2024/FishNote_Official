@@ -1,13 +1,14 @@
+import 'package:fish_note/favorites/view/favorites_view.dart';
 import 'package:fish_note/journal/view/journal_view.dart';
 import 'package:fish_note/login/view/home_view.dart';
-import 'package:fish_note/myPage/view/index.dart';
+// import 'package:fish_note/myPage/view/index.dart';
 import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
+import 'package:fish_note/myPage/view/my_page_view.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
-import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fish_note/firebase_options.dart';
-import 'package:fish_note/myPage/view/index.dart';
+import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:fish_note/onBoarding/on_boarding.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
@@ -15,8 +16,9 @@ import 'package:fish_note/signUp/view/sign_up_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'Ledger/view/tab_bar_view.dart';
+import 'signUp/model/user_information_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +27,14 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserInformationProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -57,7 +66,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: backgroundBlue,
         useMaterial3: true,
       ),
-      initialRoute: '/home',
+      initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const MyHomePage(),
@@ -69,11 +78,12 @@ class MyApp extends StatelessWidget {
         '/onBoarding': (context) => OnboardingScreen(),
         '/netPage1': (context) => const NetTabBarView(initialTabIndex: 0),
         '/netPage2': (context) => const NetTabBarView(initialTabIndex: 1),
-        '/myPage': (context) => const MyPage(),
+        '/myPage': (context) => const MyPageView(),
         '/journal': (context) => const JournalView(),
         // '/getNetFish': (context) => const GetNetFish(),
         '/getNetAddFish': (context) => const GetNetAddFish(),
         '/getNetAddFishWeight': (context) => const AddThrowNetPage(),
+        '/favorites': (context) => const FavoritesView(),
       },
     );
   }

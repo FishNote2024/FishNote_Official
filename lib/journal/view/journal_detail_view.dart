@@ -52,6 +52,7 @@ class JournalDetailView extends StatelessWidget {
         itemBuilder: (context, index) {
           final event = events[index];
           final action = event.tooMang ? "투망" : "양망";
+          final locationName = event.locationName;
           return Card(
             color: Colors.white,
             margin: const EdgeInsets.symmetric(vertical: 8),
@@ -61,7 +62,7 @@ class JournalDetailView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    DateFormat('HH:mm').format(event.datetime) + ' ${action} 기록',
+                    DateFormat('HH:mm').format(event.datetime) + ' ${locationName}',
                     style: header3B(gray8),
                   ),
                   SizedBox(height: 16),

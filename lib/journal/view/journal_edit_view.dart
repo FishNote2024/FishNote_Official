@@ -14,15 +14,15 @@ class JournalEditView extends StatefulWidget {
 }
 
 class _JournalEditViewState extends State<JournalEditView> {
-  List<Widget> fishFields = [];
+  List<Map<String, dynamic>> fishes = [
+    {'어종': '고등어', '어법': '외끌이대형저인망', '어획량': '120'}
+  ];
   DateTime? selectedDateTime;
   TextEditingController _dateTimeController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    // 초기 어획 필드 추가 (필요에 따라 추가/제거 가능)
-    fishFields.add(_buildFishField());
   }
 
   @override
@@ -39,7 +39,8 @@ class _JournalEditViewState extends State<JournalEditView> {
           },
         ),
         title: Text(
-          DateFormat('MM월 dd일 (E)', 'ko_KR').format(widget.events.first.datetime),
+          DateFormat('MM월 dd일 (E)', 'ko_KR')
+              .format(widget.events.first.datetime),
           style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
@@ -60,6 +61,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         itemCount: widget.events.length,
         itemBuilder: (context, index) {
           final event = widget.events[index];
+          final locationName = event.locationName;
           return Card(
             margin: const EdgeInsets.symmetric(vertical: 8),
             color: backgroundWhite,
@@ -71,11 +73,9 @@ class _JournalEditViewState extends State<JournalEditView> {
                   Row(
                     children: [
                       Text(
-                        DateFormat('HH:mm').format(event.datetime) + ' 투망 기록',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
+                        DateFormat('HH:mm').format(event.datetime) +
+                            ' ${locationName}',
+                        style: header3B(gray8),
                       ),
                       Spacer(),
                       TextButton(
@@ -85,22 +85,28 @@ class _JournalEditViewState extends State<JournalEditView> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text('해당 투망기록을 삭제하시겠습니까?',
-                                  style: header3B(black),),
-                                content: Text('작성한 내용이 영구적으로 삭제됩니다.\n 정말 해당 투망 기록을 삭제 하시겠습니까?'),
+                                title: Text(
+                                  '해당 투망기록을 삭제하시겠습니까?',
+                                  style: header3B(black),
+                                ),
+                                content: Text(
+                                    '작성한 내용이 영구적으로 삭제됩니다.\n 정말 해당 투망 기록을 삭제 하시겠습니까?'),
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(false); // '아니오' 선택 시
+                                      Navigator.of(context)
+                                          .pop(false); // '아니오' 선택 시
                                     },
                                     child: Text('돌아가기',
                                         style: body2(primaryBlue500)),
                                   ),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop(true); // '예' 선택 시
+                                      Navigator.of(context)
+                                          .pop(true); // '예' 선택 시
                                     },
-                                    child: Text('삭제하기',
+                                    child: Text(
+                                      '삭제하기',
                                       style: body2(primaryBlue500),
                                     ),
                                   ),
@@ -108,12 +114,9 @@ class _JournalEditViewState extends State<JournalEditView> {
                               );
                             },
                           ).then((result) {
-                            // '예' 또는 '아니오'를 선택한 후의 결과 처리
                             if (result == true) {
-                              // '예'를 선택한 경우의 로직
                               print('사용자가 삭제하기를 선택했습니다.');
                             } else {
-                              // '아니오'를 선택한 경우의 로직
                               print('사용자가 돌아가기를 선택했습니다.');
                             }
                           });
@@ -133,10 +136,12 @@ class _JournalEditViewState extends State<JournalEditView> {
                   SizedBox(height: 8),
                   _buildTextField(
                     label: '투망시간',
-                    initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+                    initialValue:
+                    DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
                         .format(event.datetime),
                     icon: Icons.calendar_today,
-                    onIconPressed: () => _handleCalendarIconPressed(event.datetime),
+                    onIconPressed: () =>
+                        _handleCalendarIconPressed(event.datetime),
                   ),
                   SizedBox(height: 8),
                   Row(
@@ -177,10 +182,6 @@ class _JournalEditViewState extends State<JournalEditView> {
                     ),
                   ),
                   SizedBox(height: 8),
-                  // _buildTextField(
-                  //   label: '수온',
-                  //   initialValue: '12.9°C',
-                  // ),
                   SizedBox(height: 16),
                   Text(
                     '양망기록',
@@ -189,17 +190,12 @@ class _JournalEditViewState extends State<JournalEditView> {
                   SizedBox(height: 8),
                   _buildTextField(
                     label: '양망시간',
-                    initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+                    initialValue:
+                    DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
                         .format(event.datetime),
                     icon: Icons.calendar_today,
-                    onIconPressed: () => _handleCalendarIconPressed(event.datetime),
-                  ),
-                  SizedBox(height: 8),
-                  _buildTextField(
-                    label: '양망위치',
-                    initialValue: 'N36°11\'27" E139°13\'23"',
-                    icon: Icons.location_on,
-                    onIconPressed: _handleLocationIconPressed,
+                    onIconPressed: () =>
+                        _handleCalendarIconPressed(event.datetime),
                   ),
                   SizedBox(height: 16),
                   Row(
@@ -212,7 +208,7 @@ class _JournalEditViewState extends State<JournalEditView> {
                       TextButton(
                         onPressed: () {
                           setState(() {
-                            fishFields.add(_buildFishField());
+                            fishes.add({'어종': '', '어법': '', '어획량': ''});
                           });
                         },
                         child: Text(
@@ -223,7 +219,11 @@ class _JournalEditViewState extends State<JournalEditView> {
                     ],
                   ),
                   Column(
-                    children: fishFields,
+                    children: fishes.asMap().entries.map((entry) {
+                      int index = entry.key;
+                      Map<String, dynamic> fish = entry.value;
+                      return _buildFishField(index);
+                    }).toList(),
                   ),
                   SizedBox(height: 16),
                   _buildTextField(
@@ -240,17 +240,61 @@ class _JournalEditViewState extends State<JournalEditView> {
     );
   }
 
-  Widget _buildFishField() {
+  Widget _buildFishField(int index) {
     return Column(
+      key: ValueKey(index),
       children: [
         SizedBox(height: 8),
-        _buildDropdownField(label: '어종', value: '고등어'),
+        _buildDropdownField(
+          label: '어종',
+          value: fishes[index]['어종'] ?? '',
+          onChanged: (newValue) {
+            setState(() {
+              fishes[index]['어종'] = newValue;
+            });
+          }, items: ["고등어","참치","연어"],
+        ),
         SizedBox(height: 8),
-        _buildDropdownField2(label: '어법', value: '외끌이대형저인망'),
+        _buildDropdownField(
+          label: '어법',
+          value: fishes[index]['어법'] ?? '',
+          items: <String>['외끌이대형저인망', '건강망 어업'],
+          onChanged: (newValue) {
+            setState(() {
+              fishes[index]['어법'] = newValue;
+            });
+          },
+        ),
         SizedBox(height: 8),
         _buildFishAmountField(
           label: '어획량',
-          initialValue: '120',
+          initialValue: fishes[index]['어획량'] ?? '',
+          onChanged: (newValue) {
+            setState(() {
+              fishes[index]['어획량'] = newValue;
+            });
+          },
+        ),
+        Row(
+          children: [
+            const Spacer(),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  fishes.removeAt(index);
+                });
+              },
+              child: Row(
+                children: [
+                  Text(
+                    '삭제하기',
+                    style: body2(alertRedBackground),
+                  ),
+                  Icon(Icons.delete, color: Colors.red),
+                ],
+              ),
+            ),
+          ],
         ),
         Divider(),
       ],
@@ -260,8 +304,10 @@ class _JournalEditViewState extends State<JournalEditView> {
   Widget _buildFishAmountField({
     required String label,
     required String initialValue,
+    required Function(String) onChanged,
   }) {
-    TextEditingController controller = TextEditingController(text: initialValue);
+    TextEditingController controller =
+    TextEditingController(text: initialValue);
 
     return TextField(
       controller: controller,
@@ -279,6 +325,7 @@ class _JournalEditViewState extends State<JournalEditView> {
             TextPosition(offset: newValue.length),
           ),
         );
+        onChanged(newValue);
       },
     );
   }
@@ -306,14 +353,27 @@ class _JournalEditViewState extends State<JournalEditView> {
     );
   }
 
-  Future<void> _handleCalendarIconPressed(DateTime date) async {
+  Future _handleCalendarIconPressed(DateTime date) async {
     DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: date,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-
+        context: context,
+        initialDate: date,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(2101),
+        confirmText: "확인",
+        cancelText: "뒤로",
+        // builder: (context, child) {
+        //   return Theme(
+        //     data: Theme.of(context).copyWith(
+        //         colorScheme: const ColorScheme.light(
+        //           primary: Colors.black,
+        //           onPrimary: Colors.black,
+        //           onSurface: Colors.black,
+        //         ),
+        //         textTheme: TextTheme()),
+        //     child: child!,
+        //   );
+        // }
+        );
     if (pickedDate != null) {
       TimeOfDay? pickedTime = await showTimePicker(
         context: context,
@@ -334,60 +394,34 @@ class _JournalEditViewState extends State<JournalEditView> {
             pickedTime.hour,
             pickedTime.minute,
           );
-          _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-              .format(selectedDateTime!);
+          _dateTimeController.text =
+              DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+                  .format(selectedDateTime!);
         });
       }
     }
   }
 
-  void _handleLocationIconPressed() {
-    // Location icon 클릭 시 실행될 코드
-    print("Location icon clicked");
-    // 여기에 위치 선택 등의 코드를 추가할 수 있습니다.
-  }
-
   Widget _buildDropdownField({
     required String label,
-    required String value,
+    required String? value,  // value를 nullable로 변경
+    required List<String> items,  // 리스트 타입 명시
+    required Function(String?) onChanged,
   }) {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(),
       ),
-      value: value,
-      items: <String>['고등어', '참치', '연어'].map((String value) {
+      value: value != null && items.contains(value) ? value : null,  // value 검증 후 할당
+      items: items.map((String itemValue) {
         return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
+          value: itemValue,
+          child: Text(itemValue),
         );
       }).toList(),
-      onChanged: (String? newValue) {
-        // 드롭다운 변경 시 처리 로직
-      },
-    );
-  }
+      onChanged: onChanged,  // 콜백 그대로 전달
 
-  Widget _buildDropdownField2({
-    required String label,
-    required String value,
-  }) {
-    return DropdownButtonFormField<String>(
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      value: value,
-      items: <String>['외끌이대형저인망', '건강망 어업'].map((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-      onChanged: (String? newValue) {
-        // 드롭다운 변경 시 처리 로직
-      },
     );
   }
 }

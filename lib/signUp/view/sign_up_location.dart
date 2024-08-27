@@ -186,7 +186,6 @@ class _SignUpLocationState extends State<SignUpLocation> {
                             'assets/icons/current_location.svg',
                             colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
                           ),
-                          color: primaryBlue500,
                           iconSize: 18.5,
                           style: IconButton.styleFrom(
                             backgroundColor: backgroundWhite,
@@ -202,7 +201,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
                     ),
                     const SizedBox(height: 12),
                     // 한 번 하고 나면 다시 띄우지 않음
-                    NextButton(value: latlon, onNext: widget.onNext),
+                    NextButton(value: latlon, onNext: widget.onNext, save: () {}),
                   ],
                 ),
               ),

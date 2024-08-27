@@ -3,6 +3,9 @@ import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../model/user_information_provider.dart';
 
 class SignUpSpecies extends StatefulWidget {
   const SignUpSpecies({super.key, required this.onNext});
@@ -26,9 +29,14 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
     return Scaffold(
       bottomNavigationBar: NextButton(
-          value: selectedList.isEmpty ? null : selectedList.first, onNext: widget.onNext),
+        value: selectedList.isEmpty ? null : selectedList.first,
+        onNext: widget.onNext,
+        save: () => userInformationProvider.setSpecies(selectedList),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 16),
         child: Column(
