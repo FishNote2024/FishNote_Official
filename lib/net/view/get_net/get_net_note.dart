@@ -1,6 +1,8 @@
+import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GetNetNote extends StatefulWidget {
   const GetNetNote({super.key, required this.onNext});
@@ -11,15 +13,22 @@ class GetNetNote extends StatefulWidget {
 }
 
 class _GetNetNoteState extends State<GetNetNote> {
-  List<String> selectedList = [];
+  String memo = "";
   @override
   Widget build(BuildContext context) {
+    final netRecordProvider =
+        Provider.of<NetRecordProvider>(context, listen: false);
+
     return Scaffold(
       resizeToAvoidBottomInset: true,
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
+            if (memo.isNotEmpty) {
+              netRecordProvider.setMemo(memo);
+              print("netRecordProvider.memo: ${netRecordProvider.memo}");
+            }
             Navigator.pushReplacementNamed(context, '/netPage2');
           },
           style: ElevatedButton.styleFrom(
@@ -51,7 +60,7 @@ class _GetNetNoteState extends State<GetNetNote> {
                 child: TextField(
                   onChanged: (value) {
                     setState(() {
-                      selectedList = [value];
+                      memo = value;
                     });
                   },
                   maxLines: 35,

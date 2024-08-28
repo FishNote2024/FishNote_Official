@@ -48,6 +48,7 @@ class NetRecordProvider with ChangeNotifier {
   final List<String> _technique = [];
   double _amount = 0.0;
   final int _daysSince = 0;
+  String _memo = '';
 
   String get locationName => _locationName;
   DateTime get throwTime => _throwTime;
@@ -60,6 +61,7 @@ class NetRecordProvider with ChangeNotifier {
   double get amount => _amount;
   Map<String, Object> get location => _location;
   Map<String, double> fishData = {};
+  String get memo => _memo;
 
   void addFish(String species, double weight) {
     fishData[species] = weight;
@@ -103,6 +105,11 @@ class NetRecordProvider with ChangeNotifier {
   void setLocation(List<double> latlon, String name) {
     _location['latlon'] = latlon;
     _location['name'] = name;
+    notifyListeners();
+  }
+
+  void setMemo(String memo) {
+    _memo = memo;
     notifyListeners();
   }
 }
