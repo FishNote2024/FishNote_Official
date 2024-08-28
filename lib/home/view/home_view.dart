@@ -8,8 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fish_note/home/model/weatherAPITimeSync.dart';
 import 'package:provider/provider.dart';
-
-import '../../signUp/model/user_information_provider.dart';
 import '../model/weather_api.dart';
 
 class Home extends StatefulWidget {
@@ -35,15 +33,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     _tabController = TabController(length: 2, vsync: this);
     ApiService apiService = ApiService();
     WeatherAPITimeSync closestForecastTime = WeatherAPITimeSync();
-    String closestTime = closestForecastTime.getClosestTime(DateTime
-        .now()); //'0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'
-    String formattedDate =
-        closestForecastTime.getFormattedDate(DateTime.now()); //'20240809'
+    String closestTime = closestForecastTime.getClosestTime(
+        DateTime.now()); //'0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'
+    String formattedDate = closestForecastTime.getFormattedDate(DateTime.now()); //'20240809'
     weatherData = apiService.fetchData(
-        nx: 36.190,
-        ny: 129.358,
-        closestTime: closestTime,
-        formattedDate: formattedDate);
+        nx: 36.190, ny: 129.358, closestTime: closestTime, formattedDate: formattedDate);
 
 // 날짜 문자열을 DateTime 객체로 변환
     int year = int.parse(formattedDate.substring(0, 4));
@@ -62,10 +56,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
     _scrollController.addListener(() {
       setState(() {
-        double scrollPosition =
-            _scrollController.position.pixels - differenceInMinutes + 88;
-        _currentTime =
-            _initialTime.add(Duration(minutes: (scrollPosition / 1).round()));
+        double scrollPosition = _scrollController.position.pixels - differenceInMinutes + 88;
+        _currentTime = _initialTime.add(Duration(minutes: (scrollPosition / 1).round()));
       });
     });
   }
@@ -79,13 +71,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final userInformationProvider =
-        Provider.of<UserInformationProvider>(context);
-    final loginModelProvider =
-    Provider.of<LoginModelProvider>(context);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
     print(loginModelProvider.kakaoId);
     print(loginModelProvider.name);
-
 
     DateTime currentDate = DateTime.now();
     return DefaultTabController(
@@ -131,8 +119,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         Text('서해 바다 50KM', style: body2()),
                       ],
                     ),
-                    Text(
-                        '${currentDate.year}.${currentDate.month}.${currentDate.day}',
+                    Text('${currentDate.year}.${currentDate.month}.${currentDate.day}',
                         style: body2()),
                   ],
                 ),
@@ -169,25 +156,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       child: FutureBuilder<Map<String, dynamic>>(
                           future: weatherData,
                           builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator());
                             } else if (snapshot.hasError) {
-                              return Center(
-                                  child: Text('Error: ${snapshot.error}'));
-                            } else if (!snapshot.hasData ||
-                                snapshot.data!.isEmpty) {
-                              return const Center(
-                                  child: Text('No data available'));
+                              return Center(child: Text('Error: ${snapshot.error}'));
+                            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                              return const Center(child: Text('No data available'));
                             }
 
                             data = snapshot.data!;
 
                             if (!_hasJumped) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
-                                _scrollController.jumpTo(
-                                    differenceInMinutes.toDouble() - 88);
+                                _scrollController.jumpTo(differenceInMinutes.toDouble() - 88);
                               });
                               _hasJumped = true;
                             }
@@ -216,23 +197,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                     // const SizedBox(width: 8.0), // 제목과 데이터 간의 간격 추가
                                     const SizedBox(
                                         width: 1,
-                                        child: Divider(
-                                            color: gray1,
-                                            height: 158,
-                                            thickness: 300)),
+                                        child: Divider(color: gray1, height: 158, thickness: 300)),
                                     const SizedBox(width: 8.0),
                                     Row(
                                       children: data.entries.map((entry) {
                                         String time =
                                             "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
-                                        Map<String, dynamic> weatherInfo =
-                                            entry.value;
+                                        Map<String, dynamic> weatherInfo = entry.value;
 
                                         String direction =
-                                            _convertVecToDirection(
-                                                int.parse(weatherInfo['VEC']));
-                                        IconData icon = _getWeatherIcon(
-                                            int.parse(weatherInfo['SKY']));
+                                            _convertVecToDirection(int.parse(weatherInfo['VEC']));
+                                        IconData icon =
+                                            _getWeatherIcon(int.parse(weatherInfo['SKY']));
 
                                         return Padding(
                                           padding: const EdgeInsets.all(0.0),
@@ -258,8 +234,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         context,
                         MaterialPageRoute(
                           builder: (context) => WeatherDetailView(
-                              data: data,
-                              differenceInMinutes: differenceInMinutes),
+                              data: data, differenceInMinutes: differenceInMinutes),
                         ),
                       );
                     },
@@ -267,8 +242,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   FutureBuilder<Map<String, dynamic>>(
                     future: weatherData,
                     builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done &&
-                          snapshot.hasData) {
+                      if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
                         return const Positioned(
                           left: 65,
                           top: 0,
@@ -309,8 +283,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   VerticalOutlinedButton(
                       iconPath: 'assets/icons/buttonIcon_star.svg',
                       text: "즐겨찾기",
-                      onPressed: () =>
-                          {Navigator.pushNamed(context, '/favorites')}),
+                      onPressed: () => {Navigator.pushNamed(context, '/favorites')}),
                   const SizedBox(width: 12),
                   VerticalOutlinedButton(
                       iconPath: 'assets/icons/buttonIcon_note.svg',
@@ -322,14 +295,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   VerticalOutlinedButton(
                       iconPath: 'assets/icons/buttonIcon_calculate.svg',
                       text: "장부",
-                      onPressed: () =>
-                          {Navigator.pushNamed(context, '/ledger1')}),
+                      onPressed: () => {Navigator.pushNamed(context, '/ledger1')}),
                   const SizedBox(width: 12),
                   VerticalOutlinedButton(
                       iconPath: 'assets/icons/buttonIcon_price.svg',
                       text: "시세",
-                      onPressed: () =>
-                          {Navigator.pushNamed(context, '/ledger2')})
+                      onPressed: () => {Navigator.pushNamed(context, '/ledger2')})
                 ]),
                 const SizedBox(height: 16.0),
                 GestureDetector(
@@ -368,8 +339,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     }
   }
 
-  Widget weatherColumn(String time, IconData icon, String windSpeed,
-      String direction, String waveHeight) {
+  Widget weatherColumn(
+      String time, IconData icon, String windSpeed, String direction, String waveHeight) {
     return SizedBox(
       width: 60,
       child: Column(
@@ -406,9 +377,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           padding: const EdgeInsets.only(top: 14.0),
           child: Container(
               height: 150,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5),
-                  color: primaryBlue500),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(5), color: primaryBlue500),
               child: Padding(
                 padding: const EdgeInsets.only(top: 30),
                 child: Row(

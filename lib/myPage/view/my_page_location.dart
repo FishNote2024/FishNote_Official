@@ -1,9 +1,11 @@
 import 'package:fish_note/myPage/components/bottom_button.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class MyPageLocation extends StatefulWidget {
@@ -18,13 +20,26 @@ class _MyPageLocationState extends State<MyPageLocation> {
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
   late WebViewController _controller;
+  late UserInformationProvider userInformationProvider;
 
   @override
   void initState() {
     super.initState();
+    userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    latlon = List.from(userInformationProvider.location.latlon);
+    _latController.text = userInformationProvider.location.latlon[0].toString();
+    _lngController.text = userInformationProvider.location.latlon[1].toString();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));
+      ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) {
+            // 페이지 로드가 완료된 후에 JavaScript를 실행합니다.
+            _controller.runJavaScript('fromAppToWeb("${latlon![0]}", "${latlon![1]}");');
+          },
+        ),
+      );
   }
 
   @override
@@ -203,9 +218,11 @@ class _MyPageLocationState extends State<MyPageLocation> {
                     ),
                     // 한 번 하고 나면 다시 띄우지 않음
                     BottomButton(
-                        text: "해당 위치로 수정하기",
-                        value: latlon,
-                        onPressed: () => Navigator.pop(context)),
+                      text: "해당 위치로 수정하기",
+                      value: latlon,
+                      onPressed: () =>
+                          _showLocationModal(context, userInformationProvider.location.name),
+                    ),
                   ],
                 ),
               ],
@@ -215,4 +232,98 @@ class _MyPageLocationState extends State<MyPageLocation> {
       ),
     );
   }
+}
+
+void _showLocationModal(BuildContext context, String name) {
+  final TextEditingController controller = TextEditingController();
+  controller.text = name;
+
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    isScrollControlled: true,
+    backgroundColor: backgroundWhite,
+    builder: (BuildContext context) {
+      final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
+      return Padding(
+        padding: const EdgeInsets.all(24),
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                '주요 조업 위치의 별명을 입력해주세요',
+                style: header3B(),
+              ),
+              const SizedBox(height: 18),
+              TextField(
+                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                controller: controller,
+                cursorColor: primaryBlue500,
+                style: const TextStyle(color: Colors.black),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: backgroundWhite,
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: primaryBlue500,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                  disabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: primaryBlue500,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(
+                      width: 1,
+                      color: primaryBlue500,
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  ),
+                  hintText: '지역 별명을 입력해주세요',
+                  hintStyle: body1(gray3),
+                  contentPadding: const EdgeInsets.all(16),
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: controller.text == name
+                    ? () => {}
+                    : () {
+                        userInformationProvider.setLocation(
+                          userInformationProvider.location.latlon,
+                          controller.text,
+                        );
+                        Navigator.pop(context);
+                        // 별명 등록 로직 추가
+                        Navigator.pop(context);
+                      },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  elevation: 0,
+                  backgroundColor: primaryBlue500,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text('등록하기', style: header4(backgroundWhite)),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

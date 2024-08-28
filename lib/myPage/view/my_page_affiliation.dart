@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:fish_note/myPage/components/bottom_button.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 class MyPageAffiliation extends StatefulWidget {
   const MyPageAffiliation({super.key});
@@ -44,6 +46,8 @@ class _MyPageAffiliationState extends State<MyPageAffiliation> {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: backgroundBlue,
@@ -53,8 +57,11 @@ class _MyPageAffiliationState extends State<MyPageAffiliation> {
       ),
       bottomNavigationBar: BottomButton(
         text: '수정 완료',
-        value: affiliation,
-        onPressed: () => Navigator.pop(context),
+        value: affiliation == userInformationProvider.affiliation ? null : affiliation,
+        onPressed: () {
+          userInformationProvider.setAffiliation(affiliation!);
+          Navigator.pop(context);
+        },
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
