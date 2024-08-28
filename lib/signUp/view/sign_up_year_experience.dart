@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -9,7 +10,6 @@ import '../model/user_information_provider.dart';
 class SignUpYearExperience extends StatefulWidget {
   const SignUpYearExperience({super.key, required this.onNext});
 
-  final String name = "지수";
   final VoidCallback onNext;
 
   @override
@@ -23,18 +23,20 @@ class _SignUpYearExperienceState extends State<SignUpYearExperience> {
   @override
   Widget build(BuildContext context) {
     final userInformationProvider = Provider.of<UserInformationProvider>(context);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
     return Scaffold(
       bottomNavigationBar: NextButton(
         value: dropdownValue,
         onNext: widget.onNext,
-        save: () => userInformationProvider.setYearExperience(dropdownValue!),
+        save: () =>
+            userInformationProvider.setYearExperience(dropdownValue!, loginModelProvider.kakaoId),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 16),
-          Text('안녕하세요, ${widget.name}님!', style: header1B()),
+          Text('안녕하세요, ${loginModelProvider.name}님!', style: header1B()),
           const SizedBox(height: 8),
           Text('서비스 제공을 위해 몇 가지 정보를 알려주세요.', style: body1(gray6)),
           const SizedBox(height: 58),

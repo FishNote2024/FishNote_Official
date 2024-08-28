@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/favorites/components/snack_bar.dart';
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/myPage/components/bottom_button.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -250,6 +251,7 @@ void _showLocationModal(BuildContext context, GeoPoint latlon, String name) {
     backgroundColor: backgroundWhite,
     builder: (BuildContext context) {
       final userInformationProvider = Provider.of<UserInformationProvider>(context);
+      final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
       return Padding(
         padding: const EdgeInsets.all(24),
@@ -310,6 +312,7 @@ void _showLocationModal(BuildContext context, GeoPoint latlon, String name) {
                         userInformationProvider.setLocation(
                           latlon,
                           controller.text,
+                          loginModelProvider.kakaoId,
                         );
                         Navigator.pop(context);
                         // 별명 등록 로직 추가

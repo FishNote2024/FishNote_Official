@@ -71,7 +71,8 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   ...userInformationProvider.species.map((item) => _buildSelectableItem(item,
                       isRemovable: true,
-                      onPressed: () => userInformationProvider.removeSpecies(item))),
+                      onPressed: () =>
+                          userInformationProvider.removeSpecies(item, loginModelProvider.kakaoId))),
                   _buildSelectableItem('어종 추가하기',
                       isAdd: true,
                       onPressed: () => Navigator.of(context)
@@ -83,7 +84,8 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   ...userInformationProvider.technique.map((item) => _buildSelectableItem(item,
                       isRemovable: true,
-                      onPressed: () => userInformationProvider.removeTechnique(item))),
+                      onPressed: () => userInformationProvider.removeTechnique(
+                          item, loginModelProvider.kakaoId))),
                   _buildSelectableItem('어법 추가하기',
                       isAdd: true,
                       onPressed: () => Navigator.of(context)

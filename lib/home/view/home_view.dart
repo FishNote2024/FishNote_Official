@@ -28,12 +28,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   final DateTime _initialTime = DateTime.now();
   DateTime _currentTime = DateTime.now();
   late UserInformationProvider userInformationProvider;
+  late LoginModelProvider loginModelProvider;
 
   @override
   void initState() {
     super.initState();
     userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
-    userInformationProvider.init();
+    loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+    userInformationProvider.init(loginModelProvider.kakaoId);
 
     _tabController = TabController(length: 2, vsync: this);
     ApiService apiService = ApiService();
