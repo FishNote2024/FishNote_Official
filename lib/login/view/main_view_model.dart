@@ -1,4 +1,5 @@
 import 'package:fish_note/login/view/social_login.dart';
+
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 
 class MainViewModel {
@@ -10,9 +11,8 @@ class MainViewModel {
 
   Future login() async {
     isLogined = await _socialLogin.login();
-    if (isLogined) {
-      user = await UserApi.instance.me();
-    }
+    user = await UserApi.instance.me();
+
   }
 
   Future logout() async {

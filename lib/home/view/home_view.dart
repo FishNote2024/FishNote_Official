@@ -1,6 +1,7 @@
 import 'package:fish_note/home/view/net_wait_card.dart';
 import 'package:fish_note/home/view/vertical_outlined_button.dart';
 import 'package:fish_note/home/view/weather/weather_detail_view.dart';
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -80,12 +81,11 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final userInformationProvider =
         Provider.of<UserInformationProvider>(context);
-    print(userInformationProvider.yearExperience);
-    print(userInformationProvider.ageRange);
-    print(userInformationProvider.affiliation);
-    print(userInformationProvider.species);
-    print(userInformationProvider.technique);
-    print(userInformationProvider.location);
+    final loginModelProvider =
+    Provider.of<LoginModelProvider>(context);
+    print(loginModelProvider.kakaoId);
+    print(loginModelProvider.name);
+
 
     DateTime currentDate = DateTime.now();
     return DefaultTabController(
