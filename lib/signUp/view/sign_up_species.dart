@@ -1,3 +1,4 @@
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -157,7 +158,9 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                                 ),
                                 onTap: () => {
                                   setState(() {
-                                    if (selectedList.length < 5) {
+                                    if (selectedList.length >= 5) {
+                                      showSnackBar(context, '어종은 5개까지 선택 가능해요.');
+                                    } else {
                                       selectedList.add(top10[index]);
                                     }
                                   }),
@@ -195,7 +198,9 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                                 ),
                                 onTap: () => {
                                   setState(() {
-                                    if (selectedList.length < 5) {
+                                    if (selectedList.length >= 5) {
+                                      showSnackBar(context, '어종은 5개까지 선택 가능해요.');
+                                    } else {
                                       selectedList.add(fishList[index]);
                                     }
                                   }),
@@ -224,7 +229,9 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                             itemBuilder: (context, index) => InkWell(
                               onTap: () => {
                                 setState(() {
-                                  if (selectedList.length < 5) {
+                                  if (selectedList.length >= 5) {
+                                    showSnackBar(context, '어종은 5개까지 선택 가능해요.');
+                                  } else {
                                     selectedList.add(speciesList[index]);
                                   }
                                 }),

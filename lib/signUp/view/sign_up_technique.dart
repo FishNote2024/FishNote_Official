@@ -5,6 +5,7 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../favorites/components/snack_bar.dart';
 import '../model/user_information_provider.dart';
 
 class SignUpTechnique extends StatefulWidget {
@@ -156,7 +157,9 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                               ),
                               onTap: () => {
                                 setState(() {
-                                  if (selectedList.length < 5) {
+                                  if (selectedList.length >= 5) {
+                                    showSnackBar(context, '어법은 5개까지 선택 가능해요.');
+                                  } else {
                                     selectedList.add(primaryTechniques[index]);
                                   }
                                 }),
@@ -210,7 +213,9 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                           itemBuilder: (context, index) => InkWell(
                             onTap: () => {
                               setState(() {
-                                if (selectedList.length < 5) {
+                                if (selectedList.length >= 5) {
+                                  showSnackBar(context, '어법은 5개까지 선택 가능해요.');
+                                } else {
                                   selectedList.add(searchResult[index]);
                                 }
                               }),

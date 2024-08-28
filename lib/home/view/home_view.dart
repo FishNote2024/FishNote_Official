@@ -7,6 +7,7 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fish_note/home/model/weatherAPITimeSync.dart';
+import 'package:provider/provider.dart';
 import '../model/weather_api.dart';
 
 class Home extends StatefulWidget {
@@ -70,7 +71,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final userInformationProvider = Provider.of<UserInformationProvider>(context);
     final loginModelProvider = Provider.of<LoginModelProvider>(context);
     print(loginModelProvider.kakaoId);
     print(loginModelProvider.name);
