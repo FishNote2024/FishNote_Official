@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/favorites/components/alert_dialog.dart';
 import 'package:fish_note/favorites/components/snack_bar.dart';
