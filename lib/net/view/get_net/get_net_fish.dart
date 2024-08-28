@@ -1,13 +1,15 @@
+import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
+import 'package:provider/provider.dart';
 
 class GetNetFish extends StatefulWidget {
-  const GetNetFish({super.key, required this.onNext, this.fishList});
+  const GetNetFish({super.key, required this.onNext});
 
   final VoidCallback onNext;
-  final List<String>? fishList;
 
   @override
   State<GetNetFish> createState() => _GetNetFishState();
@@ -16,22 +18,22 @@ class GetNetFish extends StatefulWidget {
 class _GetNetFishState extends State<GetNetFish> {
   final TextEditingController _controller = TextEditingController();
   Set<String> selectedList = {};
-  List<String> speciesList = [
-    '갈치',
-    '고등어',
-    '방어',
-    '문어',
-  ];
+  Set<String> speciesList = {};
 
   @override
   void initState() {
     super.initState();
-    // Add the received fishList to the speciesList
-    if (widget.fishList != null && widget.fishList!.isNotEmpty) {
-      speciesList.addAll(widget.fishList!);
-      // Optionally, remove duplicates
-      speciesList = speciesList.toSet().toList();
-    }
+    // 최초 로딩 시 UserInformationProvider에서 species를 가져와 NetRecordProvider에 설정
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userInformationProvider =
+          Provider.of<UserInformationProvider>(context, listen: false);
+      final netRecordProvider =
+          Provider.of<NetRecordProvider>(context, listen: false);
+
+      // 초기 데이터 복사
+      speciesList = userInformationProvider.species.toSet();
+      netRecordProvider.setSpecies(speciesList);
+    });
   }
 
   @override
@@ -40,22 +42,23 @@ class _GetNetFishState extends State<GetNetFish> {
     super.dispose();
   }
 
-  void _addSpecies(String species) {
-    if (species.isNotEmpty && !speciesList.contains(species)) {
-      setState(() {
-        speciesList.add(species);
-        _controller.clear();
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
+    final netRecordProvider = Provider.of<NetRecordProvider>(context);
+
+    // NetRecordProvider에서 업데이트된 species 목록을 가져옴
+    speciesList = netRecordProvider.species;
+
     return Scaffold(
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: selectedList.isEmpty ? null : widget.onNext,
+          onPressed: selectedList.isEmpty
+              ? null
+              : () {
+                  netRecordProvider.setSpecies(selectedList);
+                  widget.onNext();
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: selectedList.isEmpty ? gray2 : primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -84,7 +87,7 @@ class _GetNetFishState extends State<GetNetFish> {
                 itemCount: speciesList.length + 1,
                 itemBuilder: (context, index) {
                   if (index < speciesList.length) {
-                    String species = speciesList[index];
+                    String species = speciesList.elementAt(index);
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Container(
@@ -138,13 +141,18 @@ class _GetNetFishState extends State<GetNetFish> {
                                 color: primaryBlue500),
                             title: Text("어종 추가하기",
                                 style: header3R(primaryBlue500)),
-                            onTap: () {
-                              Navigator.push(
+                            onTap: () async {
+                              await Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => GetNetAddFish(),
                                 ),
                               );
+
+                              // 돌아왔을 때 NetRecordProvider에서 최신 목록을 가져옴
+                              setState(() {
+                                speciesList = netRecordProvider.species;
+                              });
                             },
                           ),
                         ),

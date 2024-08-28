@@ -1,6 +1,8 @@
+import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fish_note/signUp/components/next_button.dart';
@@ -8,6 +10,7 @@ import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class GetNetAddFish extends StatefulWidget {
   const GetNetAddFish({super.key});
@@ -29,6 +32,8 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
 
   @override
   Widget build(BuildContext context) {
+    final netRecordProvider = Provider.of<NetRecordProvider>(context);
+    selectedList = netRecordProvider.species;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: backgroundBlue,
@@ -52,12 +57,11 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
         child: ElevatedButton(
           onPressed: selectedList.isNotEmpty
               ? () {
-                  Navigator.push(
+                  netRecordProvider.setSpecies(selectedList);
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => GetNetView(
-                        fishList: selectedList.toList(),
-                      ),
+                      builder: (context) => GetNetView(),
                     ),
                   );
                 }
@@ -155,6 +159,8 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
                             setState(() {
                               selectedList
                                   .remove(selectedList.elementAt(index));
+                              netRecordProvider.setSpecies(selectedList);
+                              print("🥨 selectedList: $selectedList");
                             }),
                           },
                           icon: const Icon(

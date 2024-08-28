@@ -21,17 +21,17 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
         date: DateTime(2024, 8, 25, 6, 0),
         locationName: '문어대가리',
         daysSince: 10,
-        species: []),
+        species: {}),
     NetRecord(
         date: DateTime(2024, 8, 24, 6, 0),
         locationName: '하얀부표',
         daysSince: 10,
-        species: []),
+        species: {}),
     NetRecord(
         date: DateTime(2024, 8, 23, 4, 0),
         locationName: '아왕빡세네',
         daysSince: 10,
-        species: []),
+        species: {}),
   ];
 
   @override
@@ -75,7 +75,6 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                           Row(
                             children: [
                               Text('위치별명', style: body3(gray5)),
-
                               const SizedBox(width: 16),
                               Text(record.locationName,
                                   style: body1(textBlack)),
@@ -95,7 +94,6 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                   ),
                                 );
                               },
-
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
                                 backgroundColor: primaryYellow500,
@@ -130,7 +128,6 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
         padding: const EdgeInsets.only(bottom: 16.0),
         child: OutlinedButton(
           onPressed: () {
-
             Navigator.push(
               context,
               MaterialPageRoute(

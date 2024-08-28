@@ -52,7 +52,7 @@ class _GetNetViewState extends State<GetNetView> {
       case 1:
         return GetNetFish(
           onNext: _nextPage,
-          fishList: widget.fishList,
+          // fishList: widget.fishList,
         );
       case 2:
         return GetNetFishWeight(
