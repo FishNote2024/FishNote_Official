@@ -29,7 +29,8 @@ Widget buildRemoveFavoriteDialog(BuildContext context) {
   );
 }
 
-Widget buildLocationDialog(BuildContext context, TextEditingController controller) {
+Widget buildLocationDialog(
+    BuildContext context, TextEditingController controller, List<double> latlon) {
   return AlertDialog(
     insetPadding: const EdgeInsets.symmetric(horizontal: 24),
     shape: RoundedRectangleBorder(
@@ -48,7 +49,7 @@ Widget buildLocationDialog(BuildContext context, TextEditingController controlle
         onPressed: () {
           // 제거 로직 추가
           Navigator.of(context).pop(); // 다이얼로그 닫기
-          showLocationModal(context, controller, false);
+          showLocationModal(context, controller, false, latlon);
         },
         child: Text('변경하기', style: body2(primaryBlue500)),
       ),

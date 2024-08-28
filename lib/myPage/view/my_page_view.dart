@@ -67,8 +67,9 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildSectionTitle('주요 어종'),
                   const SizedBox(height: 12),
-                  ...userInformationProvider.species.map(
-                      (item) => _buildSelectableItem(item, isRemovable: true, onPressed: () {})),
+                  ...userInformationProvider.species.map((item) => _buildSelectableItem(item,
+                      isRemovable: true,
+                      onPressed: () => userInformationProvider.removeSpecies(item))),
                   _buildSelectableItem('어종 추가하기',
                       isAdd: true,
                       onPressed: () => Navigator.of(context)
@@ -78,8 +79,9 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildSectionTitle('주요 어법'),
                   const SizedBox(height: 12),
-                  ...userInformationProvider.technique.map(
-                      (item) => _buildSelectableItem(item, isRemovable: true, onPressed: () {})),
+                  ...userInformationProvider.technique.map((item) => _buildSelectableItem(item,
+                      isRemovable: true,
+                      onPressed: () => userInformationProvider.removeTechnique(item))),
                   _buildSelectableItem('어법 추가하기',
                       isAdd: true,
                       onPressed: () => Navigator.of(context)
@@ -89,7 +91,7 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildSectionTitle('주요 조업 위치'),
                   const SizedBox(height: 12),
-                  _buildSelectableItem((userInformationProvider.location['name'] ?? '') as String,
+                  _buildSelectableItem(userInformationProvider.location.name,
                       onPressed: () => Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) => const MyPageLocation())),
                       hasLocationIcon: true),
