@@ -5,6 +5,7 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class BeforeGetNetPage extends StatefulWidget {
   const BeforeGetNetPage({super.key});
@@ -14,16 +15,6 @@ class BeforeGetNetPage extends StatefulWidget {
 }
 
 class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
-  List<double>? latlon;
-  List<NetRecord> netRecords = [
-    NetRecord(
-        date: DateTime(2024, 8, 28, 6, 0),
-        locationName: '문어대가리',
-        daysSince: 10,
-        isGet: false,
-        species: {}),
-  ];
-
   Future<void> _navigateToAddThrowNetPage() async {
     final result = await Navigator.push(
       context,
@@ -37,29 +28,22 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
       final List<double> location = result['location'];
       final DateTime throwTime = result['throwTime'];
 
-      setState(() {
-        netRecords.add(
-          NetRecord(
-            date: throwTime,
-            locationName: name,
-            daysSince: 0, // 새로운 기록이므로 0일째로 설정
-            isGet: false,
-            species: {}, // 빈 종 목록으로 초기화
-          ),
-        );
-      });
+      // NetRecordProvider를 통해 상태 업데이트
+      Provider.of<NetRecordProvider>(context, listen: false).addNewRecord(
+        name,
+        location,
+        throwTime,
+      );
     }
-  }
-
-  List<NetRecord> getRecordsForDate(bool isGetNet) {
-    return netRecords.where((record) {
-      return record.isGet == isGetNet;
-    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<NetRecord> records = getRecordsForDate(false);
+    // NetRecordProvider에서 netRecords를 가져옴
+    final allRecords = Provider.of<NetRecordProvider>(context).netRecords;
+
+    // isGet이 false인 기록만 필터링
+    final records = allRecords.where((record) => !record.isGet).toList();
 
     return Scaffold(
       backgroundColor: backgroundBlue,

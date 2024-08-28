@@ -18,10 +18,15 @@ class NetRecord {
     this.isGet = false,
     this.species = const {},
     this.amount = 0,
+    required String memo,
   });
 }
 
 class NetRecordProvider with ChangeNotifier {
+  List<NetRecord> _netRecords = [];
+
+  List<NetRecord> get netRecords => _netRecords;
+
   final int _id = 0;
   List<double> _location = [];
   String _locationName = '';
@@ -93,10 +98,17 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addNewRecord(String name, List<double> location, DateTime throwTime) {
-    _locationName = name;
-    _location = location;
-    _throwTime = DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(throwTime);
+  void addNewRecord(String name, List<double> location, DateTime throwTime,
+      {String? memo}) {
+    _netRecords.add(NetRecord(
+      date: throwTime,
+      locationName: name,
+      daysSince: 0,
+      isGet: false,
+      species: {},
+      amount: 0,
+      memo: memo ?? '',
+    ));
     notifyListeners();
   }
 
