@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/favorites/components/modal_bottom_sheet.dart';
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -10,6 +11,7 @@ import '../../signUp/model/location.dart';
 
 Widget buildRemoveFavoriteDialog(BuildContext context, Location location) {
   final userInformationProvider = Provider.of<UserInformationProvider>(context);
+  final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
   return AlertDialog(
     insetPadding: const EdgeInsets.symmetric(horizontal: 24),
@@ -28,7 +30,7 @@ Widget buildRemoveFavoriteDialog(BuildContext context, Location location) {
       TextButton(
         onPressed: () {
           // 제거 로직 추가
-          userInformationProvider.removeFavorite(location);
+          userInformationProvider.removeFavorite(location, loginModelProvider.kakaoId);
           Navigator.of(context).pop(); // 다이얼로그 닫기
         },
         child: Text('제거하기', style: body2(primaryBlue500)),

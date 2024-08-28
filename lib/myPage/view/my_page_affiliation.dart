@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/myPage/components/bottom_button.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -47,6 +48,7 @@ class _MyPageAffiliationState extends State<MyPageAffiliation> {
   @override
   Widget build(BuildContext context) {
     final userInformationProvider = Provider.of<UserInformationProvider>(context);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -59,7 +61,7 @@ class _MyPageAffiliationState extends State<MyPageAffiliation> {
         text: '수정 완료',
         value: affiliation == userInformationProvider.affiliation ? null : affiliation,
         onPressed: () {
-          userInformationProvider.setAffiliation(affiliation!);
+          userInformationProvider.setAffiliation(affiliation!, loginModelProvider.kakaoId);
           Navigator.pop(context);
         },
       ),

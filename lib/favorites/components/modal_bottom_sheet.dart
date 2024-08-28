@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/favorites/components/alert_dialog.dart';
 import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/favorites/view/favorites_information.dart';
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -186,6 +187,7 @@ void showLocationModal(
     backgroundColor: backgroundWhite,
     builder: (BuildContext context) {
       final UserInformationProvider provider = Provider.of<UserInformationProvider>(context);
+      final LoginModelProvider loginModelProvider = Provider.of<LoginModelProvider>(context);
 
       return PopScope(
         canPop: false,
@@ -263,10 +265,12 @@ void showLocationModal(
                               showSnackBar(context, '즐겨찾기는 최대 10개까지 등록 가능합니다');
                               return;
                             } else {
-                              provider.addFavorite(latlon, controller.text);
+                              provider.addFavorite(
+                                  latlon, controller.text, loginModelProvider.kakaoId);
                             }
                           } else {
-                            provider.setLocation(latlon, controller.text);
+                            provider.setLocation(
+                                latlon, controller.text, loginModelProvider.kakaoId);
                           }
                           Navigator.pop(context);
                           Navigator.pop(context);

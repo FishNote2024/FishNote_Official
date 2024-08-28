@@ -12,7 +12,6 @@ class MainViewModel {
   Future login() async {
     isLogined = await _socialLogin.login();
     user = await UserApi.instance.me();
-
   }
 
   Future logout() async {
