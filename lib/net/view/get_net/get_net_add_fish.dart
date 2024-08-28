@@ -160,7 +160,6 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
                               selectedList
                                   .remove(selectedList.elementAt(index));
                               netRecordProvider.setSpecies(selectedList);
-                              print("🥨 selectedList: $selectedList");
                             }),
                           },
                           icon: const Icon(
