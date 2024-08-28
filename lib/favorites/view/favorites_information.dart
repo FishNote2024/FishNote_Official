@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/home/model/weatherAPITimeSync.dart';
 import 'package:fish_note/home/model/weather_api.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -7,7 +8,7 @@ import 'package:flutter/material.dart';
 class FavoritesInformation extends StatefulWidget {
   const FavoritesInformation({super.key, required this.latlon});
 
-  final List<double>? latlon;
+  final GeoPoint? latlon;
 
   @override
   State<FavoritesInformation> createState() => _FavoritesInformationState();
@@ -34,8 +35,8 @@ class _FavoritesInformationState extends State<FavoritesInformation> {
         DateTime.now()); //'0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'
     String formattedDate = closestForecastTime.getFormattedDate(DateTime.now()); //'20240809'
     weatherData = apiService.fetchData(
-        nx: widget.latlon![0],
-        ny: widget.latlon![1],
+        nx: widget.latlon!.latitude,
+        ny: widget.latlon!.longitude,
         closestTime: closestTime,
         formattedDate: formattedDate);
 
@@ -74,7 +75,7 @@ class _FavoritesInformationState extends State<FavoritesInformation> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.location_on, size: 24, color: primaryBlue300),
-            Text('위도 ${widget.latlon![0]} 경도 ${widget.latlon![1]}', style: body2()),
+            Text('위도 ${widget.latlon!.latitude} 경도 ${widget.latlon!.longitude}', style: body2()),
           ],
         ),
       ),

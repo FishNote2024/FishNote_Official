@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/myPage/view/my_page_affiliation.dart';
 import 'package:fish_note/myPage/view/my_page_location.dart';
 import 'package:fish_note/myPage/view/my_page_species.dart';
@@ -25,6 +26,7 @@ class MyPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userInformationProvider = Provider.of<UserInformationProvider>(context);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
     return Scaffold(
       backgroundColor: backgroundBlue,
@@ -51,9 +53,9 @@ class MyPageView extends StatelessWidget {
                 children: [
                   _buildSectionTitle('내 정보'),
                   const SizedBox(height: 12),
-                  _buildUserInfo('이름', '김복실'),
+                  _buildUserInfo('이름', loginModelProvider.name),
                   const SizedBox(height: 8),
-                  _buildUserInfo('카카오 ID', 'kakaoID@gmail.com'),
+                  _buildUserInfo('카카오 ID', loginModelProvider.kakaoId),
                   const SizedBox(height: 12),
                   const Divider(color: gray1),
                   const SizedBox(height: 12),

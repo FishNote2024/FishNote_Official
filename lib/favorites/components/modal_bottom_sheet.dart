@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/favorites/components/alert_dialog.dart';
 import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/favorites/view/favorites_information.dart';
@@ -6,6 +9,8 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../signUp/model/location.dart';
 
 void showFavoriteBottomSheet(BuildContext context) {
   showModalBottomSheet(
@@ -24,9 +29,8 @@ void showFavoriteBottomSheet(BuildContext context) {
     builder: (BuildContext context) {
       final UserInformationProvider provider = Provider.of<UserInformationProvider>(context);
 
-      List<Widget> favoriteList = provider.favorites
-          .map((favorite) => _buildFavoriteItem(favorite.name, favorite.latlon, context))
-          .toList();
+      List<Widget> favoriteList =
+          provider.favorites.map((favorite) => _buildFavoriteItem(favorite, context)).toList();
 
       return Container(
         decoration: const BoxDecoration(
@@ -61,7 +65,7 @@ void showFavoriteBottomSheet(BuildContext context) {
               child: ListView.separated(
                 itemCount: favoriteList.length,
                 itemBuilder: (context, index) => favoriteList[index],
-                separatorBuilder: (context, index) => const Divider(color: gray6),
+                separatorBuilder: (context, index) => const Divider(color: gray2),
               ),
             ),
           ],
@@ -71,23 +75,24 @@ void showFavoriteBottomSheet(BuildContext context) {
   );
 }
 
-Widget _buildFavoriteItem(String name, List<double> coordinates, BuildContext context) {
+Widget _buildFavoriteItem(Location location, BuildContext context) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(name, style: body1()),
+          Text(location.name, style: body1()),
           const SizedBox(width: 15),
-          Text('${coordinates[0]}, ${coordinates[1]}', style: body1(gray4)),
+          Text('${location.latlon.latitude}, ${location.latlon.longitude}', style: body1(gray4)),
         ],
       ),
       IconButton(
         icon: const Icon(Icons.close),
         onPressed: () {
           // 즐겨찾기 항목 제거 로직 추가
-          showDialog(context: context, builder: (context) => buildRemoveFavoriteDialog(context));
+          showDialog(
+              context: context, builder: (context) => buildRemoveFavoriteDialog(context, location));
         },
       ),
     ],
@@ -95,7 +100,7 @@ Widget _buildFavoriteItem(String name, List<double> coordinates, BuildContext co
 }
 
 void showLocationBottomSheet(
-    BuildContext context, List<double> latlon, TextEditingController controller) {
+    BuildContext context, GeoPoint latlon, TextEditingController controller) {
   showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -173,7 +178,7 @@ void showLocationBottomSheet(
 }
 
 void showLocationModal(
-    BuildContext context, TextEditingController controller, bool isFavorite, List<double> latlon) {
+    BuildContext context, TextEditingController controller, bool isFavorite, GeoPoint latlon) {
   showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -252,8 +257,8 @@ void showLocationModal(
                               showSnackBar(context, '이미 존재하는 별명입니다');
                               return;
                             } else if (provider.favorites.any((favorite) =>
-                                favorite.latlon[0] == latlon[0] &&
-                                favorite.latlon[1] == latlon[1])) {
+                                favorite.latlon.latitude == latlon.latitude &&
+                                favorite.latlon.longitude == latlon.longitude)) {
                               showSnackBar(context, '이미 존재하는 위치입니다');
                               return;
                             } else if (provider.favorites.length == 10) {

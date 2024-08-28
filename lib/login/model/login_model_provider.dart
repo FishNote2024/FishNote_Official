@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 class LoginModelProvider with ChangeNotifier {
   String _name = '';
-  String _kakaoId = '';
-
+  String _kakaoId = '123';
 
   // Getters
   String get name => _name;
