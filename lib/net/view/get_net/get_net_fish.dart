@@ -57,6 +57,7 @@ class _GetNetFishState extends State<GetNetFish> {
               ? null
               : () {
                   netRecordProvider.setSpecies(selectedList);
+                  print("🤯 selectedList = ${selectedList}");
                   widget.onNext();
                 },
           style: ElevatedButton.styleFrom(
@@ -142,6 +143,7 @@ class _GetNetFishState extends State<GetNetFish> {
                             title: Text("어종 추가하기",
                                 style: header3R(primaryBlue500)),
                             onTap: () async {
+                              // GetNetAddFish로 이동해서 목록을 수정한 후 돌아오도록
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -149,7 +151,7 @@ class _GetNetFishState extends State<GetNetFish> {
                                 ),
                               );
 
-                              // 돌아왔을 때 NetRecordProvider에서 최신 목록을 가져옴
+                              // 돌아왔을 때 NetRecordProvider에서 최신 목록 가져오기
                               setState(() {
                                 speciesList = netRecordProvider.species;
                               });
