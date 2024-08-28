@@ -4,19 +4,24 @@ import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+import '../model/login_model_provider.dart';
+
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  HomeViewState createState() => HomeViewState();
+  LoginViewState createState() => LoginViewState();
 }
 
-class HomeViewState extends State<HomeView> {
+class LoginViewState extends State<LoginView> {
   final viewModel = MainViewModel(KakaoLogin());
 
   @override
   Widget build(BuildContext context) {
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -47,7 +52,20 @@ class HomeViewState extends State<HomeView> {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 50),
               child: ElevatedButton(
-                onPressed: viewModel.login,
+                onPressed: () async {
+                  await viewModel.login();
+                  setState(() {
+                    // UI를 업데이트하기 위해 setState 호출
+                    if (viewModel.user != null) {
+                      loginModelProvider.setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
+                      loginModelProvider.setKakaoId(viewModel.user!.id.toString());
+                      Navigator.pushNamed(context, '/home');
+
+                    } else {
+                      print('Login failed or user is null');
+                    }
+                  });
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryYellow400,
                   minimumSize: const Size(328, 51),
