@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -175,7 +176,7 @@ class _NextButtonState extends State<NextButton> {
                         Navigator.pop(context);
                         if (widget.value is List<double>) {
                           // 위치 정보 등록 로직 추가
-                          provider.setLocation(widget.value as List<double>, _controller.text);
+                          provider.setLocation(widget.value as GeoPoint, _controller.text);
                         }
                         // 별명 등록 로직 추가
                         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);

@@ -5,6 +5,7 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../favorites/components/snack_bar.dart';
 import '../model/user_information_provider.dart';
 
 class SignUpTechnique extends StatefulWidget {
@@ -149,11 +150,18 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                             itemBuilder: (context, index) => InkWell(
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
-                                child: Text(primaryTechniques[index], style: body1()),
+                                child: Text(primaryTechniques[index],
+                                    style: selectedList.contains(primaryTechniques[index])
+                                        ? body1(primaryBlue500)
+                                        : body1()),
                               ),
                               onTap: () => {
                                 setState(() {
-                                  selectedList.add(primaryTechniques[index]);
+                                  if (selectedList.length >= 5) {
+                                    showSnackBar(context, '어법은 5개까지 선택 가능해요.');
+                                  } else {
+                                    selectedList.add(primaryTechniques[index]);
+                                  }
                                 }),
                               },
                             ),
@@ -176,7 +184,9 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                       InkWell(
                         onTap: () => {
                           setState(() {
-                            selectedList.add(_controller.text);
+                            if (selectedList.length < 5) {
+                              selectedList.add(_controller.text);
+                            }
                           }),
                         },
                         child: Container(
@@ -191,7 +201,10 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(_controller.text, style: body1(primaryBlue500)),
+                              Text(_controller.text,
+                                  style: selectedList.contains(_controller.text)
+                                      ? body1(primaryBlue500)
+                                      : body1()),
                               Text('어법 새로 추가하기', style: body3(gray5)),
                             ],
                           ),
@@ -203,7 +216,11 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                           itemBuilder: (context, index) => InkWell(
                             onTap: () => {
                               setState(() {
-                                selectedList.add(searchResult[index]);
+                                if (selectedList.length >= 5) {
+                                  showSnackBar(context, '어법은 5개까지 선택 가능해요.');
+                                } else {
+                                  selectedList.add(searchResult[index]);
+                                }
                               }),
                             },
                             child: Container(
@@ -215,7 +232,10 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                                   color: primaryBlue100,
                                 ),
                               ),
-                              child: Text(searchResult[index], style: body1()),
+                              child: Text(searchResult[index],
+                                  style: selectedList.contains(primaryTechniques[index])
+                                      ? body1(primaryBlue500)
+                                      : body1()),
                             ),
                           ),
                           separatorBuilder: (context, index) => const SizedBox(height: 8),

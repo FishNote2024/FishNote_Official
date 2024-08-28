@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/favorites/components/modal_bottom_sheet.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -14,7 +15,7 @@ class FavoritesView extends StatefulWidget {
 }
 
 class _FavoritesViewState extends State<FavoritesView> {
-  List<double>? latlon;
+  GeoPoint? latlon;
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
@@ -27,7 +28,7 @@ class _FavoritesViewState extends State<FavoritesView> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel("toApp", onMessageReceived: (JavaScriptMessage message) {
         message.message == "marker touched"
-            ? showLocationBottomSheet(context, latlon, _nameController)
+            ? showLocationBottomSheet(context, latlon!, _nameController)
             : null;
       })
       ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));
@@ -46,7 +47,7 @@ class _FavoritesViewState extends State<FavoritesView> {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
       _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
-      latlon = [position.latitude, position.longitude];
+      latlon = GeoPoint(position.latitude, position.longitude);
     });
   }
 
@@ -86,10 +87,10 @@ class _FavoritesViewState extends State<FavoritesView> {
                             _controller.runJavaScript(
                               'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
                             );
-                            latlon = [
+                            latlon = GeoPoint(
                               double.parse(_latController.text),
-                              double.parse(_lngController.text)
-                            ];
+                              double.parse(_lngController.text),
+                            );
                           }
                         }),
                         decoration: InputDecoration(
@@ -135,10 +136,10 @@ class _FavoritesViewState extends State<FavoritesView> {
                             _controller.runJavaScript(
                               'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
                             );
-                            latlon = [
+                            latlon = GeoPoint(
                               double.parse(_latController.text),
-                              double.parse(_lngController.text)
-                            ];
+                              double.parse(_lngController.text),
+                            );
                           }
                         }),
                         decoration: InputDecoration(

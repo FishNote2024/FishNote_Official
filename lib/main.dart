@@ -1,10 +1,9 @@
 import 'package:fish_note/favorites/view/favorites_view.dart';
 import 'package:fish_note/journal/view/journal_view.dart';
-import 'package:fish_note/login/view/home_view.dart';
+import 'package:fish_note/login/model/login_model_provider.dart';
+import 'package:fish_note/login/view/login_view.dart';
 import 'package:fish_note/net/model/net_record.dart';
-// import 'package:fish_note/myPage/view/index.dart';
 import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
-import 'package:fish_note/net/view/get_net/get_net_fish.dart';
 import 'package:fish_note/myPage/view/my_page_view.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,6 +32,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => UserInformationProvider()),
         ChangeNotifierProvider(create: (_) => NetRecordProvider()),
+        ChangeNotifierProvider(create: (_) => LoginModelProvider()),
       ],
       child: const MyApp(),
     ),
@@ -68,10 +68,11 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: backgroundBlue,
         useMaterial3: true,
       ),
-      initialRoute: '/',
+      initialRoute: '/home',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const MyHomePage(),
+        '/login': (context) => const LoginView(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
         '/home': (context) => const Home(),

@@ -1,8 +1,11 @@
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/myPage/components/bottom_button.dart';
 import 'package:fish_note/signUp/model/data_list.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MyPageSpecies extends StatefulWidget {
   const MyPageSpecies({super.key});
@@ -15,6 +18,15 @@ class _MyPageSpeciesState extends State<MyPageSpecies> {
   final TextEditingController _controller = TextEditingController();
   Set<String> selectedList = {};
   List<String> speciesList = [];
+  late UserInformationProvider userInformationProvider;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    selectedList = Set<String>.from(userInformationProvider.species);
+  }
 
   @override
   void dispose() {
@@ -33,8 +45,14 @@ class _MyPageSpeciesState extends State<MyPageSpecies> {
       ),
       bottomNavigationBar: BottomButton(
           text: '수정 완료',
-          value: selectedList.isEmpty ? null : selectedList.first,
-          onPressed: () => Navigator.pop(context)),
+          value: selectedList.difference(userInformationProvider.species).isEmpty &&
+                  userInformationProvider.species.difference(selectedList).isEmpty
+              ? null
+              : selectedList,
+          onPressed: () {
+            userInformationProvider.setSpecies(selectedList);
+            Navigator.pop(context);
+          }),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
@@ -151,7 +169,12 @@ class _MyPageSpeciesState extends State<MyPageSpecies> {
                                 ),
                                 onTap: () => {
                                   setState(() {
-                                    selectedList.add(top10[index]);
+                                    if (selectedList.length >= 5) {
+                                      showSnackBar(context, '최대 5개까지 선택 가능합니다.');
+                                    } else {
+                                      selectedList.add(top10[index]);
+                                      print(selectedList);
+                                    }
                                   }),
                                 },
                               ),
@@ -187,7 +210,11 @@ class _MyPageSpeciesState extends State<MyPageSpecies> {
                                 ),
                                 onTap: () => {
                                   setState(() {
-                                    selectedList.add(fishList[index]);
+                                    if (selectedList.length >= 5) {
+                                      showSnackBar(context, '최대 5개까지 선택 가능합니다.');
+                                    } else {
+                                      selectedList.add(fishList[index]);
+                                    }
                                   }),
                                 },
                               ),
@@ -214,7 +241,11 @@ class _MyPageSpeciesState extends State<MyPageSpecies> {
                             itemBuilder: (context, index) => InkWell(
                               onTap: () => {
                                 setState(() {
-                                  selectedList.add(speciesList[index]);
+                                  if (selectedList.length >= 5) {
+                                    showSnackBar(context, '최대 5개까지 선택 가능합니다.');
+                                  } else {
+                                    selectedList.add(speciesList[index]);
+                                  }
                                 }),
                               },
                               child: Container(

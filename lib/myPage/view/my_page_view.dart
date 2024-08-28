@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/myPage/view/my_page_affiliation.dart';
 import 'package:fish_note/myPage/view/my_page_location.dart';
 import 'package:fish_note/myPage/view/my_page_species.dart';
@@ -25,6 +26,7 @@ class MyPageView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userInformationProvider = Provider.of<UserInformationProvider>(context);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
     return Scaffold(
       backgroundColor: backgroundBlue,
@@ -51,9 +53,9 @@ class MyPageView extends StatelessWidget {
                 children: [
                   _buildSectionTitle('내 정보'),
                   const SizedBox(height: 12),
-                  _buildUserInfo('이름', '김복실'),
+                  _buildUserInfo('이름', loginModelProvider.name),
                   const SizedBox(height: 8),
-                  _buildUserInfo('카카오 ID', 'kakaoID@gmail.com'),
+                  _buildUserInfo('카카오 ID', loginModelProvider.kakaoId),
                   const SizedBox(height: 12),
                   const Divider(color: gray1),
                   const SizedBox(height: 12),
@@ -67,8 +69,9 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildSectionTitle('주요 어종'),
                   const SizedBox(height: 12),
-                  ...userInformationProvider.species.map(
-                      (item) => _buildSelectableItem(item, isRemovable: true, onPressed: () {})),
+                  ...userInformationProvider.species.map((item) => _buildSelectableItem(item,
+                      isRemovable: true,
+                      onPressed: () => userInformationProvider.removeSpecies(item))),
                   _buildSelectableItem('어종 추가하기',
                       isAdd: true,
                       onPressed: () => Navigator.of(context)
@@ -78,8 +81,9 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildSectionTitle('주요 어법'),
                   const SizedBox(height: 12),
-                  ...userInformationProvider.technique.map(
-                      (item) => _buildSelectableItem(item, isRemovable: true, onPressed: () {})),
+                  ...userInformationProvider.technique.map((item) => _buildSelectableItem(item,
+                      isRemovable: true,
+                      onPressed: () => userInformationProvider.removeTechnique(item))),
                   _buildSelectableItem('어법 추가하기',
                       isAdd: true,
                       onPressed: () => Navigator.of(context)
@@ -89,7 +93,7 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildSectionTitle('주요 조업 위치'),
                   const SizedBox(height: 12),
-                  _buildSelectableItem((userInformationProvider.location['name'] ?? '') as String,
+                  _buildSelectableItem(userInformationProvider.location.name,
                       onPressed: () => Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) => const MyPageLocation())),
                       hasLocationIcon: true),
