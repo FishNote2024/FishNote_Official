@@ -54,7 +54,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('위치별명', style: body3(gray5)),
                               SizedBox(width: 16),
-                              Text(records.locationName,
+                              Text(record.locationName,
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -64,8 +64,11 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               Text('어종', style: body3(gray5)),
                               SizedBox(width: 40),
                               Text(
-                                  '${records.species.isNotEmpty ? records.species.join(', ') : '없음'}',
-                                  style: body1(textBlack)),
+                                record.species.isNotEmpty
+                                    ? record.species.first
+                                    : "없음",
+                                style: body1(textBlack),
+                              ),
                             ],
                           ),
                           SizedBox(height: 8),
@@ -74,7 +77,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               Text('어획량', style: body3(gray5)),
                               SizedBox(width: 27),
                               Text(
-                                  '${records.amount.isNaN ? "없음" : records.amount} kg',
+                                  '${record.amount > 0 ? record.amount.toString() : "없음"} kg',
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -83,9 +86,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('메모', style: body3(gray5)),
                               SizedBox(width: 40),
-                              Text(
-                                  '${records.memo.isEmpty ? "없음" : records.memo}',
-                                  style: body1(textBlack)),
+                              Text(record.memo ?? "", style: body1(textBlack)),
                             ],
                           ),
                           const SizedBox(height: 16),

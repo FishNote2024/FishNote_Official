@@ -10,6 +10,7 @@ class NetRecord {
   final Set<String> species;
   final double amount;
   final bool isGet;
+  final String? memo;
 
   NetRecord({
     required this.date,
@@ -18,8 +19,10 @@ class NetRecord {
     this.isGet = false,
     this.species = const {},
     this.amount = 0,
-    required String memo,
+    this.memo,
   });
+
+  // get memo => null;
 }
 
 class NetRecordProvider with ChangeNotifier {
