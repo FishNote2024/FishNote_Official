@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/myPage/components/bottom_button.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
@@ -17,7 +18,7 @@ class MyPageLocation extends StatefulWidget {
 }
 
 class _MyPageLocationState extends State<MyPageLocation> {
-  List<double>? latlon;
+  GeoPoint? latlon;
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
   late WebViewController _controller;
@@ -27,9 +28,9 @@ class _MyPageLocationState extends State<MyPageLocation> {
   void initState() {
     super.initState();
     userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
-    latlon = List.from(userInformationProvider.location.latlon);
-    _latController.text = userInformationProvider.location.latlon[0].toString();
-    _lngController.text = userInformationProvider.location.latlon[1].toString();
+    latlon = userInformationProvider.location.latlon;
+    _latController.text = userInformationProvider.location.latlon.latitude.toString();
+    _lngController.text = userInformationProvider.location.latlon.longitude.toString();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"))
@@ -37,7 +38,8 @@ class _MyPageLocationState extends State<MyPageLocation> {
         NavigationDelegate(
           onPageFinished: (String url) {
             // 페이지 로드가 완료된 후에 JavaScript를 실행합니다.
-            _controller.runJavaScript('fromAppToWeb("${latlon![0]}", "${latlon![1]}");');
+            _controller
+                .runJavaScript('fromAppToWeb("${latlon!.latitude}", "${latlon!.longitude}");');
           },
         ),
       );
@@ -56,7 +58,7 @@ class _MyPageLocationState extends State<MyPageLocation> {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
       _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
-      latlon = [position.latitude, position.longitude];
+      latlon = GeoPoint(position.latitude, position.longitude);
     });
   }
 
@@ -96,10 +98,10 @@ class _MyPageLocationState extends State<MyPageLocation> {
                             _controller.runJavaScript(
                               'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
                             );
-                            latlon = [
+                            latlon = GeoPoint(
                               double.parse(_latController.text),
-                              double.parse(_lngController.text)
-                            ];
+                              double.parse(_lngController.text),
+                            );
                           }
                         }),
                         decoration: InputDecoration(
@@ -145,10 +147,10 @@ class _MyPageLocationState extends State<MyPageLocation> {
                             _controller.runJavaScript(
                               'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
                             );
-                            latlon = [
+                            latlon = GeoPoint(
                               double.parse(_latController.text),
-                              double.parse(_lngController.text)
-                            ];
+                              double.parse(_lngController.text),
+                            );
                           }
                         }),
                         decoration: InputDecoration(
@@ -235,7 +237,7 @@ class _MyPageLocationState extends State<MyPageLocation> {
   }
 }
 
-void _showLocationModal(BuildContext context, List<double> latlon, String name) {
+void _showLocationModal(BuildContext context, GeoPoint latlon, String name) {
   final TextEditingController controller = TextEditingController();
   controller.text = name;
 
@@ -301,8 +303,8 @@ void _showLocationModal(BuildContext context, List<double> latlon, String name) 
               const SizedBox(height: 12),
               ElevatedButton(
                 onPressed: (controller.text == name || controller.text.isEmpty) &&
-                        (latlon[0] == userInformationProvider.location.latlon[0] &&
-                            latlon[1] == userInformationProvider.location.latlon[1])
+                        (latlon.latitude == userInformationProvider.location.latlon.latitude &&
+                            latlon.longitude == userInformationProvider.location.latlon.longitude)
                     ? () => showSnackBar(context, '별명이나 위치가 변경되지 않았습니다.')
                     : () {
                         userInformationProvider.setLocation(
