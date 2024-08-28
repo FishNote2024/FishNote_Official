@@ -56,11 +56,10 @@ class _GetNetFishState extends State<GetNetFish> {
           onPressed: selectedList.isEmpty
               ? null
               : () {
-                  netRecordProvider.setSpecies(selectedList.toSet());
-                  // speciesList = selectedList.toSet();
-                  print("🤯 selectedList = ${selectedList}");
-                  print("🤯 selectedList = ${speciesList}");
-                  print("🤯 selectedList = ${netRecordProvider.species}");
+                  netRecordProvider.setSpecies(selectedList.toSet()); //
+                  netRecordProvider.fishData.clear();
+                  netRecordProvider.addFish(selectedList.toString(), 0);
+                  print("🤯 fishData = ${netRecordProvider.fishData}");
                   widget.onNext();
                 },
           style: ElevatedButton.styleFrom(
@@ -96,9 +95,7 @@ class _GetNetFishState extends State<GetNetFish> {
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: selectedList.contains(species)
-                              ? primaryBlue500
-                              : Colors.white,
+                          color: Colors.white,
                           border: Border.all(
                             color: selectedList.contains(species)
                                 ? primaryBlue500
@@ -110,11 +107,7 @@ class _GetNetFishState extends State<GetNetFish> {
                         child: ListTile(
                           title: Text(
                             species,
-                            style: header3R(
-                              selectedList.contains(species)
-                                  ? Colors.white
-                                  : textBlack,
-                            ),
+                            style: header3R(textBlack),
                           ),
                           onTap: () {
                             setState(() {

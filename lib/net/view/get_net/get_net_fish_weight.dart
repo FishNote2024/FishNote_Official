@@ -24,19 +24,21 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
   void initState() {
     super.initState();
 
-    // speciesList 초기화 후 컨트롤러 설정
+    // WidgetsBinding을 사용해 initState 이후에 실행
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final netRecordProvider =
           Provider.of<NetRecordProvider>(context, listen: false);
-      speciesList = netRecordProvider.species.toList();
-      print("🤯🤯 speciesList = ${speciesList}");
+      String speciesString =
+          netRecordProvider.fishData.keys.elementAt(0).toString();
+      speciesList = speciesString.replaceAll(RegExp(r'[\[\]]'), '').split(', ');
 
+      // speciesList가 초기화된 후에 TextEditingController를 설정합니다.
       for (String species in speciesList) {
         _controllers[species] = TextEditingController();
         _controllers[species]!.addListener(_updateButtonState);
       }
 
-      setState(() {}); // speciesList와 controllers가 설정된 후 UI 업데이트
+      setState(() {}); // 컨트롤러 설정 후 UI 갱신
     });
   }
 
@@ -77,6 +79,8 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                     netRecordProvider.addFish(
                         entry.key, double.parse(entry.value.text));
                   }
+                  print(netRecordProvider.fishData);
+
                   widget.onNext(selectedList.toList());
                 }
               : null,
