@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Location {
   String _name = '';
-  List<double> _latlon = [];
+  GeoPoint _latlon = const GeoPoint(0, 0);
 
   String get name => _name;
-  List<double> get latlon => _latlon;
+  GeoPoint get latlon => _latlon;
 
   Location(this._name, this._latlon);
 
@@ -11,7 +13,7 @@ class Location {
     _name = name;
   }
 
-  void setLatlon(List<double> latlon) {
+  void setLatlon(GeoPoint latlon) {
     _latlon = latlon;
   }
 }

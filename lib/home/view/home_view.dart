@@ -2,6 +2,7 @@ import 'package:fish_note/home/view/net_wait_card.dart';
 import 'package:fish_note/home/view/vertical_outlined_button.dart';
 import 'package:fish_note/home/view/weather/weather_detail_view.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -26,10 +27,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   int differenceInMinutes = 0;
   final DateTime _initialTime = DateTime.now();
   DateTime _currentTime = DateTime.now();
+  late UserInformationProvider userInformationProvider;
 
   @override
   void initState() {
     super.initState();
+    userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    userInformationProvider.init();
+
     _tabController = TabController(length: 2, vsync: this);
     ApiService apiService = ApiService();
     WeatherAPITimeSync closestForecastTime = WeatherAPITimeSync();
