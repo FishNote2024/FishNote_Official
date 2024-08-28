@@ -9,36 +9,21 @@ class NetRecord {
   final int daysSince;
   final Set<String> species;
   final double amount;
+  final bool isGet;
 
   NetRecord({
     required this.date,
     required this.locationName,
     required this.daysSince,
+    this.isGet = false,
     this.species = const {},
     this.amount = 0,
   });
 }
 
-// 예시 데이터
-List<NetRecord> netRecords = [
-  NetRecord(
-      date: DateTime(2024, 6, 29, 6, 0),
-      locationName: '문어대가리',
-      daysSince: 10,
-      species: {'고등어'}),
-  NetRecord(
-      date: DateTime(2024, 6, 30, 6, 0),
-      locationName: '하얀부표',
-      daysSince: 10,
-      species: {'갈치'}),
-];
-
 class NetRecordProvider with ChangeNotifier {
   final int _id = 0;
-  final Map<String, Object> _location = {
-    'latlon': [],
-    'name': '',
-  };
+  List<double> _location = [];
   String _locationName = '';
   String _throwTime = '';
   DateTime _getNetTime = DateTime.now();
@@ -48,7 +33,7 @@ class NetRecordProvider with ChangeNotifier {
   final Set<String> _species = {};
   final List<String> _technique = [];
   double _amount = 0.0;
-  final int _daysSince = 0;
+  int _daysSince = 0;
   String _memo = '';
 
   String get locationName => _locationName;
@@ -60,7 +45,7 @@ class NetRecordProvider with ChangeNotifier {
   Set<String> get species => _species;
   List<String> get technique => _technique;
   double get amount => _amount;
-  Map<String, Object> get location => _location;
+  List<double> get location => _location;
   Map<String, double> fishData = {};
   String get memo => _memo;
 
@@ -74,7 +59,6 @@ class NetRecordProvider with ChangeNotifier {
   }
 
   void setThrowTime(DateTime throwTime) {
-    // 'MM.dd(E) HH시 mm분' 형식으로 포맷팅
     _throwTime = DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(throwTime);
     notifyListeners();
   }
@@ -104,14 +88,21 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setLocation(List<double> latlon, String name) {
-    _location['latlon'] = latlon;
-    _location['name'] = name;
+  void setMemo(String memo) {
+    _memo = memo;
     notifyListeners();
   }
 
-  void setMemo(String memo) {
-    _memo = memo;
+  void addNewRecord(String name, List<double> location, DateTime throwTime) {
+    _locationName = name;
+    _location = location;
+    _throwTime = DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(throwTime);
+    notifyListeners();
+  }
+
+  void setDaysSince(DateTime today) {
+    final diff = today.difference(_getNetTime).inDays;
+    _daysSince = diff;
     notifyListeners();
   }
 }

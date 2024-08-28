@@ -1,6 +1,5 @@
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_view.dart';
-
 import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -21,23 +20,47 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
         date: DateTime(2024, 8, 28, 6, 0),
         locationName: '문어대가리',
         daysSince: 10,
-        species: {}),
-    NetRecord(
-        date: DateTime(2024, 8, 24, 6, 0),
-        locationName: '하얀부표',
-        daysSince: 10,
-        species: {}),
-    NetRecord(
-        date: DateTime(2024, 8, 23, 4, 0),
-        locationName: '아왕빡세네',
-        daysSince: 10,
+        isGet: false,
         species: {}),
   ];
 
+  Future<void> _navigateToAddThrowNetPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AddThrowNetPage(),
+      ),
+    );
+
+    if (result != null) {
+      final String name = result['name'];
+      final List<double> location = result['location'];
+      final DateTime throwTime = result['throwTime'];
+
+      setState(() {
+        netRecords.add(
+          NetRecord(
+            date: throwTime,
+            locationName: name,
+            daysSince: 0, // 새로운 기록이므로 0일째로 설정
+            isGet: false,
+            species: {}, // 빈 종 목록으로 초기화
+          ),
+        );
+      });
+    }
+  }
+
+  List<NetRecord> getRecordsForDate(bool isGetNet) {
+    return netRecords.where((record) {
+      return record.isGet == isGetNet;
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
-    DateTime today = DateTime.now();
-    List<NetRecord> records = getRecordsForDate(today);
+    List<NetRecord> records = getRecordsForDate(false);
+
     return Scaffold(
       backgroundColor: backgroundBlue,
       body: records.isNotEmpty
@@ -127,14 +150,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
         child: OutlinedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AddThrowNetPage(),
-              ),
-            );
-          },
+          onPressed: _navigateToAddThrowNetPage,
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -146,13 +162,5 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
         ),
       ),
     );
-  }
-
-  List<NetRecord> getRecordsForDate(DateTime date) {
-    return netRecords.where((record) {
-      return record.date.year == date.year &&
-          record.date.month == date.month &&
-          record.date.day == date.day;
-    }).toList();
   }
 }
