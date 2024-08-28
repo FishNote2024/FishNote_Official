@@ -201,7 +201,10 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(_controller.text, style: body1(primaryBlue500)),
+                              Text(_controller.text,
+                                  style: selectedList.contains(_controller.text)
+                                      ? body1(primaryBlue500)
+                                      : body1()),
                               Text('어법 새로 추가하기', style: body3(gray5)),
                             ],
                           ),

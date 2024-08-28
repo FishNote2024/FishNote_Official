@@ -56,4 +56,14 @@ class UserInformationProvider with ChangeNotifier {
     _favorites.add(newFavorite);
     notifyListeners();
   }
+
+  void removeSpecies(String species) {
+    _species.remove(species);
+    notifyListeners();
+  }
+
+  void removeTechnique(String technique) {
+    _technique.remove(technique);
+    notifyListeners();
+  }
 }
