@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NetRecord {
   final DateTime date;
@@ -39,7 +40,7 @@ class NetRecordProvider with ChangeNotifier {
     'name': '',
   };
   String _locationName = '';
-  DateTime _throwTime = DateTime.now();
+  String _throwTime = '';
   DateTime _getNetTime = DateTime.now();
   String _waveHeight = '';
   final double _waterTemperature = 0.0;
@@ -51,7 +52,7 @@ class NetRecordProvider with ChangeNotifier {
   String _memo = '';
 
   String get locationName => _locationName;
-  DateTime get throwTime => _throwTime;
+  String get throwTime => _throwTime;
   DateTime get getNetTime => _getNetTime;
   String get waveHeight => _waveHeight;
   double get waterTemperature => _waterTemperature;
@@ -73,7 +74,8 @@ class NetRecordProvider with ChangeNotifier {
   }
 
   void setThrowTime(DateTime throwTime) {
-    _throwTime = throwTime;
+    // 'MM.dd(E) HH시 mm분' 형식으로 포맷팅
+    _throwTime = DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(throwTime);
     notifyListeners();
   }
 

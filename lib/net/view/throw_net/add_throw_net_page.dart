@@ -26,11 +26,6 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
   late WebViewController _controller;
   late NetRecordProvider netRecordProvider;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
-  // }
   String todayDate = DateFormat('M월 d일 (E)', 'ko_KR').format(DateTime.now());
 
   @override
@@ -130,11 +125,13 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                     ? () => {}
                     : () {
                         netRecordProvider.setLocationName(_nameController.text);
+                        netRecordProvider.setThrowTime(DateTime.now());
+
                         print("👉🏻 ${netRecordProvider.locationName}");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => GetNetView()),
-                        );
+                        print("👉🏻 ${netRecordProvider.throwTime}");
+
+                        Navigator.pop(context);
+                        Navigator.pop(context);
                       },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),

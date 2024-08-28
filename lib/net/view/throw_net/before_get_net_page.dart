@@ -18,7 +18,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
   List<double>? latlon;
   List<NetRecord> netRecords = [
     NetRecord(
-        date: DateTime(2024, 8, 25, 6, 0),
+        date: DateTime(2024, 8, 28, 6, 0),
         locationName: '문어대가리',
         daysSince: 10,
         species: {}),
