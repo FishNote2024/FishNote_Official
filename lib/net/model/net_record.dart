@@ -6,14 +6,14 @@ class NetRecord {
   final DateTime date;
   final String locationName;
   final int daysSince;
-  final List<String> species;
+  final Set<String> species;
   final double amount;
 
   NetRecord({
     required this.date,
     required this.locationName,
     required this.daysSince,
-    this.species = const [],
+    this.species = const {},
     this.amount = 0,
   });
 }
@@ -24,12 +24,12 @@ List<NetRecord> netRecords = [
       date: DateTime(2024, 6, 29, 6, 0),
       locationName: '문어대가리',
       daysSince: 10,
-      species: ['고등어']),
+      species: {'고등어'}),
   NetRecord(
       date: DateTime(2024, 6, 30, 6, 0),
       locationName: '하얀부표',
       daysSince: 10,
-      species: ['갈치']),
+      species: {'갈치'}),
 ];
 
 class NetRecordProvider with ChangeNotifier {
@@ -44,7 +44,7 @@ class NetRecordProvider with ChangeNotifier {
   String _waveHeight = '';
   final double _waterTemperature = 0.0;
   final bool _isGet = false;
-  final List<String> _species = [];
+  final Set<String> _species = {};
   final List<String> _technique = [];
   double _amount = 0.0;
   final int _daysSince = 0;
@@ -55,7 +55,7 @@ class NetRecordProvider with ChangeNotifier {
   String get waveHeight => _waveHeight;
   double get waterTemperature => _waterTemperature;
   bool get isGet => _isGet;
-  List<String> get species => _species;
+  Set<String> get species => _species;
   List<String> get technique => _technique;
   double get amount => _amount;
   Map<String, Object> get location => _location;
@@ -80,7 +80,7 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setSpecies(List<String> species) {
+  void setSpecies(Set<String> species) {
     _species.addAll(species);
     notifyListeners();
   }
