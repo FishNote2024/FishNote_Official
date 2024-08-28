@@ -27,7 +27,7 @@ class _FavoritesViewState extends State<FavoritesView> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel("toApp", onMessageReceived: (JavaScriptMessage message) {
         message.message == "marker touched"
-            ? showLocationBottomSheet(context, latlon, _nameController)
+            ? showLocationBottomSheet(context, latlon!, _nameController)
             : null;
       })
       ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));

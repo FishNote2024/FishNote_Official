@@ -89,7 +89,7 @@ class MyPageView extends StatelessWidget {
                   const SizedBox(height: 12),
                   _buildSectionTitle('주요 조업 위치'),
                   const SizedBox(height: 12),
-                  _buildSelectableItem((userInformationProvider.location['name'] ?? '') as String,
+                  _buildSelectableItem(userInformationProvider.location.name,
                       onPressed: () => Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) => const MyPageLocation())),
                       hasLocationIcon: true),
