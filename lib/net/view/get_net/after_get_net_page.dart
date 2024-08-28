@@ -19,18 +19,21 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
         date: DateTime(2024, 8, 25, 6, 0),
         locationName: '문어대가리',
         daysSince: 10,
+        isGet: true,
         species: {'고등어'},
         amount: 10),
     NetRecord(
         date: DateTime(2024, 8, 24, 6, 0),
         locationName: '하얀부표',
         daysSince: 10,
+        isGet: false,
         species: {'갈치', '소라'},
         amount: 30),
     NetRecord(
         date: DateTime(2024, 8, 23, 4, 0),
         locationName: '아왕빡세네',
         daysSince: 10,
+        isGet: true,
         species: {'게', '문어'},
         amount: 21),
   ];

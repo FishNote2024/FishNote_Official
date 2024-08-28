@@ -127,11 +127,13 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                         netRecordProvider.setLocationName(_nameController.text);
                         netRecordProvider.setThrowTime(DateTime.now());
 
-                        print("👉🏻 ${netRecordProvider.locationName}");
-                        print("👉🏻 ${netRecordProvider.throwTime}");
+                        Navigator.pop(context);
 
-                        Navigator.pop(context);
-                        Navigator.pop(context);
+                        Navigator.pop(context, {
+                          'name': _nameController.text,
+                          'location': latlon ?? [0.0, 0.0],
+                          'throwTime': DateTime.now(),
+                        });
                       },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),

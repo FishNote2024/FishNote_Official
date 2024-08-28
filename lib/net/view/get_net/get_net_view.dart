@@ -57,6 +57,13 @@ class _GetNetViewState extends State<GetNetView> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print("dd ${widget.record?.locationName}");
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
