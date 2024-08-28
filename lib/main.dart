@@ -1,5 +1,6 @@
 import 'package:fish_note/favorites/view/favorites_view.dart';
 import 'package:fish_note/journal/view/journal_view.dart';
+import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/myPage/view/my_page_view.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
@@ -28,6 +29,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => UserInformationProvider()),
+        ChangeNotifierProvider(create: (_) => NetRecordProvider()),
       ],
       child: const MyApp(),
     ),
