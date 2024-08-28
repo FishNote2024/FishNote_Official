@@ -71,7 +71,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => const MyHomePage(),
         '/login': (context) => const LoginView(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
@@ -88,22 +87,6 @@ class MyApp extends StatelessWidget {
         '/getNetAddFishWeight': (context) => const AddThrowNetPage(),
         '/favorites': (context) => const FavoritesView(),
       },
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => {Navigator.pushNamed(context, '/signUp')},
-          child: const Text("Sign Up"),
-        ),
-      ),
     );
   }
 }
