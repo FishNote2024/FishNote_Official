@@ -57,11 +57,11 @@ class LoginViewState extends State<LoginView> {
                   setState(() {
                     // UI를 업데이트하기 위해 setState 호출
                     if (viewModel.user != null) {
-                      loginModelProvider.setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
+                      loginModelProvider
+                          .setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
                       loginModelProvider.setKakaoId(viewModel.user!.id.toString());
                       //여기서 파베에 있으면 바꾸고 아니면 그냥 하기
-                      Navigator.pushNamed(context, '/home');
-
+                      Navigator.pushNamed(context, '/signUp');
                     } else {
                       print('Login failed or user is null');
                     }

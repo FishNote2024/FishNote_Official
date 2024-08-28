@@ -1,12 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:provider/provider.dart';
-
-import '../model/user_information_provider.dart';
 
 class NextButton extends StatefulWidget {
   const NextButton({
@@ -110,109 +106,17 @@ class _NextButtonState extends State<NextButton> {
     );
   }
 
-  void _showLocationModal(BuildContext context, UserInformationProvider provider) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      isScrollControlled: true,
-      backgroundColor: backgroundWhite,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '주요 조업 위치의 별명을 입력해주세요',
-                style: header3B(),
-              ),
-              const SizedBox(height: 18),
-              TextField(
-                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-                controller: _controller,
-                cursorColor: primaryBlue500,
-                style: const TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: backgroundWhite,
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  disabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  hintText: '지역 별명을 입력해주세요',
-                  hintStyle: body1(gray3),
-                  contentPadding: const EdgeInsets.all(16),
-                ),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: _controller.text.isEmpty
-                    ? () => {}
-                    : () {
-                        // 허용 안함 버튼 클릭 시 동작
-                        Navigator.pop(context);
-                        if (widget.value is List<double>) {
-                          // 위치 정보 등록 로직 추가
-                          provider.setLocation(widget.value as GeoPoint, _controller.text);
-                        }
-                        // 별명 등록 로직 추가
-                        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                      },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  elevation: 0,
-                  backgroundColor: primaryBlue500,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text('등록하기', style: header4(backgroundWhite)),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final userInformationProvider = Provider.of<UserInformationProvider>(context);
-
     return ElevatedButton(
-      onPressed: widget.value is List<double>
-          ? () => _showLocationModal(context, userInformationProvider)
-          : widget.value == "agree"
-              ? () => _showPermissionModal(context)
-              : widget.value == null || widget.value == ""
-                  ? null
-                  : () {
-                      widget.save();
-                      widget.onNext();
-                    },
+      onPressed: widget.value == "agree"
+          ? () => _showPermissionModal(context)
+          : widget.value == null || widget.value == ""
+              ? null
+              : () {
+                  widget.save();
+                  widget.onNext();
+                },
       style: ElevatedButton.styleFrom(
         backgroundColor: widget.value == null || widget.value == "" ? gray2 : primaryBlue500,
         foregroundColor: Colors.white,

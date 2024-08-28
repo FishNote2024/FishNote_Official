@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -50,12 +51,14 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
   @override
   Widget build(BuildContext context) {
     final userInformationProvider = Provider.of<UserInformationProvider>(context);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
     return Scaffold(
       bottomNavigationBar: NextButton(
         value: affiliation,
         onNext: widget.onNext,
-        save: () => userInformationProvider.setAffiliation(affiliation!),
+        save: () =>
+            userInformationProvider.setAffiliation(affiliation!, loginModelProvider.kakaoId),
       ),
       body: SingleChildScrollView(
         child: Column(

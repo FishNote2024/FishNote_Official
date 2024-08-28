@@ -1,4 +1,5 @@
 import 'package:fish_note/favorites/components/snack_bar.dart';
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/myPage/components/bottom_button.dart';
 import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
@@ -37,6 +38,7 @@ class _MyPageTechniqueState extends State<MyPageTechnique> {
 
   @override
   Widget build(BuildContext context) {
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: backgroundBlue,
@@ -51,7 +53,7 @@ class _MyPageTechniqueState extends State<MyPageTechnique> {
             ? null
             : selectedList,
         onPressed: () {
-          userInformationProvider.setTechnique(selectedList);
+          userInformationProvider.setTechnique(selectedList, loginModelProvider.kakaoId);
           Navigator.pop(context);
         },
       ),

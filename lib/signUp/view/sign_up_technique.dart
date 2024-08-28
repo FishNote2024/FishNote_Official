@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -32,12 +33,13 @@ class _SignUpTechniqueState extends State<SignUpTechnique> {
   @override
   Widget build(BuildContext context) {
     final userInformationProvider = Provider.of<UserInformationProvider>(context);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
     return Scaffold(
       bottomNavigationBar: NextButton(
         value: selectedList.isEmpty ? null : selectedList,
         onNext: widget.onNext,
-        save: () => userInformationProvider.setTechnique(selectedList),
+        save: () => userInformationProvider.setTechnique(selectedList, loginModelProvider.kakaoId),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
