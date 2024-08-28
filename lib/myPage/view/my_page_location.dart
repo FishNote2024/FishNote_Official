@@ -1,3 +1,4 @@
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/myPage/components/bottom_button.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -302,7 +303,7 @@ void _showLocationModal(BuildContext context, List<double> latlon, String name) 
                 onPressed: (controller.text == name || controller.text.isEmpty) &&
                         (latlon[0] == userInformationProvider.location.latlon[0] &&
                             latlon[1] == userInformationProvider.location.latlon[1])
-                    ? () => {}
+                    ? () => showSnackBar(context, '별명이나 위치가 변경되지 않았습니다.')
                     : () {
                         userInformationProvider.setLocation(
                           latlon,
