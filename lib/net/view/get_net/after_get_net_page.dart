@@ -1,9 +1,9 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AfterGetNetPage extends StatefulWidget {
   const AfterGetNetPage({super.key});
@@ -13,42 +13,17 @@ class AfterGetNetPage extends StatefulWidget {
 }
 
 class _AfterGetNetPageState extends State<AfterGetNetPage> {
-  List<double>? latlon;
-  List<NetRecord> netRecords = [
-    NetRecord(
-        date: DateTime(2024, 8, 25, 6, 0),
-        locationName: '문어대가리',
-        daysSince: 10,
-        isGet: true,
-        species: {'고등어'},
-        amount: 10),
-    NetRecord(
-        date: DateTime(2024, 8, 24, 6, 0),
-        locationName: '하얀부표',
-        daysSince: 10,
-        isGet: false,
-        species: {'갈치', '소라'},
-        amount: 30),
-    NetRecord(
-        date: DateTime(2024, 8, 23, 4, 0),
-        locationName: '아왕빡세네',
-        daysSince: 10,
-        isGet: true,
-        species: {'게', '문어'},
-        amount: 21),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    DateTime today = DateTime.now();
-    List<NetRecord> records = getRecordsForDate(today);
+    final records = Provider.of<NetRecordProvider>(context);
+
     return Scaffold(
       backgroundColor: backgroundBlue,
-      body: records.isNotEmpty
+      body: records.netRecords.isNotEmpty
           ? ListView.builder(
-              itemCount: records.length,
+              itemCount: records.netRecords.length,
               itemBuilder: (context, index) {
-                NetRecord record = records[index];
+                NetRecord record = records.netRecords[index];
                 return Padding(
                   padding: const EdgeInsets.all(0.0),
                   child: Card(
@@ -79,7 +54,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('위치별명', style: body3(gray5)),
                               SizedBox(width: 16),
-                              Text('${record.locationName}',
+                              Text(records.locationName,
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -89,7 +64,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               Text('어종', style: body3(gray5)),
                               SizedBox(width: 40),
                               Text(
-                                  '${record.species.isNotEmpty ? record.species.join(', ') : '없음'}',
+                                  '${records.species.isNotEmpty ? records.species.join(', ') : '없음'}',
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -99,7 +74,17 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               Text('어획량', style: body3(gray5)),
                               SizedBox(width: 27),
                               Text(
-                                  '${record.amount.isNaN ? "없음" : record.amount} kg',
+                                  '${records.amount.isNaN ? "없음" : records.amount} kg',
+                                  style: body1(textBlack)),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Text('메모', style: body3(gray5)),
+                              SizedBox(width: 40),
+                              Text(
+                                  '${records.memo.isEmpty ? "없음" : records.memo}',
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -109,13 +94,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             height: 51,
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        GetNetView(record: record),
-                                  ),
-                                );
+                                // Handle button press
                               },
                               child: Text('양망완료', style: header3B(textBlack)),
                               style: ElevatedButton.styleFrom(
@@ -146,35 +125,6 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                 ],
               ),
             ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: OutlinedButton(
-          onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const AddThrowNetPage(),
-            //   ),
-            // );
-          },
-          child: Text("기록하기", style: header1B(Colors.white)),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryBlue500,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-      ),
     );
-  }
-
-  List<NetRecord> getRecordsForDate(DateTime date) {
-    return netRecords.where((record) {
-      return record.date.year == date.year &&
-          record.date.month == date.month &&
-          record.date.day == date.day;
-    }).toList();
   }
 }
