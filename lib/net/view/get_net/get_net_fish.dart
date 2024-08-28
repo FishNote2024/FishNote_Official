@@ -17,7 +17,7 @@ class GetNetFish extends StatefulWidget {
 
 class _GetNetFishState extends State<GetNetFish> {
   final TextEditingController _controller = TextEditingController();
-  Set<String> selectedList = {};
+  List<String> selectedList = [];
   Set<String> speciesList = {};
 
   @override
@@ -56,8 +56,11 @@ class _GetNetFishState extends State<GetNetFish> {
           onPressed: selectedList.isEmpty
               ? null
               : () {
-                  netRecordProvider.setSpecies(selectedList);
+                  netRecordProvider.setSpecies(selectedList.toSet());
+                  // speciesList = selectedList.toSet();
                   print("🤯 selectedList = ${selectedList}");
+                  print("🤯 selectedList = ${speciesList}");
+                  print("🤯 selectedList = ${netRecordProvider.species}");
                   widget.onNext();
                 },
           style: ElevatedButton.styleFrom(

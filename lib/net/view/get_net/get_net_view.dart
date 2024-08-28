@@ -34,14 +34,10 @@ class _GetNetViewState extends State<GetNetView> {
     });
 
     if (_currentPage == 2 && selectedFish != null) {
-      // Pass the selected fish list to GetNetFishWeight
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => GetNetFishWeight(
-            onNext: _nextPage,
-            selectedFish: selectedFish, // Pass the selected fish list here
-          ),
+          builder: (context) => GetNetFishWeight(onNext: _nextPage),
         ),
       );
     }
@@ -50,15 +46,9 @@ class _GetNetViewState extends State<GetNetView> {
   Widget _getPage() {
     switch (_currentPage) {
       case 1:
-        return GetNetFish(
-          onNext: _nextPage,
-          // fishList: widget.fishList,
-        );
+        return GetNetFish(onNext: _nextPage);
       case 2:
-        return GetNetFishWeight(
-          onNext: _nextPage,
-          selectedFish: ['람', '아 진짜', '그만'],
-        );
+        return GetNetFishWeight(onNext: _nextPage);
       case 3:
         return GetNetNote(onNext: _nextPage);
       default:

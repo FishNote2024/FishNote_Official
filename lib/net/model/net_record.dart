@@ -59,6 +59,11 @@ class NetRecordProvider with ChangeNotifier {
   List<String> get technique => _technique;
   double get amount => _amount;
   Map<String, Object> get location => _location;
+  Map<String, double> fishData = {};
+
+  void addFish(String species, double weight) {
+    fishData[species] = weight;
+  }
 
   void setLocationName(String locationName) {
     _locationName = locationName;
