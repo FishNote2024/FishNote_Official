@@ -220,8 +220,8 @@ class _MyPageLocationState extends State<MyPageLocation> {
                     BottomButton(
                       text: "해당 위치로 수정하기",
                       value: latlon,
-                      onPressed: () =>
-                          _showLocationModal(context, userInformationProvider.location.name),
+                      onPressed: () => _showLocationModal(
+                          context, latlon!, userInformationProvider.location.name),
                     ),
                   ],
                 ),
@@ -234,7 +234,7 @@ class _MyPageLocationState extends State<MyPageLocation> {
   }
 }
 
-void _showLocationModal(BuildContext context, String name) {
+void _showLocationModal(BuildContext context, List<double> latlon, String name) {
   final TextEditingController controller = TextEditingController();
   controller.text = name;
 
@@ -299,11 +299,13 @@ void _showLocationModal(BuildContext context, String name) {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: controller.text == name
+                onPressed: (controller.text == name || controller.text.isEmpty) &&
+                        (latlon[0] == userInformationProvider.location.latlon[0] &&
+                            latlon[1] == userInformationProvider.location.latlon[1])
                     ? () => {}
                     : () {
                         userInformationProvider.setLocation(
-                          userInformationProvider.location.latlon,
+                          latlon,
                           controller.text,
                         );
                         Navigator.pop(context);
