@@ -63,11 +63,15 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('어종', style: body3(gray5)),
                               SizedBox(width: 40),
-                              Text(
-                                record.species.isNotEmpty
-                                    ? record.species.first
-                                    : "없음",
-                                style: body1(textBlack),
+                              // Species 목록을 쉼표로 구분된 문자열로 변환하여 표시
+                              Expanded(
+                                child: Text(
+                                  record.species.isNotEmpty
+                                      ? record.species.join(', ')
+                                      : "없음",
+                                  style: body1(textBlack),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
@@ -86,7 +90,15 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('메모', style: body3(gray5)),
                               SizedBox(width: 40),
-                              Text(record.memo ?? "", style: body1(textBlack)),
+                              Expanded(
+                                child: Text(
+                                  record.memo?.isNotEmpty == true
+                                      ? record.memo!
+                                      : "없음",
+                                  style: body1(textBlack),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
