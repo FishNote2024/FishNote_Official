@@ -21,7 +21,7 @@ class _GetNetNoteState extends State<GetNetNote> {
     final netRecordProvider =
         Provider.of<NetRecordProvider>(context, listen: false);
     netRecordProvider.updateRecord(widget.recordId, memo: memo);
-    widget.onNext();
+    Navigator.pushReplacementNamed(context, '/netPage2');
   }
 
   @override
@@ -37,7 +37,7 @@ class _GetNetNoteState extends State<GetNetNote> {
               _submitMemo();
             } else {
               // 비어있어도 다음 페이지로 이동
-              widget.onNext();
+              Navigator.pushReplacementNamed(context, '/netPage2');
             }
           },
           style: ElevatedButton.styleFrom(
