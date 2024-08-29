@@ -1,10 +1,11 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_fish.dart';
-import 'package:fish_note/net/view/get_net/get_net_fish_weight.dart';
-import 'package:fish_note/net/view/get_net/get_net_note.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:fish_note/net/view/get_net/get_net_fish.dart';
+import 'package:fish_note/net/view/get_net/get_net_fish_weight.dart';
+import 'package:fish_note/net/view/get_net/get_net_note.dart';
+import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -32,6 +33,7 @@ class _GetNetViewState extends State<GetNetView> {
     });
 
     if (_currentPage == 2 && selectedFish != null) {
+      // 여기서 recordId를 GetNetFishWeight에 전달
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -55,12 +57,6 @@ class _GetNetViewState extends State<GetNetView> {
       default:
         return GetNetNote(onNext: _nextPage, recordId: widget.record!.id);
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    print("-> ${widget.record?.locationName}");
   }
 
   @override
