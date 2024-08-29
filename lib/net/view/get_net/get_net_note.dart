@@ -29,6 +29,7 @@ class _GetNetNoteState extends State<GetNetNote> {
               netRecordProvider.setMemo(memo);
               print("netRecordProvider.memo: ${netRecordProvider.memo}");
             }
+
             Navigator.pushReplacementNamed(context, '/netPage2');
           },
           style: ElevatedButton.styleFrom(

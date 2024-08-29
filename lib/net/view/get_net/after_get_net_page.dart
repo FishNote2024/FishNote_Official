@@ -17,13 +17,18 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
   Widget build(BuildContext context) {
     final records = Provider.of<NetRecordProvider>(context);
 
+    // 어획량이 있는 기록만 필터링
+    final filteredRecords = records.netRecords
+        .where((record) => record.amount != null && record.amount.isNotEmpty)
+        .toList();
+
     return Scaffold(
       backgroundColor: backgroundBlue,
-      body: records.netRecords.isNotEmpty
+      body: filteredRecords.isNotEmpty
           ? ListView.builder(
-              itemCount: records.netRecords.length,
+              itemCount: filteredRecords.length,
               itemBuilder: (context, index) {
-                NetRecord record = records.netRecords[index];
+                NetRecord record = filteredRecords[index];
                 return Padding(
                   padding: const EdgeInsets.all(0.0),
                   child: Card(
@@ -45,8 +50,9 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               Text('양망시간', style: body3(gray5)),
                               SizedBox(width: 16),
                               Text(
-                                  '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date)}',
-                                  style: body1(textBlack)),
+                                '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date)}',
+                                style: body1(textBlack),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -63,7 +69,6 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('어종', style: body3(gray5)),
                               SizedBox(width: 40),
-                              // Species 목록을 쉼표로 구분된 문자열로 변환하여 표시
                               Expanded(
                                 child: Text(
                                   record.species.isNotEmpty
@@ -80,9 +85,19 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('어획량', style: body3(gray5)),
                               SizedBox(width: 27),
-                              Text(
-                                  '${record.amount > 0 ? record.amount.toString() : "없음"} kg',
-                                  style: body1(textBlack)),
+                              // 어종과 무게를 함께 표시
+                              Expanded(
+                                child: Text(
+                                  record.amount.isNotEmpty
+                                      ? record.amount
+                                          .map((weight) =>
+                                              "${weight.toString()} kg")
+                                          .join(', ')
+                                      : "없음",
+                                  style: body1(textBlack),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ],
                           ),
                           SizedBox(height: 8),

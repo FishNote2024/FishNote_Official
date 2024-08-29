@@ -29,11 +29,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
       final DateTime throwTime = result['throwTime'];
 
       // NetRecordProvider를 통해 상태 업데이트
-      Provider.of<NetRecordProvider>(context, listen: false).addNewRecord(
-        name,
-        location,
-        throwTime,
-      );
+      Provider.of<NetRecordProvider>(context, listen: false)
+          .addNewRecord(name, location, throwTime, false);
     }
   }
 
@@ -42,8 +39,10 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
     // NetRecordProvider에서 netRecords를 가져옴
     final allRecords = Provider.of<NetRecordProvider>(context).netRecords;
 
-    // isGet이 false인 기록만 필터링
-    final records = allRecords.where((record) => !record.isGet).toList();
+    // amount가 없는 기록만 필터링
+    final records = allRecords
+        .where((record) => record.amount == null || record.amount.isEmpty)
+        .toList();
 
     return Scaffold(
       backgroundColor: backgroundBlue,
@@ -93,6 +92,16 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                             height: 51,
                             child: ElevatedButton(
                               onPressed: () {
+                                print("record id = ${record.id}");
+                                print(
+                                    "record locationName = ${record.locationName}");
+                                print("record date = ${record.date}");
+                                print("record daysSince = ${record.daysSince}");
+                                print("record isGet = ${record.isGet}");
+                                print("record species = ${record.species}");
+                                print("record amount = ${record.amount}");
+                                print("record memo = ${record.memo}");
+
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(

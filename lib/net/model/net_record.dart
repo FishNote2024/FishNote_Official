@@ -7,27 +7,30 @@ class NetRecord {
   final DateTime date;
   final String locationName;
   final int daysSince;
+  final int id;
   final Set<String> species;
-  final double amount;
+  final List<double> amount;
   final bool isGet;
   final String? memo;
+  Map<String, double> fishData;
 
-  NetRecord({
-    required this.date,
-    required this.locationName,
-    required this.daysSince,
-    this.isGet = false,
-    this.species = const {},
-    this.amount = 0,
-    this.memo,
-  });
+  NetRecord(
+      {required this.date,
+      required this.locationName,
+      required this.daysSince,
+      required this.id,
+      required this.isGet,
+      this.species = const {},
+      this.amount = const [],
+      this.memo,
+      this.fishData = const {}});
 
   // get memo => null;
 }
 
 class NetRecordProvider with ChangeNotifier {
   List<NetRecord> _netRecords = [];
-
+  int _nextId = 1; // 다음에 사용할 ID 값
   List<NetRecord> get netRecords => _netRecords;
 
   final int _id = 0;
@@ -40,7 +43,7 @@ class NetRecordProvider with ChangeNotifier {
   final bool _isGet = false;
   final Set<String> _species = {};
   final List<String> _technique = [];
-  double _amount = 0.0;
+  List<double> _amount = [];
   int _daysSince = 0;
   String _memo = '';
 
@@ -52,7 +55,7 @@ class NetRecordProvider with ChangeNotifier {
   bool get isGet => _isGet;
   Set<String> get species => _species;
   List<String> get technique => _technique;
-  double get amount => _amount;
+  List<double> get amount => _amount;
   List<double> get location => _location;
   Map<String, double> fishData = {};
   String get memo => _memo;
@@ -76,11 +79,6 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setWaveHeight(String waveHeight) {
-    _waveHeight = waveHeight;
-    notifyListeners();
-  }
-
   void setSpecies(Set<String> species) {
     _species.addAll(species);
     notifyListeners();
@@ -91,7 +89,7 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setAmount(double amount) {
+  void setAmount(List<double> amount) {
     _amount = amount;
     notifyListeners();
   }
@@ -101,18 +99,39 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void addNewRecord(String name, List<double> location, DateTime throwTime,
-      {String? memo}) {
+  void addNewRecord(
+      String name, List<double> location, DateTime throwTime, bool isGet,
+      {String? memo, Set<String>? species, List<double>? amount}) {
     _netRecords.add(NetRecord(
+      id: _nextId++,
       date: throwTime,
       locationName: name,
       daysSince: 0,
-      isGet: false,
-      species: {},
-      amount: 0,
+      isGet: isGet,
+      species: species ?? {},
+      amount: amount ?? [],
       memo: memo ?? '',
     ));
     notifyListeners();
+  }
+
+  void updateRecord(int id,
+      {Set<String>? species, List<double>? amount, String? memo}) {
+    final recordIndex = _netRecords.indexWhere((record) => record.id == id);
+    if (recordIndex != -1) {
+      final existingRecord = _netRecords[recordIndex];
+      _netRecords[recordIndex] = NetRecord(
+        id: existingRecord.id,
+        date: existingRecord.date,
+        locationName: existingRecord.locationName,
+        daysSince: existingRecord.daysSince,
+        isGet: existingRecord.isGet,
+        species: species ?? existingRecord.species,
+        amount: amount ?? existingRecord.amount,
+        memo: memo ?? existingRecord.memo,
+      );
+      notifyListeners();
+    }
   }
 
   void setDaysSince(DateTime today) {
