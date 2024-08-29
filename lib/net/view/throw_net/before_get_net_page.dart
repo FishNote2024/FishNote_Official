@@ -99,8 +99,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                 print("record daysSince = ${record.daysSince}");
                                 print("record isGet = ${record.isGet}");
                                 print("record species = ${record.species}");
-                                print("record amount = ${record.amount}");
-                                print("record memo = ${record.memo}");
+                                print("record = ${record.amount}");
+                                print("record = ${record.memo}");
 
                                 Navigator.push(
                                   context,

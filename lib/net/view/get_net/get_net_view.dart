@@ -37,7 +37,10 @@ class _GetNetViewState extends State<GetNetView> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => GetNetFishWeight(onNext: _nextPage),
+          builder: (context) => GetNetFishWeight(
+            onNext: _nextPage,
+            recordId: widget.record!.id,
+          ),
         ),
       );
     }
@@ -46,13 +49,13 @@ class _GetNetViewState extends State<GetNetView> {
   Widget _getPage() {
     switch (_currentPage) {
       case 1:
-        return GetNetFish(onNext: _nextPage);
+        return GetNetFish(onNext: _nextPage, recordId: widget.record!.id);
       case 2:
-        return GetNetFishWeight(onNext: _nextPage);
+        return GetNetFishWeight(onNext: _nextPage, recordId: widget.record!.id);
       case 3:
-        return GetNetNote(onNext: _nextPage);
+        return GetNetNote(onNext: _nextPage, recordId: widget.record!.id);
       default:
-        return GetNetNote(onNext: _nextPage);
+        return GetNetNote(onNext: _nextPage, recordId: widget.record!.id);
     }
   }
 
