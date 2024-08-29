@@ -24,7 +24,7 @@ class NetWaitCard extends StatelessWidget {
 
     return Column(
       children: waitingRecords.map((record) {
-        // 계산된 경과 일수를 사용하여 몇 일 전인지 표시
+        // 날짜 계산해서 몇 일 전인지 표시
         final daysSince = DateTime.now().difference(record.throwDate).inDays;
 
         return Padding(
