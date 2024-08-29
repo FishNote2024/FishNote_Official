@@ -17,7 +17,8 @@ void showFavoriteBottomSheet(
     WebViewController controller,
     TextEditingController latController,
     TextEditingController lngController,
-    TextEditingController nameController) {
+    TextEditingController nameController,
+    Location location) {
   showModalBottomSheet(
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height * 0.6,
@@ -35,8 +36,8 @@ void showFavoriteBottomSheet(
       final UserInformationProvider provider = Provider.of<UserInformationProvider>(context);
 
       List<Widget> favoriteList = provider.favorites
-          .map((favorite) => _buildFavoriteItem(
-              favorite, context, controller, latController, lngController, nameController))
+          .map((favorite) => _buildFavoriteItem(favorite, context, controller, latController,
+              lngController, nameController, location))
           .toList();
 
       return Container(
@@ -83,12 +84,13 @@ void showFavoriteBottomSheet(
 }
 
 Widget _buildFavoriteItem(
-    Location location,
+    Location favorite,
     BuildContext context,
     WebViewController controller,
     TextEditingController latController,
     TextEditingController lngController,
-    TextEditingController nameController) {
+    TextEditingController nameController,
+    Location location) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -96,18 +98,20 @@ Widget _buildFavoriteItem(
         onTap: () {
           // 즐겨찾기 항목 클릭 시 로직 추가
           Navigator.pop(context);
-          latController.text = '${location.latlon.latitude}';
-          lngController.text = '${location.latlon.longitude}';
+          latController.text = '${favorite.latlon.latitude}';
+          lngController.text = '${favorite.latlon.longitude}';
           controller.runJavaScript(
-              'fromAppToWeb("${location.latlon.latitude}", "${location.latlon.longitude}");');
-          nameController.text = location.name;
+              'fromAppToWeb("${favorite.latlon.latitude}", "${favorite.latlon.longitude}");');
+          location.setLatlon(favorite.latlon);
+          location.setName(favorite.name);
+          nameController.text = favorite.name;
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(location.name, style: body1()),
+            Text(favorite.name, style: body1()),
             const SizedBox(width: 15),
-            Text('${location.latlon.latitude}, ${location.latlon.longitude}', style: body1(gray4)),
+            Text('${favorite.latlon.latitude}, ${favorite.latlon.longitude}', style: body1(gray4)),
           ],
         ),
       ),
@@ -116,7 +120,7 @@ Widget _buildFavoriteItem(
         onPressed: () {
           // 즐겨찾기 항목 제거 로직 추가
           showDialog(
-              context: context, builder: (context) => buildRemoveFavoriteDialog(context, location));
+              context: context, builder: (context) => buildRemoveFavoriteDialog(context, favorite));
         },
       ),
     ],
@@ -124,7 +128,7 @@ Widget _buildFavoriteItem(
 }
 
 void showLocationBottomSheet(
-    BuildContext context, GeoPoint latlon, TextEditingController controller) {
+    BuildContext context, Location location, TextEditingController controller) {
   showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -150,7 +154,7 @@ void showLocationBottomSheet(
             OutlinedButton(
               onPressed: () => showDialog(
                   context: context,
-                  builder: (context) => buildLocationDialog(context, controller, latlon)),
+                  builder: (context) => buildLocationDialog(context, controller, location.latlon)),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 side: const BorderSide(color: gray2),
@@ -165,8 +169,10 @@ void showLocationBottomSheet(
             ),
             const SizedBox(height: 10),
             OutlinedButton(
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => FavoritesInformation(latlon: latlon))),
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FavoritesInformation(location: location))),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 side: const BorderSide(color: gray2),
@@ -181,7 +187,7 @@ void showLocationBottomSheet(
             ),
             const SizedBox(height: 10),
             OutlinedButton(
-              onPressed: () => showLocationModal(context, controller, true, latlon),
+              onPressed: () => showLocationModal(context, controller, true, location.latlon),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 side: const BorderSide(color: gray2),
