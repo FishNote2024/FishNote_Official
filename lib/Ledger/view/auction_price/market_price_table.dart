@@ -1,5 +1,7 @@
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import '../../../../theme/colors.dart';
 import '../../../../theme/font.dart';
 import 'package:dio/dio.dart';
@@ -19,27 +21,29 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
   final String apiKey =
       'P9snIt2gDleusE4uaQ9a1Tyx6/QaQRBJjRzr9H4ELGzbp263NM0Fvprpu1mr6Qqu6Efxqu35tgxg0JeKZtRnHA==';
   String baseDt = '20240816';
-
-  // 등록된 어종 목록
-  final List<String> registeredSpecies = ['문어', '전복', '방어', '소라', '다금바리'];
-  // 등록된 조합명
-  final String mxtrNm = '거제수산업협동조합';
-
+  Set<String> registeredSpecies = {};
+  String mxtrNm = '';
   Map<String, Map<String, dynamic>> groupedData = {};
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final userInformationProvider =
+        Provider.of<UserInformationProvider>(context);
+    registeredSpecies = userInformationProvider.species;
+    mxtrNm = userInformationProvider.affiliation;
+    print('mxtrNm: $mxtrNm');
+    print('registeredSpecies: $registeredSpecies');
     fetchData();
   }
 
   Future<void> fetchData() async {
     try {
-      // 기존 데이터 제거
       groupedData.clear();
       String requestUrl =
           '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&mxtrNm=$mxtrNm&fromDt=$baseDt&toDt=$baseDt&type=xml';
       var response = await dio.get(requestUrl);
+
       if (response.statusCode == 200) {
         var document = xml.XmlDocument.parse(response.data);
         final items = document.findAllElements('item');
@@ -62,7 +66,6 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
               groupedData[mprcStdCodeNm]!['totalQy'] += csmtQy;
               groupedData[mprcStdCodeNm]!['count'] += 1;
 
-              // 고가, 저가 갱신
               groupedData[mprcStdCodeNm]!['maxUntpc'] =
                   (csmtUntpc > groupedData[mprcStdCodeNm]!['maxUntpc'])
                       ? csmtUntpc
@@ -105,7 +108,7 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
         child: Material(
           color: Colors.transparent,
           child: Container(
-            padding: EdgeInsets.all(6),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(4),
@@ -120,6 +123,9 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
       ),
     );
     Overlay.of(context).insert(_overlayEntry!);
+    Future.delayed(const Duration(seconds: 2), () {
+      _hideTooltip();
+    });
   }
 
   void _hideTooltip() {
@@ -128,7 +134,6 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
   }
 
   String _formatGoodsUnitNm(String goodsUnitNm) {
-    // 정규식으로 괄호 안 문자만 빼기
     final match = RegExp(r'상자\((.*?)\)').firstMatch(goodsUnitNm);
     if (match != null && match.groupCount > 0) {
       return match.group(1)!;
@@ -151,31 +156,26 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                 IconButton(
                   key: _iconKey,
                   padding: EdgeInsets.zero,
-                  constraints: BoxConstraints(),
-                  icon: Icon(Icons.error_outline, color: gray5, size: 25),
-                  onPressed: () {
-                    _showTooltip();
-                    Future.delayed(Duration(seconds: 2), () {
-                      _hideTooltip();
-                    });
-                  },
+                  constraints: const BoxConstraints(),
+                  icon: const Icon(Icons.error_outline, color: gray5, size: 25),
+                  onPressed: _showTooltip,
                 ),
               ],
             ),
             Text("오늘의 경락시세", style: header3B().copyWith(height: 0.6)),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Text("소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
                 style: caption1(gray4)),
             const SizedBox(height: 40),
             Table(
-              columnWidths: {
+              columnWidths: const {
                 0: FlexColumnWidth(2),
                 1: FlexColumnWidth(1),
                 2: FlexColumnWidth(3),
                 3: FlexColumnWidth(1),
                 4: FlexColumnWidth(3),
               },
-              border: TableBorder(
+              border: const TableBorder(
                   horizontalInside: BorderSide(color: gray1),
                   verticalInside: BorderSide(color: Colors.transparent)),
               children: [
@@ -185,21 +185,21 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                           Border(bottom: BorderSide(color: gray2, width: 1))),
                   children: [
                     Padding(
-                      padding: EdgeInsets.fromLTRB(4, 12, 0, 12),
+                      padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
                       child: Text('주요 어종', style: body2(gray5)),
                     ),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(4, 12, 0, 12),
+                      padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
                       child: Text('규격', style: body2(gray5)),
                     ),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(12, 12, 0, 12),
+                        padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
                         child: Text('수량/단위', style: body2(gray5)),
                       ),
                     ),
-                    Align(
+                    const Align(
                       alignment: Alignment.centerRight,
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
@@ -209,7 +209,7 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                        padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
                         child: Text('가격', style: body2(gray5)),
                       ),
                     ),
@@ -252,49 +252,51 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Padding(
                             padding: const EdgeInsets.only(right: 1.0),
                             child: SvgPicture.asset('assets/icons/up.svg'),
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           SvgPicture.asset('assets/icons/avg.svg'),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           Padding(
                             padding: const EdgeInsets.only(right: 1.0),
                             child: SvgPicture.asset('assets/icons/down.svg'),
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                         ],
                       ),
-                      Column(children: [
-                        SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Spacer(),
-                            Text('$maxUntpc원', style: body1(textBlack)),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Spacer(),
-                            Text('$avgUntpc원', style: body1(textBlack)),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            Spacer(),
-                            Text('$minUntpc원', style: body1(textBlack)),
-                          ],
-                        ),
-                        SizedBox(height: 10),
-                      ]),
+                      Column(
+                        children: [
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              const Spacer(),
+                              Text('$maxUntpc원', style: body1(textBlack)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Spacer(),
+                              Text('$avgUntpc원', style: body1(textBlack)),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Spacer(),
+                              Text('$minUntpc원', style: body1(textBlack)),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                        ],
+                      ),
                     ],
                   );
                 }).toList(),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               child: OutlinedButton(
