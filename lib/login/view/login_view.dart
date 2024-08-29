@@ -1,5 +1,6 @@
 import 'package:fish_note/login/view/kakao_login.dart';
 import 'package:fish_note/login/view/main_view_model.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -21,6 +22,7 @@ class LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     final loginModelProvider = Provider.of<LoginModelProvider>(context);
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
 
     return Scaffold(
       body: Stack(
@@ -54,18 +56,25 @@ class LoginViewState extends State<LoginView> {
               child: ElevatedButton(
                 onPressed: () async {
                   await viewModel.login();
-                  setState(() {
-                    // UI를 업데이트하기 위해 setState 호출
-                    if (viewModel.user != null) {
-                      loginModelProvider
-                          .setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
-                      loginModelProvider.setKakaoId(viewModel.user!.id.toString());
-                      //여기서 파베에 있으면 바꾸고 아니면 그냥 하기
-                      Navigator.pushNamed(context, '/signUp');
+                  if (viewModel.user != null) {
+                    // 카카오 로그인 성공
+                    loginModelProvider
+                        .setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
+                    loginModelProvider.setKakaoId(viewModel.user!.id.toString());
+                    // 사용자 정보를 가져온다.
+                    await userInformationProvider.init(loginModelProvider.kakaoId);
+                    // 주요 조업 위치의 이름이 있는 경우 -> 회원가입이 완료되었다는 의미이므로 홈 화면으로 이동
+                    if (userInformationProvider.location.name != '') {
+                      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
                     } else {
-                      print('Login failed or user is null');
+                      // 사용자 이름 저장
+                      loginModelProvider.saveName();
+                      // 주요 조업 위치의 이름이 없는 경우 -> 회원가입이 아직 완료되지 않았다는 의미이므로 회원가입 화면으로 이동
+                      Navigator.pushNamedAndRemoveUntil(context, '/signUp', (route) => false);
                     }
-                  });
+                  } else {
+                    print('Login failed or user is null');
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryYellow400,
