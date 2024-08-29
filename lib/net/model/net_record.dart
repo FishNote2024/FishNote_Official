@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class NetRecord {
-  final DateTime date;
+  final DateTime throwDate;
+  final DateTime getDate;
   final String locationName;
   final int daysSince;
   final int id;
@@ -15,7 +16,8 @@ class NetRecord {
   Map<String, double> fishData;
 
   NetRecord(
-      {required this.date,
+      {required this.throwDate,
+      required this.getDate,
       required this.locationName,
       required this.daysSince,
       required this.id,
@@ -37,7 +39,7 @@ class NetRecordProvider with ChangeNotifier {
   List<double> _location = [];
   String _locationName = '';
   String _throwTime = '';
-  DateTime _getNetTime = DateTime.now();
+  String _getNetTime = '';
   String _waveHeight = '';
   final double _waterTemperature = 0.0;
   final bool _isGet = false;
@@ -49,7 +51,7 @@ class NetRecordProvider with ChangeNotifier {
 
   String get locationName => _locationName;
   String get throwTime => _throwTime;
-  DateTime get getNetTime => _getNetTime;
+  String get getNetTime => _getNetTime;
   String get waveHeight => _waveHeight;
   double get waterTemperature => _waterTemperature;
   bool get isGet => _isGet;
@@ -74,7 +76,7 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setGetNetTime(DateTime getNetTime) {
+  void setGetNetTime(String getNetTime) {
     _getNetTime = getNetTime;
     notifyListeners();
   }
@@ -101,10 +103,14 @@ class NetRecordProvider with ChangeNotifier {
 
   void addNewRecord(
       String name, List<double> location, DateTime throwTime, bool isGet,
-      {String? memo, Set<String>? species, List<double>? amount}) {
+      {String? memo,
+      Set<String>? species,
+      DateTime? getTime,
+      List<double>? amount}) {
     _netRecords.add(NetRecord(
       id: _nextId++,
-      date: throwTime,
+      throwDate: throwTime,
+      getDate: getTime!,
       locationName: name,
       daysSince: 0,
       isGet: isGet,
@@ -122,8 +128,9 @@ class NetRecordProvider with ChangeNotifier {
       final existingRecord = _netRecords[recordIndex];
       _netRecords[recordIndex] = NetRecord(
         id: existingRecord.id,
-        date: existingRecord.date,
+        throwDate: existingRecord.throwDate,
         locationName: existingRecord.locationName,
+        getDate: existingRecord.getDate,
         daysSince: existingRecord.daysSince,
         isGet: existingRecord.isGet,
         species: species ?? existingRecord.species,
@@ -142,9 +149,9 @@ class NetRecordProvider with ChangeNotifier {
     }
   }
 
-  void setDaysSince(DateTime today) {
-    final diff = today.difference(_getNetTime).inDays;
-    _daysSince = diff;
-    notifyListeners();
-  }
+  // void setDaysSince(DateTime today) {
+  //   final diff = today.difference(_getNetTime).inDays;
+  //   _daysSince = diff;
+  //   notifyListeners();
+  // }
 }
