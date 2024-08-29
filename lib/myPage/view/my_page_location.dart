@@ -24,6 +24,7 @@ class _MyPageLocationState extends State<MyPageLocation> {
   final TextEditingController _lngController = TextEditingController();
   late WebViewController _controller;
   late UserInformationProvider userInformationProvider;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -54,12 +55,18 @@ class _MyPageLocationState extends State<MyPageLocation> {
   }
 
   Future<void> _getLocation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
     setState(() {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
       _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
       latlon = GeoPoint(position.latitude, position.longitude);
+      _isLoading = false;
     });
   }
 
@@ -229,6 +236,15 @@ class _MyPageLocationState extends State<MyPageLocation> {
                     ),
                   ],
                 ),
+                _isLoading
+                    ? Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: backgroundWhite.withOpacity(0.8),
+                        child:
+                            const Center(child: CircularProgressIndicator(color: primaryBlue500)),
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
           ),

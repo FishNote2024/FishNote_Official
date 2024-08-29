@@ -24,6 +24,7 @@ class _FavoritesViewState extends State<FavoritesView> {
   final TextEditingController _lngController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   late WebViewController _controller;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -46,12 +47,18 @@ class _FavoritesViewState extends State<FavoritesView> {
   }
 
   Future<void> _getLocation() async {
+    setState(() {
+      _isLoading = true; // 로딩 상태로 전환
+    });
+
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
     setState(() {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
       _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
       location.setLatlon(GeoPoint(position.latitude, position.longitude));
+      _isLoading = false; // 로딩 상태 해제
     });
   }
 
@@ -209,7 +216,11 @@ class _FavoritesViewState extends State<FavoritesView> {
                             ),
                           ),
                           IconButton(
-                            onPressed: _getLocation,
+                            onPressed: () {
+                              setState(() {
+                                _getLocation();
+                              });
+                            },
                             icon: SvgPicture.asset(
                               'assets/icons/current_location.svg',
                               colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
@@ -229,6 +240,15 @@ class _FavoritesViewState extends State<FavoritesView> {
                     ),
                   ],
                 ),
+                _isLoading
+                    ? Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: backgroundWhite.withOpacity(0.8),
+                        child:
+                            const Center(child: CircularProgressIndicator(color: primaryBlue500)),
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
           ),
