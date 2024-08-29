@@ -3,7 +3,6 @@ import 'package:fish_note/journal/view/journal_view.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/login/view/login_view.dart';
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/myPage/view/my_page_view.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:firebase_core/firebase_core.dart';
