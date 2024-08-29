@@ -1,7 +1,5 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/signUp/components/bottom_button.dart';
-import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +24,6 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
   late WebViewController _controller;
   late NetRecordProvider netRecordProvider;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
-  // }
   String todayDate = DateFormat('M월 d일 (E)', 'ko_KR').format(DateTime.now());
 
   @override
@@ -130,11 +123,15 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                     ? () => {}
                     : () {
                         netRecordProvider.setLocationName(_nameController.text);
-                        print("👉🏻 ${netRecordProvider.locationName}");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => GetNetView()),
-                        );
+                        netRecordProvider.setThrowTime(DateTime.now());
+
+                        Navigator.pop(context);
+
+                        Navigator.pop(context, {
+                          'name': _nameController.text,
+                          'location': latlon ?? [0.0, 0.0],
+                          'throwTime': DateTime.now(),
+                        });
                       },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),

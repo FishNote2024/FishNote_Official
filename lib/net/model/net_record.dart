@@ -1,64 +1,68 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NetRecord {
   final DateTime date;
   final String locationName;
   final int daysSince;
-  final List<String> species;
-  final double amount;
+  final int id;
+  final Set<String> species;
+  final List<double> amount;
+  final bool isGet;
+  final String? memo;
+  Map<String, double> fishData;
 
-  NetRecord({
-    required this.date,
-    required this.locationName,
-    required this.daysSince,
-    this.species = const [],
-    this.amount = 0,
-  });
+  NetRecord(
+      {required this.date,
+      required this.locationName,
+      required this.daysSince,
+      required this.id,
+      required this.isGet,
+      this.species = const {},
+      this.amount = const [],
+      this.memo,
+      this.fishData = const {}});
+
+  // get memo => null;
 }
 
-// 예시 데이터
-List<NetRecord> netRecords = [
-  NetRecord(
-      date: DateTime(2024, 6, 29, 6, 0),
-      locationName: '문어대가리',
-      daysSince: 10,
-      species: ['고등어']),
-  NetRecord(
-      date: DateTime(2024, 6, 30, 6, 0),
-      locationName: '하얀부표',
-      daysSince: 10,
-      species: ['갈치']),
-];
-
 class NetRecordProvider with ChangeNotifier {
+  List<NetRecord> _netRecords = [];
+  int _nextId = 1; // 다음에 사용할 ID 값
+  List<NetRecord> get netRecords => _netRecords;
+
   final int _id = 0;
-  final Map<String, Object> _location = {
-    'latlon': [],
-    'name': '',
-  };
+  List<double> _location = [];
   String _locationName = '';
-  DateTime _throwTime = DateTime.now();
+  String _throwTime = '';
   DateTime _getNetTime = DateTime.now();
   String _waveHeight = '';
   final double _waterTemperature = 0.0;
   final bool _isGet = false;
-  final List<String> _species = [];
+  final Set<String> _species = {};
   final List<String> _technique = [];
-  double _amount = 0.0;
-  final int _daysSince = 0;
+  List<double> _amount = [];
+  int _daysSince = 0;
+  String _memo = '';
 
   String get locationName => _locationName;
-  DateTime get throwTime => _throwTime;
+  String get throwTime => _throwTime;
   DateTime get getNetTime => _getNetTime;
   String get waveHeight => _waveHeight;
   double get waterTemperature => _waterTemperature;
   bool get isGet => _isGet;
-  List<String> get species => _species;
+  Set<String> get species => _species;
   List<String> get technique => _technique;
-  double get amount => _amount;
-  Map<String, Object> get location => _location;
+  List<double> get amount => _amount;
+  List<double> get location => _location;
+  Map<String, double> fishData = {};
+  String get memo => _memo;
+
+  void addFish(String species, double weight) {
+    fishData[species] = weight;
+  }
 
   void setLocationName(String locationName) {
     _locationName = locationName;
@@ -66,7 +70,7 @@ class NetRecordProvider with ChangeNotifier {
   }
 
   void setThrowTime(DateTime throwTime) {
-    _throwTime = throwTime;
+    _throwTime = DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(throwTime);
     notifyListeners();
   }
 
@@ -75,12 +79,7 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setWaveHeight(String waveHeight) {
-    _waveHeight = waveHeight;
-    notifyListeners();
-  }
-
-  void setSpecies(List<String> species) {
+  void setSpecies(Set<String> species) {
     _species.addAll(species);
     notifyListeners();
   }
@@ -90,14 +89,62 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setAmount(double amount) {
+  void setAmount(List<double> amount) {
     _amount = amount;
     notifyListeners();
   }
 
-  void setLocation(List<double> latlon, String name) {
-    _location['latlon'] = latlon;
-    _location['name'] = name;
+  void setMemo(String memo) {
+    _memo = memo;
+    notifyListeners();
+  }
+
+  void addNewRecord(
+      String name, List<double> location, DateTime throwTime, bool isGet,
+      {String? memo, Set<String>? species, List<double>? amount}) {
+    _netRecords.add(NetRecord(
+      id: _nextId++,
+      date: throwTime,
+      locationName: name,
+      daysSince: 0,
+      isGet: isGet,
+      species: species ?? {},
+      amount: amount ?? [],
+      memo: memo ?? '',
+    ));
+    notifyListeners();
+  }
+
+  void updateRecord(int id,
+      {Set<String>? species, List<double>? amount, String? memo}) {
+    final recordIndex = _netRecords.indexWhere((record) => record.id == id);
+    if (recordIndex != -1) {
+      final existingRecord = _netRecords[recordIndex];
+      _netRecords[recordIndex] = NetRecord(
+        id: existingRecord.id,
+        date: existingRecord.date,
+        locationName: existingRecord.locationName,
+        daysSince: existingRecord.daysSince,
+        isGet: existingRecord.isGet,
+        species: species ?? existingRecord.species,
+        amount: amount ?? existingRecord.amount,
+        memo: memo ?? existingRecord.memo,
+      );
+      notifyListeners();
+    }
+  }
+
+  NetRecord? getRecordById(int id) {
+    try {
+      return _netRecords.firstWhere((record) => record.id == id);
+    } catch (e) {
+      return null; // 해당 ID의 기록이 없을 경우 null 반환
+    }
+  }
+
+  void setDaysSince(DateTime today) {
+    final diff = today.difference(_getNetTime).inDays;
+    _daysSince = diff;
     notifyListeners();
   }
 }

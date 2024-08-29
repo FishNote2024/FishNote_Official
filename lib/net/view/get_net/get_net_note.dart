@@ -1,17 +1,29 @@
+import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GetNetNote extends StatefulWidget {
-  const GetNetNote({super.key, required this.onNext});
   final VoidCallback onNext;
+  final int recordId;
+
+  const GetNetNote({super.key, required this.onNext, required this.recordId});
 
   @override
   State<GetNetNote> createState() => _GetNetNoteState();
 }
 
 class _GetNetNoteState extends State<GetNetNote> {
-  List<String> selectedList = [];
+  String memo = "";
+
+  void _submitMemo() {
+    final netRecordProvider =
+        Provider.of<NetRecordProvider>(context, listen: false);
+    netRecordProvider.updateRecord(widget.recordId, memo: memo);
+    Navigator.pushReplacementNamed(context, '/netPage2');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +32,13 @@ class _GetNetNoteState extends State<GetNetNote> {
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/netPage2');
+            // 메모가 비어있지 않으면 저장하고 다음 페이지로 이동
+            if (memo.isNotEmpty) {
+              _submitMemo();
+            } else {
+              // 비어있어도 다음 페이지로 이동
+              Navigator.pushReplacementNamed(context, '/netPage2');
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryBlue500,
@@ -51,7 +69,7 @@ class _GetNetNoteState extends State<GetNetNote> {
                 child: TextField(
                   onChanged: (value) {
                     setState(() {
-                      selectedList = [value];
+                      memo = value;
                     });
                   },
                   maxLines: 35,

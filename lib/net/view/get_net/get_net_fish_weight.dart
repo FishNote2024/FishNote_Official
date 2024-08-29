@@ -1,17 +1,15 @@
-import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
+import 'package:fish_note/net/model/net_record.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
+import 'package:provider/provider.dart';
 
 class GetNetFishWeight extends StatefulWidget {
-  const GetNetFishWeight(
-      {super.key,
-      required this.onNext,
-      this.fishList,
-      required List<String> selectedFish});
+  final VoidCallback onNext;
+  final int recordId;
 
-  final void Function(List<String> selectedFish) onNext; // Modify this line
-  final List<String>? fishList;
+  const GetNetFishWeight(
+      {super.key, required this.onNext, required this.recordId});
 
   @override
   State<GetNetFishWeight> createState() => _GetNetFishWeightState();
@@ -19,29 +17,37 @@ class GetNetFishWeight extends StatefulWidget {
 
 class _GetNetFishWeightState extends State<GetNetFishWeight> {
   Map<String, TextEditingController> _controllers = {};
-  final TextEditingController _controller = TextEditingController();
   bool allFieldsFilled = false;
-  Set<String> selectedList = {};
-  List<String> speciesList = [
-    '갈치',
-    '고등어',
-    '방어',
-    '문어',
-  ];
+  List<String> speciesList = [];
 
   @override
   void initState() {
     super.initState();
-    for (String species in speciesList) {
-      _controllers[species] = TextEditingController();
-      // 리스너를 추가하여 값 변경 시 상태 업데이트
-      _controllers[species]!.addListener(_updateButtonState);
-    }
+
+    // NetRecordProvider에서 species 리스트를 가져와서 speciesList에 넣기
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final netRecordProvider =
+          Provider.of<NetRecordProvider>(context, listen: false);
+
+      // 특정 recordId에 해당하는 기록 찾기
+      NetRecord? record = netRecordProvider.getRecordById(widget.recordId);
+
+      if (record != null && record.species.isNotEmpty) {
+        speciesList = record.species.toList();
+
+        // speciesList에 있는 각 species에 대해 TextEditingController를 설정
+        for (String species in speciesList) {
+          _controllers[species] = TextEditingController();
+          _controllers[species]!.addListener(_updateButtonState);
+        }
+      }
+
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
-    // 생성된 모든 controllers를 dispose
     for (var controller in _controllers.values) {
       controller.dispose();
     }
@@ -49,28 +55,27 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
   }
 
   void _updateButtonState() {
-    // 모든 필드가 채워졌는지 확인
     bool allFilled =
         _controllers.values.every((controller) => controller.text.isNotEmpty);
 
     setState(() {
       allFieldsFilled = allFilled;
-
-      if (allFilled) {
-        selectedList = _controllers.entries
-            .map((entry) => '${entry.key} ${entry.value.text} kg')
-            .toSet();
-      }
     });
   }
 
-  void _addSpecies(String species) {
-    if (species.isNotEmpty && !speciesList.contains(species)) {
-      setState(() {
-        speciesList.add(species);
-        _controller.clear();
-      });
+  void _submitData() {
+    final netRecordProvider =
+        Provider.of<NetRecordProvider>(context, listen: false);
+
+    List<double> weights = [];
+    for (var entry in _controllers.entries) {
+      weights.add(double.parse(entry.value.text));
     }
+
+    // 업데이트 호출
+    netRecordProvider.updateRecord(widget.recordId, amount: weights);
+
+    widget.onNext();
   }
 
   @override
@@ -79,11 +84,9 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: allFieldsFilled
-              ? () => widget.onNext(selectedList.toList())
-              : null,
+          onPressed: allFieldsFilled ? _submitData : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: selectedList.isEmpty ? gray2 : primaryBlue500,
+            backgroundColor: allFieldsFilled ? primaryBlue500 : gray2,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -107,70 +110,60 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
             const SizedBox(height: 32),
             Expanded(
               child: ListView.builder(
-                  itemCount: speciesList.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index < speciesList.length) {
-                      String species = speciesList[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Container(
-                          height: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: gray2,
-                              width: 1.0,
-                            ),
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: ListTile(
-                            title: Row(
-                              children: [
-                                Text(
-                                  species,
-                                  style: header3R(textBlack),
-                                ),
-                                Spacer(),
-                                Container(
-                                  width: 180,
-                                  height: 33,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                      color: gray3,
-                                      width: 1.0,
-                                    ),
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: TextField(
-                                    controller: _controllers[species],
-                                    keyboardType: TextInputType.number,
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      hintText: '- ',
-                                      isDense: false,
-                                      suffixText: ' kg  ',
-                                    ),
-                                    textAlign: TextAlign.end,
-                                    style: body1(textBlack),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            onTap: () {
-                              // setState(() {
-                              //   if (selectedList.contains(species)) {
-                              //     selectedList.remove(species);
-                              //   } else {
-                              //     selectedList.add(species);
-                              //   }
-                              // });
-                            },
-                          ),
+                itemCount: speciesList.length,
+                itemBuilder: (context, index) {
+                  String species = speciesList[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                      height: 60,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                          color: gray2,
+                          width: 1.0,
                         ),
-                      );
-                    }
-                  }),
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: ListTile(
+                        title: Row(
+                          children: [
+                            Text(
+                              species,
+                              style: header3R(textBlack),
+                            ),
+                            Spacer(),
+                            Container(
+                              width: 180,
+                              height: 33,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: gray3,
+                                  width: 1.0,
+                                ),
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: TextField(
+                                controller: _controllers[species],
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: '- ',
+                                  isDense: false,
+                                  suffixText: ' kg  ',
+                                ),
+                                textAlign: TextAlign.end,
+                                style: body1(textBlack),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),

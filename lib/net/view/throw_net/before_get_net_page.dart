@@ -1,11 +1,11 @@
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_view.dart';
-
 import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class BeforeGetNetPage extends StatefulWidget {
   const BeforeGetNetPage({super.key});
@@ -15,29 +15,35 @@ class BeforeGetNetPage extends StatefulWidget {
 }
 
 class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
-  List<double>? latlon;
-  List<NetRecord> netRecords = [
-    NetRecord(
-        date: DateTime(2024, 8, 25, 6, 0),
-        locationName: '문어대가리',
-        daysSince: 10,
-        species: []),
-    NetRecord(
-        date: DateTime(2024, 8, 24, 6, 0),
-        locationName: '하얀부표',
-        daysSince: 10,
-        species: []),
-    NetRecord(
-        date: DateTime(2024, 8, 23, 4, 0),
-        locationName: '아왕빡세네',
-        daysSince: 10,
-        species: []),
-  ];
+  Future<void> _navigateToAddThrowNetPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AddThrowNetPage(),
+      ),
+    );
+
+    if (result != null) {
+      final String name = result['name'];
+      final List<double> location = result['location'];
+      final DateTime throwTime = result['throwTime'];
+
+      // NetRecordProvider를 통해 상태 업데이트
+      Provider.of<NetRecordProvider>(context, listen: false)
+          .addNewRecord(name, location, throwTime, false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    DateTime today = DateTime.now();
-    List<NetRecord> records = getRecordsForDate(today);
+    // NetRecordProvider에서 netRecords를 가져옴
+    final allRecords = Provider.of<NetRecordProvider>(context).netRecords;
+
+    // amount가 없는 기록만 필터링
+    final records = allRecords
+        .where((record) => record.amount == null || record.amount.isEmpty)
+        .toList();
+
     return Scaffold(
       backgroundColor: backgroundBlue,
       body: records.isNotEmpty
@@ -75,7 +81,6 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                           Row(
                             children: [
                               Text('위치별명', style: body3(gray5)),
-
                               const SizedBox(width: 16),
                               Text(record.locationName,
                                   style: body1(textBlack)),
@@ -87,6 +92,16 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                             height: 51,
                             child: ElevatedButton(
                               onPressed: () {
+                                print("record id = ${record.id}");
+                                print(
+                                    "record locationName = ${record.locationName}");
+                                print("record date = ${record.date}");
+                                print("record daysSince = ${record.daysSince}");
+                                print("record isGet = ${record.isGet}");
+                                print("record species = ${record.species}");
+                                print("record = ${record.amount}");
+                                print("record = ${record.memo}");
+
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -95,7 +110,6 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                   ),
                                 );
                               },
-
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
                                 backgroundColor: primaryYellow500,
@@ -129,15 +143,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
         child: OutlinedButton(
-          onPressed: () {
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const AddThrowNetPage(),
-              ),
-            );
-          },
+          onPressed: _navigateToAddThrowNetPage,
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryBlue500,
             padding: const EdgeInsets.symmetric(vertical: 12),
@@ -149,13 +155,5 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
         ),
       ),
     );
-  }
-
-  List<NetRecord> getRecordsForDate(DateTime date) {
-    return netRecords.where((record) {
-      return record.date.year == date.year &&
-          record.date.month == date.month &&
-          record.date.day == date.day;
-    }).toList();
   }
 }

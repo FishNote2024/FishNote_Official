@@ -1,9 +1,9 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class AfterGetNetPage extends StatefulWidget {
   const AfterGetNetPage({super.key});
@@ -13,39 +13,22 @@ class AfterGetNetPage extends StatefulWidget {
 }
 
 class _AfterGetNetPageState extends State<AfterGetNetPage> {
-  List<double>? latlon;
-  List<NetRecord> netRecords = [
-    NetRecord(
-        date: DateTime(2024, 8, 25, 6, 0),
-        locationName: '문어대가리',
-        daysSince: 10,
-        species: ['고등어'],
-        amount: 10),
-    NetRecord(
-        date: DateTime(2024, 8, 24, 6, 0),
-        locationName: '하얀부표',
-        daysSince: 10,
-        species: ['갈치', '소라'],
-        amount: 30),
-    NetRecord(
-        date: DateTime(2024, 8, 23, 4, 0),
-        locationName: '아왕빡세네',
-        daysSince: 10,
-        species: ['게', '문어'],
-        amount: 21),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    DateTime today = DateTime.now();
-    List<NetRecord> records = getRecordsForDate(today);
+    final records = Provider.of<NetRecordProvider>(context);
+
+    // 어획량이 있는 기록만 필터링
+    final filteredRecords = records.netRecords
+        .where((record) => record.amount != null && record.amount.isNotEmpty)
+        .toList();
+
     return Scaffold(
       backgroundColor: backgroundBlue,
-      body: records.isNotEmpty
+      body: filteredRecords.isNotEmpty
           ? ListView.builder(
-              itemCount: records.length,
+              itemCount: filteredRecords.length,
               itemBuilder: (context, index) {
-                NetRecord record = records[index];
+                NetRecord record = filteredRecords[index];
                 return Padding(
                   padding: const EdgeInsets.all(0.0),
                   child: Card(
@@ -67,8 +50,9 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               Text('양망시간', style: body3(gray5)),
                               SizedBox(width: 16),
                               Text(
-                                  '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date)}',
-                                  style: body1(textBlack)),
+                                '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date)}',
+                                style: body1(textBlack),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -76,7 +60,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('위치별명', style: body3(gray5)),
                               SizedBox(width: 16),
-                              Text('${record.locationName}',
+                              Text(record.locationName,
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -85,9 +69,15 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('어종', style: body3(gray5)),
                               SizedBox(width: 40),
-                              Text(
-                                  '${record.species.isNotEmpty ? record.species.join(', ') : '없음'}',
-                                  style: body1(textBlack)),
+                              Expanded(
+                                child: Text(
+                                  record.species.isNotEmpty
+                                      ? record.species.join(', ')
+                                      : "없음",
+                                  style: body1(textBlack),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ],
                           ),
                           SizedBox(height: 8),
@@ -95,9 +85,34 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('어획량', style: body3(gray5)),
                               SizedBox(width: 27),
-                              Text(
-                                  '${record.amount.isNaN ? "없음" : record.amount} kg',
-                                  style: body1(textBlack)),
+                              Expanded(
+                                child: Text(
+                                  record.amount.isNotEmpty
+                                      ? record.amount
+                                          .map((weight) =>
+                                              "${weight.toString()} kg")
+                                          .join(', ')
+                                      : "없음",
+                                  style: body1(textBlack),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Text('메모', style: body3(gray5)),
+                              SizedBox(width: 40),
+                              Expanded(
+                                child: Text(
+                                  record.memo?.isNotEmpty == true
+                                      ? record.memo!
+                                      : "없음",
+                                  style: body1(textBlack),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -105,15 +120,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             width: double.infinity,
                             height: 51,
                             child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        GetNetView(record: record),
-                                  ),
-                                );
-                              },
+                              onPressed: () {},
                               child: Text('양망완료', style: header3B(textBlack)),
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
@@ -143,35 +150,6 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                 ],
               ),
             ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.only(bottom: 16.0),
-        child: OutlinedButton(
-          onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => const AddThrowNetPage(),
-            //   ),
-            // );
-          },
-          child: Text("기록하기", style: header1B(Colors.white)),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryBlue500,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-      ),
     );
-  }
-
-  List<NetRecord> getRecordsForDate(DateTime date) {
-    return netRecords.where((record) {
-      return record.date.year == date.year &&
-          record.date.month == date.month &&
-          record.date.day == date.day;
-    }).toList();
   }
 }

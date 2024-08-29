@@ -1,12 +1,11 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
+import 'package:fish_note/theme/colors.dart';
+import 'package:fish_note/theme/font.dart';
+import 'package:flutter/material.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish_weight.dart';
 import 'package:fish_note/net/view/get_net/get_net_note.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
-import 'package:fish_note/theme/colors.dart';
-import 'package:fish_note/theme/font.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -34,13 +33,13 @@ class _GetNetViewState extends State<GetNetView> {
     });
 
     if (_currentPage == 2 && selectedFish != null) {
-      // Pass the selected fish list to GetNetFishWeight
+      // 여기서 recordId를 GetNetFishWeight에 전달
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => GetNetFishWeight(
             onNext: _nextPage,
-            selectedFish: selectedFish, // Pass the selected fish list here
+            recordId: widget.record!.id,
           ),
         ),
       );
@@ -50,19 +49,13 @@ class _GetNetViewState extends State<GetNetView> {
   Widget _getPage() {
     switch (_currentPage) {
       case 1:
-        return GetNetFish(
-          onNext: _nextPage,
-          fishList: widget.fishList,
-        );
+        return GetNetFish(onNext: _nextPage, recordId: widget.record!.id);
       case 2:
-        return GetNetFishWeight(
-          onNext: _nextPage,
-          selectedFish: ['람', '아 진짜', '그만'],
-        );
+        return GetNetFishWeight(onNext: _nextPage, recordId: widget.record!.id);
       case 3:
-        return GetNetNote(onNext: _nextPage);
+        return GetNetNote(onNext: _nextPage, recordId: widget.record!.id);
       default:
-        return GetNetNote(onNext: _nextPage);
+        return GetNetNote(onNext: _nextPage, recordId: widget.record!.id);
     }
   }
 
