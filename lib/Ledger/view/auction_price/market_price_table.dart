@@ -1,3 +1,4 @@
+import 'package:fish_note/myPage/view/my_page_view.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -305,7 +306,10 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyPageView()));
+                  },
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),
                     child: Text(
