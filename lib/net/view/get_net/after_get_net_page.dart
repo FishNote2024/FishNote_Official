@@ -50,7 +50,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               Text('양망시간', style: body3(gray5)),
                               SizedBox(width: 16),
                               Text(
-                                '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.date)}',
+                                '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.getDate)}',
                                 style: body1(textBlack),
                               ),
                             ],

@@ -73,7 +73,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                               const SizedBox(width: 16),
                               Text(
                                   DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
-                                      .format(record.date),
+                                      .format(record.throwDate),
                                   style: body1(textBlack)),
                             ],
                           ),
@@ -95,12 +95,13 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                 print("record id = ${record.id}");
                                 print(
                                     "record locationName = ${record.locationName}");
-                                print("record date = ${record.date}");
+                                print("record date = ${record.throwDate}");
                                 print("record daysSince = ${record.daysSince}");
                                 print("record isGet = ${record.isGet}");
                                 print("record species = ${record.species}");
                                 print("record = ${record.amount}");
                                 print("record = ${record.memo}");
+                                print("--> record = ${record.location}");
 
                                 Navigator.push(
                                   context,
