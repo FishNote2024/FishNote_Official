@@ -41,6 +41,8 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
           _controllers[species]!.addListener(_updateButtonState);
         }
       }
+
+      setState(() {});
     });
   }
 
@@ -70,8 +72,9 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
       weights.add(double.parse(entry.value.text));
     }
 
-    // 업데이트 하기
+    // 업데이트 호출
     netRecordProvider.updateRecord(widget.recordId, amount: weights);
+
     widget.onNext();
   }
 
