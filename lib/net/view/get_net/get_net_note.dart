@@ -20,7 +20,10 @@ class _GetNetNoteState extends State<GetNetNote> {
   void _submitMemo() {
     final netRecordProvider =
         Provider.of<NetRecordProvider>(context, listen: false);
-    netRecordProvider.updateRecord(widget.recordId, memo: memo);
+    netRecordProvider.updateRecord(widget.recordId,
+        memo: memo, getTime: DateTime.now());
+    print("getTime : ${DateTime.now()}");
+    print(netRecordProvider.getRecordById(widget.recordId)?.getDate.toString());
     Navigator.pushReplacementNamed(context, '/netPage2');
   }
 
@@ -36,8 +39,13 @@ class _GetNetNoteState extends State<GetNetNote> {
             if (memo.isNotEmpty) {
               _submitMemo();
             } else {
-              // 비어있어도 다음 페이지로 이동
-              Navigator.pushReplacementNamed(context, '/netPage2');
+              _submitMemo();
+              // // 비어있어도 다음 페이지로 이동
+              // final netRecordProvider =
+              //     Provider.of<NetRecordProvider>(context, listen: false);
+              // netRecordProvider.updateRecord(widget.recordId,
+              //     getTime: DateTime.now());
+              // Navigator.pushReplacementNamed(context, '/netPage2');
             }
           },
           style: ElevatedButton.styleFrom(

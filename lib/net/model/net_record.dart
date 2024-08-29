@@ -1,5 +1,5 @@
 import 'dart:ffi';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +13,7 @@ class NetRecord {
   final List<double> amount;
   final bool isGet;
   final String? memo;
+  final List<double> location; // location을 위도, 경도로 저장
   Map<String, double> fishData;
 
   NetRecord(
@@ -22,12 +23,11 @@ class NetRecord {
       required this.daysSince,
       required this.id,
       required this.isGet,
+      required this.location,
       this.species = const {},
       this.amount = const [],
       this.memo,
       this.fishData = const {}});
-
-  // get memo => null;
 }
 
 class NetRecordProvider with ChangeNotifier {
@@ -110,7 +110,8 @@ class NetRecordProvider with ChangeNotifier {
     _netRecords.add(NetRecord(
       id: _nextId++,
       throwDate: throwTime,
-      getDate: getTime!,
+      location: location, // location 추가
+      getDate: getTime ?? DateTime.now(),
       locationName: name,
       daysSince: 0,
       isGet: isGet,
@@ -122,7 +123,10 @@ class NetRecordProvider with ChangeNotifier {
   }
 
   void updateRecord(int id,
-      {Set<String>? species, List<double>? amount, String? memo}) {
+      {Set<String>? species,
+      List<double>? amount,
+      String? memo,
+      DateTime? getTime}) {
     final recordIndex = _netRecords.indexWhere((record) => record.id == id);
     if (recordIndex != -1) {
       final existingRecord = _netRecords[recordIndex];
@@ -130,7 +134,8 @@ class NetRecordProvider with ChangeNotifier {
         id: existingRecord.id,
         throwDate: existingRecord.throwDate,
         locationName: existingRecord.locationName,
-        getDate: existingRecord.getDate,
+        location: existingRecord.location,
+        getDate: getTime ?? existingRecord.getDate, // getTime 업데이트 추가
         daysSince: existingRecord.daysSince,
         isGet: existingRecord.isGet,
         species: species ?? existingRecord.species,
@@ -149,9 +154,9 @@ class NetRecordProvider with ChangeNotifier {
     }
   }
 
-  // void setDaysSince(DateTime today) {
-  //   final diff = today.difference(_getNetTime).inDays;
-  //   _daysSince = diff;
-  //   notifyListeners();
-  // }
+  void setDaysSince(DateTime today) {
+    final diff = today.difference(_throwTime as DateTime).inDays;
+    _daysSince = diff;
+    notifyListeners();
+  }
 }

@@ -101,6 +101,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                 print("record species = ${record.species}");
                                 print("record = ${record.amount}");
                                 print("record = ${record.memo}");
+                                print("--> record = ${record.location}");
 
                                 Navigator.push(
                                   context,
