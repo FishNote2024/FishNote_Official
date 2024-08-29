@@ -1,14 +1,15 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:provider/provider.dart';
 
 class GetNetFishWeight extends StatefulWidget {
-  const GetNetFishWeight({super.key, required this.onNext});
+  final VoidCallback onNext;
+  final int recordId;
 
-  final void Function(List<String> selectedFish) onNext;
+  const GetNetFishWeight(
+      {super.key, required this.onNext, required this.recordId});
 
   @override
   State<GetNetFishWeight> createState() => _GetNetFishWeightState();
@@ -17,25 +18,28 @@ class GetNetFishWeight extends StatefulWidget {
 class _GetNetFishWeightState extends State<GetNetFishWeight> {
   Map<String, TextEditingController> _controllers = {};
   bool allFieldsFilled = false;
-  Set<String> selectedList = {};
   List<String> speciesList = [];
 
   @override
   void initState() {
     super.initState();
 
-    // WidgetsBinding을 사용해 initState 이후에 실행
+    // NetRecordProvider에서 species 리스트를 가져와서 speciesList에 할당
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final netRecordProvider =
           Provider.of<NetRecordProvider>(context, listen: false);
-      String speciesString =
-          netRecordProvider.fishData.keys.elementAt(0).toString();
-      speciesList = speciesString.replaceAll(RegExp(r'[\[\]]'), '').split(', ');
 
-      // speciesList가 초기화된 후에 TextEditingController를 설정합니다.
-      for (String species in speciesList) {
-        _controllers[species] = TextEditingController();
-        _controllers[species]!.addListener(_updateButtonState);
+      // 특정 recordId에 해당하는 기록을 찾음
+      NetRecord? record = netRecordProvider.getRecordById(widget.recordId);
+
+      if (record != null && record.species.isNotEmpty) {
+        speciesList = record.species.toList();
+
+        // speciesList에 있는 각 species에 대해 TextEditingController를 설정
+        for (String species in speciesList) {
+          _controllers[species] = TextEditingController();
+          _controllers[species]!.addListener(_updateButtonState);
+        }
       }
 
       setState(() {}); // 컨트롤러 설정 후 UI 갱신
@@ -56,50 +60,31 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
 
     setState(() {
       allFieldsFilled = allFilled;
-
-      if (allFilled) {
-        selectedList = _controllers.entries
-            .map((entry) => '${entry.key} ${entry.value.text} kg')
-            .toSet();
-      }
     });
+  }
+
+  void _submitData() {
+    final netRecordProvider =
+        Provider.of<NetRecordProvider>(context, listen: false);
+
+    List<double> weights = [];
+    for (var entry in _controllers.entries) {
+      weights.add(double.parse(entry.value.text));
+    }
+
+    // 업데이트 호출
+    netRecordProvider.updateRecord(widget.recordId, amount: weights);
+
+    widget.onNext();
   }
 
   @override
   Widget build(BuildContext context) {
-    final allRecords = Provider.of<NetRecordProvider>(context).netRecords;
     return Scaffold(
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
-          onPressed: allFieldsFilled
-              ? () {
-                  final netRecordProvider =
-                      Provider.of<NetRecordProvider>(context, listen: false);
-                  List<double> weights = [];
-                  List<String> species = [];
-                  for (var entry in _controllers.entries) {
-                    String speciesName = entry.key;
-                    double weight = double.parse(entry.value.text);
-
-                    species.add(speciesName);
-                    weights.add(weight);
-                  }
-
-                  // 하나의 레코드로 추가
-                  netRecordProvider.addNewRecord(
-                    netRecordProvider.locationName,
-                    netRecordProvider.location,
-                    DateTime.now(),
-                    true,
-                    species: species.toSet(),
-                    amount: weights,
-                  );
-                  print(netRecordProvider.fishData);
-
-                  widget.onNext(selectedList.toList());
-                }
-              : null,
+          onPressed: allFieldsFilled ? _submitData : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: allFieldsFilled ? primaryBlue500 : gray2,
             padding: const EdgeInsets.symmetric(vertical: 16),

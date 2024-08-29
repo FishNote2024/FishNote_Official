@@ -7,9 +7,10 @@ import 'package:fish_note/theme/font.dart';
 import 'package:provider/provider.dart';
 
 class GetNetFish extends StatefulWidget {
-  const GetNetFish({super.key, required this.onNext});
-
   final VoidCallback onNext;
+  final int recordId;
+
+  const GetNetFish({super.key, required this.onNext, required this.recordId});
 
   @override
   State<GetNetFish> createState() => _GetNetFishState();
@@ -56,10 +57,9 @@ class _GetNetFishState extends State<GetNetFish> {
           onPressed: selectedList.isEmpty
               ? null
               : () {
-                  netRecordProvider.setSpecies(selectedList.toSet()); //
-                  netRecordProvider.fishData.clear();
-                  netRecordProvider.addFish(selectedList.toString(), 0);
-                  print("🤯 fishData = ${netRecordProvider.fishData}");
+                  // 선택된 어종을 기록에 업데이트
+                  netRecordProvider.updateRecord(widget.recordId,
+                      species: selectedList.toSet());
                   widget.onNext();
                 },
           style: ElevatedButton.styleFrom(
@@ -143,7 +143,8 @@ class _GetNetFishState extends State<GetNetFish> {
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => GetNetAddFish(),
+                                  builder: (context) => GetNetAddFish(
+                                      recordId: widget.recordId), // recordId 전달
                                 ),
                               );
 

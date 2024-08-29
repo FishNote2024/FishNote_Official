@@ -134,6 +134,14 @@ class NetRecordProvider with ChangeNotifier {
     }
   }
 
+  NetRecord? getRecordById(int id) {
+    try {
+      return _netRecords.firstWhere((record) => record.id == id);
+    } catch (e) {
+      return null; // 해당 ID의 기록이 없을 경우 null 반환
+    }
+  }
+
   void setDaysSince(DateTime today) {
     final diff = today.difference(_getNetTime).inDays;
     _daysSince = diff;

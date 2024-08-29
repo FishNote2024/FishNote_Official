@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class GetNetNote extends StatefulWidget {
-  const GetNetNote({super.key, required this.onNext});
   final VoidCallback onNext;
+  final int recordId;
+
+  const GetNetNote({super.key, required this.onNext, required this.recordId});
 
   @override
   State<GetNetNote> createState() => _GetNetNoteState();
@@ -14,6 +16,16 @@ class GetNetNote extends StatefulWidget {
 
 class _GetNetNoteState extends State<GetNetNote> {
   String memo = "";
+
+  void _submitMemo() {
+    final netRecordProvider =
+        Provider.of<NetRecordProvider>(context, listen: false);
+
+    netRecordProvider.updateRecord(widget.recordId, memo: "_controller.text");
+
+    widget.onNext();
+  }
+
   @override
   Widget build(BuildContext context) {
     final netRecordProvider =
@@ -29,6 +41,7 @@ class _GetNetNoteState extends State<GetNetNote> {
               netRecordProvider.setMemo(memo);
               print("netRecordProvider.memo: ${netRecordProvider.memo}");
             }
+            _submitMemo();
 
             Navigator.pushReplacementNamed(context, '/netPage2');
           },

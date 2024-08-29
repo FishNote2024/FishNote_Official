@@ -84,7 +84,7 @@ class MyApp extends StatelessWidget {
         '/myPage': (context) => const MyPageView(),
         '/journal': (context) => const JournalView(),
         // '/getNetFish': (context) => const GetNetFish(),
-        '/getNetAddFish': (context) => const GetNetAddFish(),
+        // '/getNetAddFish': (context) => const GetNetAddFish(),
         '/getNetAddFishWeight': (context) => const AddThrowNetPage(),
         '/favorites': (context) => const FavoritesView(),
       },

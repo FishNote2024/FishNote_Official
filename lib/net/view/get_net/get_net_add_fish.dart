@@ -13,7 +13,8 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class GetNetAddFish extends StatefulWidget {
-  const GetNetAddFish({super.key});
+  final int recordId;
+  const GetNetAddFish({super.key, required this.recordId});
 
   @override
   State<GetNetAddFish> createState() => _GetNetAddFishState();
@@ -58,12 +59,16 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
           onPressed: selectedList.isNotEmpty
               ? () {
                   netRecordProvider.setSpecies(selectedList);
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GetNetView(),
-                    ),
-                  );
+                  // Navigator.pushReplacement(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => GetNetView(
+                  //       recordId: widget.recordId,
+                  //     ),
+                  //   ),
+                  // );
+                  Navigator.pop(
+                      context, widget.recordId); // recordId를 반환하면서 이전 화면으로 이동
                 }
               : null,
           style: ElevatedButton.styleFrom(
