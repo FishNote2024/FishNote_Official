@@ -67,6 +67,7 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
 
   @override
   Widget build(BuildContext context) {
+    final allRecords = Provider.of<NetRecordProvider>(context).netRecords;
     return Scaffold(
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -75,10 +76,25 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
               ? () {
                   final netRecordProvider =
                       Provider.of<NetRecordProvider>(context, listen: false);
+                  List<double> weights = [];
+                  List<String> species = [];
                   for (var entry in _controllers.entries) {
-                    netRecordProvider.addFish(
-                        entry.key, double.parse(entry.value.text));
+                    String speciesName = entry.key;
+                    double weight = double.parse(entry.value.text);
+
+                    species.add(speciesName);
+                    weights.add(weight);
                   }
+
+                  // 하나의 레코드로 추가
+                  netRecordProvider.addNewRecord(
+                    netRecordProvider.locationName,
+                    netRecordProvider.location,
+                    DateTime.now(),
+                    true,
+                    species: species.toSet(),
+                    amount: weights,
+                  );
                   print(netRecordProvider.fishData);
 
                   widget.onNext(selectedList.toList());
