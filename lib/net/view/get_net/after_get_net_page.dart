@@ -85,7 +85,6 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             children: [
                               Text('어획량', style: body3(gray5)),
                               SizedBox(width: 27),
-                              // 어종과 무게를 함께 표시
                               Expanded(
                                 child: Text(
                                   record.amount.isNotEmpty
@@ -121,9 +120,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             width: double.infinity,
                             height: 51,
                             child: ElevatedButton(
-                              onPressed: () {
-                                // Handle button press
-                              },
+                              onPressed: () {},
                               child: Text('양망완료', style: header3B(textBlack)),
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,

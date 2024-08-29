@@ -1,11 +1,6 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_fish.dart';
-import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
-import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
-
-import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/signUp/model/data_list.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -59,16 +54,7 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
           onPressed: selectedList.isNotEmpty
               ? () {
                   netRecordProvider.setSpecies(selectedList);
-                  // Navigator.pushReplacement(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => GetNetView(
-                  //       recordId: widget.recordId,
-                  //     ),
-                  //   ),
-                  // );
-                  Navigator.pop(
-                      context, widget.recordId); // recordId를 반환하면서 이전 화면으로 이동
+                  Navigator.pop(context, widget.recordId);
                 }
               : null,
           style: ElevatedButton.styleFrom(

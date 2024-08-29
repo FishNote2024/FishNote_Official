@@ -1,9 +1,7 @@
 import 'package:fish_note/net/model/net_record.dart';
-import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish_weight.dart';
 import 'package:fish_note/net/view/get_net/get_net_note.dart';
-import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -61,9 +59,8 @@ class _GetNetViewState extends State<GetNetView> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    print("dd ${widget.record?.locationName}");
+    print("-> ${widget.record?.locationName}");
   }
 
   @override
