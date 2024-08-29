@@ -24,7 +24,7 @@ class _GetNetFishState extends State<GetNetFish> {
   @override
   void initState() {
     super.initState();
-    // 최초 로딩 시 UserInformationProvider에서 species를 가져와 NetRecordProvider에 설정
+    // 최초 로딩 시에만 UserInformationProvider에서 species를 가져와 NetRecordProvider에 설정
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final userInformationProvider =
           Provider.of<UserInformationProvider>(context, listen: false);
@@ -47,7 +47,7 @@ class _GetNetFishState extends State<GetNetFish> {
   Widget build(BuildContext context) {
     final netRecordProvider = Provider.of<NetRecordProvider>(context);
 
-    // NetRecordProvider에서 업데이트된 species 목록을 가져옴
+    // NetRecordProvider에서 업데이트된 species 목록 가져옴
     speciesList = netRecordProvider.species;
 
     return Scaffold(
@@ -143,11 +143,10 @@ class _GetNetFishState extends State<GetNetFish> {
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => GetNetAddFish(
-                                      recordId: widget.recordId), // recordId 전달
+                                  builder: (context) =>
+                                      GetNetAddFish(recordId: widget.recordId),
                                 ),
                               );
-
                               // 돌아왔을 때 NetRecordProvider에서 최신 목록 가져오기
                               setState(() {
                                 speciesList = netRecordProvider.species;

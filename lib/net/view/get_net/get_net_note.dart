@@ -20,30 +20,25 @@ class _GetNetNoteState extends State<GetNetNote> {
   void _submitMemo() {
     final netRecordProvider =
         Provider.of<NetRecordProvider>(context, listen: false);
-
-    netRecordProvider.updateRecord(widget.recordId, memo: "_controller.text");
-
+    netRecordProvider.updateRecord(widget.recordId, memo: memo);
     widget.onNext();
   }
 
   @override
   Widget build(BuildContext context) {
-    final netRecordProvider =
-        Provider.of<NetRecordProvider>(context, listen: false);
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
+            // 메모가 비어있지 않으면 저장하고 다음 페이지로 이동
             if (memo.isNotEmpty) {
-              netRecordProvider.setMemo(memo);
-              print("netRecordProvider.memo: ${netRecordProvider.memo}");
+              _submitMemo();
+            } else {
+              // 비어있어도 다음 페이지로 이동
+              widget.onNext();
             }
-            _submitMemo();
-
-            Navigator.pushReplacementNamed(context, '/netPage2');
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: primaryBlue500,

@@ -1,13 +1,10 @@
-
 import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/net/view/get_net/after_get_net_page.dart';
 import 'package:fish_note/net/view/throw_net/before_get_net_page.dart';
-import 'package:fish_note/net/view/throw_net/throw_net_page.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:intl/intl.dart';
-import '../../home/view/ledger/ledger_page.dart';
 
 class NetTabBarView extends StatefulWidget {
   final int initialTabIndex;

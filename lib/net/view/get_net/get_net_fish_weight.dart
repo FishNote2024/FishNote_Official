@@ -24,12 +24,12 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
   void initState() {
     super.initState();
 
-    // NetRecordProvider에서 species 리스트를 가져와서 speciesList에 할당
+    // NetRecordProvider에서 species 리스트를 가져와서 speciesList에 넣기
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final netRecordProvider =
           Provider.of<NetRecordProvider>(context, listen: false);
 
-      // 특정 recordId에 해당하는 기록을 찾음
+      // 특정 recordId에 해당하는 기록 찾기
       NetRecord? record = netRecordProvider.getRecordById(widget.recordId);
 
       if (record != null && record.species.isNotEmpty) {
@@ -41,8 +41,6 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
           _controllers[species]!.addListener(_updateButtonState);
         }
       }
-
-      setState(() {}); // 컨트롤러 설정 후 UI 갱신
     });
   }
 
@@ -72,9 +70,8 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
       weights.add(double.parse(entry.value.text));
     }
 
-    // 업데이트 호출
+    // 업데이트 하기
     netRecordProvider.updateRecord(widget.recordId, amount: weights);
-
     widget.onNext();
   }
 
