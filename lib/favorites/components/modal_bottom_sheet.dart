@@ -8,10 +8,16 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../signUp/model/location.dart';
 
-void showFavoriteBottomSheet(BuildContext context) {
+void showFavoriteBottomSheet(
+    BuildContext context,
+    WebViewController controller,
+    TextEditingController latController,
+    TextEditingController lngController,
+    TextEditingController nameController) {
   showModalBottomSheet(
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height * 0.6,
@@ -28,8 +34,10 @@ void showFavoriteBottomSheet(BuildContext context) {
     builder: (BuildContext context) {
       final UserInformationProvider provider = Provider.of<UserInformationProvider>(context);
 
-      List<Widget> favoriteList =
-          provider.favorites.map((favorite) => _buildFavoriteItem(favorite, context)).toList();
+      List<Widget> favoriteList = provider.favorites
+          .map((favorite) => _buildFavoriteItem(
+              favorite, context, controller, latController, lngController, nameController))
+          .toList();
 
       return Container(
         decoration: const BoxDecoration(
@@ -74,17 +82,34 @@ void showFavoriteBottomSheet(BuildContext context) {
   );
 }
 
-Widget _buildFavoriteItem(Location location, BuildContext context) {
+Widget _buildFavoriteItem(
+    Location location,
+    BuildContext context,
+    WebViewController controller,
+    TextEditingController latController,
+    TextEditingController lngController,
+    TextEditingController nameController) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(location.name, style: body1()),
-          const SizedBox(width: 15),
-          Text('${location.latlon.latitude}, ${location.latlon.longitude}', style: body1(gray4)),
-        ],
+      InkWell(
+        onTap: () {
+          // 즐겨찾기 항목 클릭 시 로직 추가
+          Navigator.pop(context);
+          latController.text = '${location.latlon.latitude}';
+          lngController.text = '${location.latlon.longitude}';
+          controller.runJavaScript(
+              'fromAppToWeb("${location.latlon.latitude}", "${location.latlon.longitude}");');
+          nameController.text = location.name;
+        },
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(location.name, style: body1()),
+            const SizedBox(width: 15),
+            Text('${location.latlon.latitude}, ${location.latlon.longitude}', style: body1(gray4)),
+          ],
+        ),
       ),
       IconButton(
         icon: const Icon(Icons.close),
@@ -252,14 +277,14 @@ void showLocationModal(
                       : () {
                           // 별명 등록 로직 추가
                           if (isFavorite) {
-                            if (provider.favorites
-                                .any((favorite) => favorite.name == controller.text)) {
-                              showSnackBar(context, '이미 존재하는 별명입니다');
-                              return;
-                            } else if (provider.favorites.any((favorite) =>
+                            if (provider.favorites.any((favorite) =>
                                 favorite.latlon.latitude == latlon.latitude &&
                                 favorite.latlon.longitude == latlon.longitude)) {
                               showSnackBar(context, '이미 존재하는 위치입니다');
+                              return;
+                            } else if (provider.favorites
+                                .any((favorite) => favorite.name == controller.text)) {
+                              showSnackBar(context, '이미 존재하는 별명입니다');
                               return;
                             } else if (provider.favorites.length == 10) {
                               showSnackBar(context, '즐겨찾기는 최대 10개까지 등록 가능합니다');
@@ -272,6 +297,7 @@ void showLocationModal(
                             provider.setLocation(
                                 latlon, controller.text, loginModelProvider.kakaoId);
                           }
+                          controller.clear();
                           Navigator.pop(context);
                           Navigator.pop(context);
                           showSnackBar(

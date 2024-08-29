@@ -189,7 +189,8 @@ class _FavoritesViewState extends State<FavoritesView> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           IconButton(
-                            onPressed: () => showFavoriteBottomSheet(context),
+                            onPressed: () => showFavoriteBottomSheet(context, _controller,
+                                _latController, _lngController, _nameController),
                             icon: const Icon(Icons.star_rate_rounded),
                             color: primaryBlue500,
                             iconSize: 24,
