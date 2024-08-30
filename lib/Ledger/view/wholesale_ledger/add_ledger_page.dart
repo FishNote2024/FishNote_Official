@@ -220,137 +220,6 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
     );
   }
 
-  Widget _buildRevenueEntryForm(BuildContext context, int index) {
-    return Column(
-      children: [
-        _buildRevenueFormRow(
-          index: index,
-          label: "어종",
-          child: Consumer<NetRecordProvider>(
-            builder: (context, netRecordProvider, child) {
-              // 선택된 날짜에 해당하는 어종을 가져옴
-              List<String> speciesList = netRecordProvider.netRecords
-                  .where((record) =>
-                      record.isGet &&
-                      isSameDay(record.getDate, widget.selectedDate))
-                  .expand((record) => record.species)
-                  .toSet()
-                  .toList();
-
-              // 어종이 없을 때 userInfoProvider에서 species 가져오기
-              if (speciesList.isEmpty) {
-                final userInfoProvider = Provider.of<UserInformationProvider>(
-                    context,
-                    listen: false);
-                speciesList = userInfoProvider.species.toList();
-              }
-
-              return DropdownButton<String>(
-                isExpanded: true,
-                value: revenueEntries[index]['어종']?.isEmpty ?? true
-                    ? null
-                    : revenueEntries[index]['어종'],
-                hint: Text("어종을 선택해주세요", style: body2(gray4)),
-                onChanged: (value) {
-                  if (speciesList.length == 1 &&
-                      speciesList[0] == '해당 날짜에 양망한 어종이 없어요') {
-                    // 어종이 없을 때는 선택하지 않음
-                    return;
-                  }
-                  setState(() {
-                    revenueEntries[index]['어종'] = value;
-                  });
-                },
-                items:
-                    speciesList.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value, style: body2(textBlack)),
-                    enabled: !(speciesList.length == 1 &&
-                        speciesList[0] == '해당 날짜에 양망한 어종이 없어요'), // 비활성화 설정
-                  );
-                }).toList(),
-                underline: SizedBox.shrink(),
-              );
-            },
-          ),
-        ),
-        _buildRevenueFormRow(
-          index: index,
-          label: "위판량",
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      revenueEntries[index]['위판량'] = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "무게를 입력해주세요",
-                    hintStyle: body2(gray4),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              SizedBox(width: 8),
-              Text("kg", style: body2(gray4)),
-            ],
-          ),
-        ),
-        _buildRevenueFormRow(
-          index: index,
-          label: "위판 수익",
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  onChanged: (value) {
-                    setState(() {
-                      revenueEntries[index]['위판 수익'] = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "수입 금액을 입력해주세요",
-                    hintStyle: body2(gray4),
-                  ),
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              SizedBox(width: 8),
-              Text("원", style: body2(gray4)),
-            ],
-          ),
-        ),
-        Row(
-          children: [
-            Spacer(),
-            OutlinedButton(
-              onPressed: () {
-                _showDeleteConfirmationDialog(context, index);
-              },
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.transparent),
-                padding: EdgeInsets.zero,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('삭제하기 ', style: body2(alertRedBackground)),
-                  Icon(Icons.delete_forever_outlined,
-                      color: alertRedBackground),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
   void _showDeleteConfirmationDialog(BuildContext context, int index) {
     showDialog(
       context: context,
@@ -472,6 +341,138 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
     );
   }
 
+  Widget _buildRevenueEntryForm(BuildContext context, int index) {
+    return Column(
+      children: [
+        _buildRevenueFormRow(
+          index: index,
+          label: "어종",
+          child: Consumer<NetRecordProvider>(
+            builder: (context, netRecordProvider, child) {
+              // 선택된 날짜에 해당하는 어종을 가져옴
+              List<String> speciesList = netRecordProvider.netRecords
+                  .where((record) =>
+                      record.isGet &&
+                      isSameDay(record.getDate, widget.selectedDate))
+                  .expand((record) => record.species)
+                  .toSet()
+                  .toList();
+
+              // 어종이 없을 때 userInfoProvider에서 species 가져오기
+              if (speciesList.isEmpty) {
+                final userInfoProvider = Provider.of<UserInformationProvider>(
+                    context,
+                    listen: false);
+                speciesList = userInfoProvider.species.toList();
+              }
+
+              return DropdownButton<String>(
+                isExpanded: true,
+                value: revenueEntries[index]['어종']?.isEmpty ?? true
+                    ? null
+                    : revenueEntries[index]['어종'],
+                hint: Text("어종을 선택해주세요", style: body2(gray4)),
+                onChanged: (value) {
+                  if (speciesList.length == 1 &&
+                      speciesList[0] == '해당 날짜에 양망한 어종이 없어요') {
+                    // 어종이 없을 때는 선택하지 않음
+                    return;
+                  }
+                  setState(() {
+                    revenueEntries[index]['어종'] = value;
+                  });
+                },
+                items:
+                    speciesList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value, style: body2(textBlack)),
+                    enabled: !(speciesList.length == 1 &&
+                        speciesList[0] == '해당 날짜에 양망한 어종이 없어요'), // 비활성화 설정
+                  );
+                }).toList(),
+                underline: SizedBox.shrink(),
+              );
+            },
+          ),
+        ),
+        _buildRevenueFormRow(
+          index: index,
+          label: "위판량",
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      revenueEntries[index]['위판량'] = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "무게를 입력해주세요",
+                    hintStyle: body2(gray4),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              SizedBox(width: 8),
+              Text("kg", style: body2(gray4)),
+            ],
+          ),
+        ),
+        _buildRevenueFormRow(
+          index: index,
+          label: "위판 수익",
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      revenueEntries[index]['위판 수익'] = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "수입 금액을 입력해주세요",
+                    hintStyle: body2(gray4),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              SizedBox(width: 8),
+              Text("원", style: body2(gray4)),
+            ],
+          ),
+        ),
+        Row(
+          children: [
+            Spacer(),
+            if (revenueEntries.length > 1) // 리스트 길이가 1 초과인 경우에만 삭제 버튼 표시
+              OutlinedButton(
+                onPressed: () {
+                  _showDeleteConfirmationDialog(context, index);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Colors.transparent),
+                  padding: EdgeInsets.zero,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('삭제하기 ', style: body2(alertRedBackground)),
+                    Icon(Icons.delete_forever_outlined,
+                        color: alertRedBackground),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildExpenseEntryForm(int index) {
     return Column(
       children: [
@@ -529,23 +530,24 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         Row(
           children: [
             Spacer(),
-            OutlinedButton(
-              onPressed: () {
-                _showDeleteExpenseConfirmationDialog(context, index);
-              },
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.transparent),
-                padding: EdgeInsets.zero,
+            if (expenseEntries.length > 1) // 리스트 길이가 1 초과인 경우에만 삭제 버튼 표시
+              OutlinedButton(
+                onPressed: () {
+                  _showDeleteExpenseConfirmationDialog(context, index);
+                },
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Colors.transparent),
+                  padding: EdgeInsets.zero,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('삭제하기 ', style: body2(alertRedBackground)),
+                    Icon(Icons.delete_forever_outlined,
+                        color: alertRedBackground),
+                  ],
+                ),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('삭제하기 ', style: body2(alertRedBackground)),
-                  Icon(Icons.delete_forever_outlined,
-                      color: alertRedBackground),
-                ],
-              ),
-            ),
           ],
         ),
       ],
