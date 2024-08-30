@@ -8,6 +8,7 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../signUp/model/user_information_provider.dart';
 import '../components/logout_dialog.dart';
 
@@ -21,6 +22,14 @@ class MyPageView extends StatelessWidget {
         return buildLogoutDialog(context);
       },
     );
+  }
+
+  Future<void> _launchURL(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -115,11 +124,17 @@ class MyPageView extends StatelessWidget {
                 children: [
                   _buildSectionTitle('약관 정보'),
                   const SizedBox(height: 12),
-                  _buildSimpleItem('개인정보 처리방침', onPressed: () {}),
+                  _buildSimpleItem('서비스 이용약관',
+                      onPressed: () => _launchURL(Uri.parse(
+                          'https://docs.google.com/document/d/1zfLtufAEKG5JRNrn9b_EuJyxWO8jpw3EIrd2f5bDNEs/edit?usp=sharing'))),
                   const Divider(color: gray1),
-                  _buildSimpleItem('서비스 이용약관', onPressed: () {}),
+                  _buildSimpleItem('개인정보 처리방침',
+                      onPressed: () => _launchURL(Uri.parse(
+                          'https://docs.google.com/document/d/1PGIXls8ln1CyTLeGe67UePsapXoZfefWrbeYZn-eMKU/edit?usp=sharing'))),
                   const Divider(color: gray1),
-                  _buildSimpleItem('위치정보 서비스 이용약관', onPressed: () {}),
+                  _buildSimpleItem('위치정보 서비스 이용약관',
+                      onPressed: () => _launchURL(Uri.parse(
+                          'https://docs.google.com/document/d/1gDxCWqtUtuxF6DIqRmqCzBnFjCt7NPtqWwT-pLVA7cA/edit?usp=sharing'))),
                 ],
               ),
             ),
