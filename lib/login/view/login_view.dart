@@ -6,6 +6,7 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/login_model_provider.dart';
 
@@ -18,12 +19,67 @@ class LoginView extends StatefulWidget {
 
 class LoginViewState extends State<LoginView> {
   final viewModel = MainViewModel(KakaoLogin());
+  late UserInformationProvider userInformationProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (isLoggedIn) {
+      // 로그인 상태가 참이면 홈 화면으로 이동
+      String id = prefs.getString('uid') ?? '';
+      String name = prefs.getString('name') ?? 'guest';
+      if (!mounted) return; // 비동기 작업 중 상태가 언마운트된 경우 종료
+      final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+      final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+      await userInformationProvider.init(id);
+      loginModelProvider.setKakaoId(id);
+      loginModelProvider.setName(name);
+      if (!mounted) return; // 비동기 작업 중 상태가 언마운트된 경우 종료
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+  }
+
+  Future<void> _checkSignUpStatus() async {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+
+    await viewModel.login();
+    if (viewModel.user != null) {
+      // 카카오 로그인 성공
+      loginModelProvider.setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
+      loginModelProvider.setKakaoId(viewModel.user!.id.toString());
+      // 사용자 정보를 가져온다.
+      await userInformationProvider.init(loginModelProvider.kakaoId);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('isLoggedIn', true); // 로그인 상태 저장
+      await prefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
+      await prefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
+
+      if (!mounted) return; // 비동기 작업 중 상태가 언마운트된 경우 종료
+
+      // 주요 조업 위치의 이름이 있는 경우 -> 회원가입이 완료되었다는 의미이므로 홈 화면으로 이동
+      if (userInformationProvider.location.name != '') {
+        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      } else {
+        // 사용자 이름 저장
+        loginModelProvider.saveName();
+        // 주요 조업 위치의 이름이 없는 경우 -> 회원가입이 아직 완료되지 않았다는 의미이므로 회원가입 화면으로 이동
+        Navigator.pushNamedAndRemoveUntil(context, '/signUp', (route) => false);
+      }
+    } else {
+      print('Login failed or user is null');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final loginModelProvider = Provider.of<LoginModelProvider>(context);
-    final userInformationProvider = Provider.of<UserInformationProvider>(context);
-
     return Scaffold(
       body: Stack(
         children: [
@@ -54,28 +110,7 @@ class LoginViewState extends State<LoginView> {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 50),
               child: ElevatedButton(
-                onPressed: () async {
-                  await viewModel.login();
-                  if (viewModel.user != null) {
-                    // 카카오 로그인 성공
-                    loginModelProvider
-                        .setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
-                    loginModelProvider.setKakaoId(viewModel.user!.id.toString());
-                    // 사용자 정보를 가져온다.
-                    await userInformationProvider.init(loginModelProvider.kakaoId);
-                    // 주요 조업 위치의 이름이 있는 경우 -> 회원가입이 완료되었다는 의미이므로 홈 화면으로 이동
-                    if (userInformationProvider.location.name != '') {
-                      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                    } else {
-                      // 사용자 이름 저장
-                      loginModelProvider.saveName();
-                      // 주요 조업 위치의 이름이 없는 경우 -> 회원가입이 아직 완료되지 않았다는 의미이므로 회원가입 화면으로 이동
-                      Navigator.pushNamedAndRemoveUntil(context, '/signUp', (route) => false);
-                    }
-                  } else {
-                    print('Login failed or user is null');
-                  }
-                },
+                onPressed: () => _checkSignUpStatus(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryYellow400,
                   minimumSize: const Size(328, 51),
