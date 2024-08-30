@@ -1,9 +1,11 @@
 import 'package:fish_note/home/model/ledger_model.dart';
+import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class AddLedgerPage extends StatefulWidget {
   final DateTime selectedDate;
@@ -74,14 +76,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       pays: pays,
     );
 
-    // LedgerProvider에 추가
     Provider.of<LedgerProvider>(context, listen: false).addLedger(newLedger);
-    print(newLedger.date);
-    print(newLedger.pays[0].category);
-    print(newLedger.pays[0].amount);
-    print(newLedger.sales[0].species);
-    print(newLedger.sales[0].weight);
-    print(newLedger.sales[0].price);
 
     // 저장 후 이전 화면으로 이동
     Navigator.pop(context);
@@ -100,34 +95,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
           onPressed: () {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text(
-                    "페이지에서 나가시겠습니까?",
-                    style: header3B(textBlack),
-                  ),
-                  content: Text("작성한 내용이 저장되지 않고 사라져요.\n정말 페이지에서 나가시겠습니까?",
-                      style: body2(gray6)),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("머무르기", style: caption1(primaryBlue500)),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                      child: Text("나가기", style: caption1(primaryBlue500)),
-                    ),
-                  ],
-                );
-              },
-            );
+            _showExitConfirmationDialog(context);
           },
         ),
         actions: [
@@ -137,7 +105,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
               onPressed: () {
                 _saveLedger(context);
               },
-              child: Text("수정완료", style: body2(primaryYellow900)),
+              child: Text("저장", style: body2(primaryYellow900)),
             ),
           ),
         ],
@@ -146,14 +114,45 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
-            children: [_buildRevenue(), _buildExpense()],
+            children: [_buildRevenue(context), _buildExpense()],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRevenue() {
+  void _showExitConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "페이지에서 나가시겠습니까?",
+            style: header3B(textBlack),
+          ),
+          content: Text("작성한 내용이 저장되지 않고 사라집니다.\n정말 페이지에서 나가시겠습니까?",
+              style: body2(gray6)),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("머무르기", style: caption1(primaryBlue500)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: Text("나가기", style: caption1(primaryBlue500)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildRevenue(BuildContext context) {
     return Column(
       children: [
         Padding(
@@ -203,7 +202,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      _buildRevenueEntryForm(index),
+                      _buildRevenueEntryForm(context, index),
                       if (index != revenueEntries.length - 1)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
@@ -220,32 +219,56 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
     );
   }
 
-  Widget _buildRevenueEntryForm(int index) {
+  Widget _buildRevenueEntryForm(BuildContext context, int index) {
     return Column(
       children: [
         _buildRevenueFormRow(
           index: index,
           label: "어종",
-          child: DropdownButton<String>(
-            isExpanded: true,
-            value: revenueEntries[index]['어종']?.isEmpty ?? true
-                ? null
-                : revenueEntries[index]['어종'],
-            hint: Text("어종을 선택해주세요", style: body2(gray4)),
-            onChanged: (value) {
-              setState(() {
-                revenueEntries[index]['어종'] = value;
-              });
+          child: Consumer<NetRecordProvider>(
+            builder: (context, netRecordProvider, child) {
+              // 선택된 날짜에 해당하는 어종을 가져옴
+              List<String> speciesList = netRecordProvider.netRecords
+                  .where((record) =>
+                      record.isGet &&
+                      isSameDay(record.getDate, widget.selectedDate))
+                  .expand((record) => record.species)
+                  .toSet()
+                  .toList();
+
+              // 어종이 없을 때 메시지를 추가
+              if (speciesList.isEmpty) {
+                speciesList = ['해당 날짜에 양망한 어종이 없어요'];
+              }
+
+              return DropdownButton<String>(
+                isExpanded: true,
+                value: revenueEntries[index]['어종']?.isEmpty ?? true
+                    ? null
+                    : revenueEntries[index]['어종'],
+                hint: Text("어종을 선택해주세요", style: body2(gray4)),
+                onChanged: (value) {
+                  if (speciesList.length == 1 &&
+                      speciesList[0] == '해당 날짜에 양망한 어종이 없어요') {
+                    // 어종이 없을 때는 선택하지 않음
+                    return;
+                  }
+                  setState(() {
+                    revenueEntries[index]['어종'] = value;
+                  });
+                },
+                items:
+                    speciesList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value, style: body2(textBlack)),
+                    enabled: !(speciesList.length == 1 &&
+                        speciesList[0] == '해당 날짜에 양망한 어종이 없어요'), // 비활성화 설정
+                  );
+                }).toList(),
+                underline: SizedBox.shrink(),
+              );
             },
-            items: <String>['광어', '아귀', '문어'].map<DropdownMenuItem<String>>(
-              (String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value, style: body2(textBlack)),
-                );
-              },
-            ).toList(),
-            underline: SizedBox.shrink(),
           ),
         ),
         _buildRevenueFormRow(
@@ -303,30 +326,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
             Spacer(),
             OutlinedButton(
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text("삭제"),
-                      content: Text("위판을 삭제하시겠습니까?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text("취소", style: body2(primaryYellow900)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            _deleteRevenueEntry(index);
-                            Navigator.pop(context);
-                          },
-                          child: Text("삭제", style: body2(primaryYellow900)),
-                        ),
-                      ],
-                    );
-                  },
-                );
+                _showDeleteConfirmationDialog(context, index);
               },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Colors.transparent),
@@ -344,6 +344,33 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           ],
         ),
       ],
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("삭제"),
+          content: Text("위판을 삭제하시겠습니까?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("취소", style: body2(primaryYellow900)),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteRevenueEntry(index);
+                Navigator.pop(context);
+              },
+              child: Text("삭제", style: body2(primaryYellow900)),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -500,30 +527,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
             Spacer(),
             OutlinedButton(
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text("삭제"),
-                      content: Text("지출 내역을 삭제하시겠습니까?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text("취소", style: body2(primaryYellow900)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            _deleteExpenseEntry(index);
-                            Navigator.pop(context);
-                          },
-                          child: Text("삭제", style: body2(primaryYellow900)),
-                        ),
-                      ],
-                    );
-                  },
-                );
+                _showDeleteExpenseConfirmationDialog(context, index);
               },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Colors.transparent),
@@ -541,6 +545,33 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           ],
         ),
       ],
+    );
+  }
+
+  void _showDeleteExpenseConfirmationDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("삭제"),
+          content: Text("지출 내역을 삭제하시겠습니까?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text("취소", style: body2(primaryYellow900)),
+            ),
+            TextButton(
+              onPressed: () {
+                _deleteExpenseEntry(index);
+                Navigator.pop(context);
+              },
+              child: Text("삭제", style: body2(primaryYellow900)),
+            ),
+          ],
+        );
+      },
     );
   }
 
