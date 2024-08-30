@@ -3,10 +3,12 @@ import 'package:fish_note/Ledger/view/wholesale_ledger/ledger_detail_page.dart';
 import 'package:fish_note/Ledger/view/wholesale_ledger/ledger_model.dart';
 import 'package:fish_note/Ledger/view/wholesale_ledger/line_chart_view.dart';
 import 'package:fish_note/Ledger/view/wholesale_ledger/pie_chart_view.dart';
+import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -24,17 +26,10 @@ class _LedgerPageState extends State<LedgerPage> {
   int _selectedValue = 0;
   final PanelController _panelController = PanelController();
 
-  // 임시로 데이터를 저장하는 Map
-  final Map<DateTime, IncomeExpense> _incomeExpenseData = {
-    DateTime.utc(2024, 8, 19): IncomeExpense(
-        date: DateTime.utc(2024, 8, 19), income: 5000, expense: 2000),
-    DateTime.utc(2024, 8, 15): IncomeExpense(
-        date: DateTime.utc(2024, 8, 15), income: 10000, expense: 8000),
-  };
-
-  initState() {
+  @override
+  void initState() {
     super.initState();
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_panelController.isAttached) {
         _panelController.hide();
       }
@@ -47,7 +42,6 @@ class _LedgerPageState extends State<LedgerPage> {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
       });
-      print('🗓 Selected Day: $selectedDay');
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_panelController.isAttached) {
@@ -88,7 +82,7 @@ class _LedgerPageState extends State<LedgerPage> {
           ),
           SlidingUpPanel(
             controller: _panelController,
-            panel: _buildSlidingUpPanelContent(),
+            panel: _buildSlidingUpPanelContent(context),
             minHeight: 460,
             maxHeight: 1000,
             borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
@@ -108,32 +102,13 @@ class _LedgerPageState extends State<LedgerPage> {
               lastDay: DateTime.utc(2030, 3, 14),
               focusedDay: _focusedDay,
               calendarFormat: CalendarFormat.month,
-              // onDaySelected: (selectedDay, focusedDay) {
-              //   _onDaySelected(selectedDay, focusedDay);
-              //   if (!isSameDay(_selectedDay, selectedDay)) {
-              //     setState(() {
-              //       _selectedDay = selectedDay;
-              //       _focusedDay = focusedDay;
-              //     });
-              //     _panelController.show(); // 패널 열기
-              //   } else {
-              //     if (!_panelController.isPanelShown) {
-              //       _panelController.show();
-              //     } else {
-              //       _panelController.hide();
-              //     }
-              //   }
-              // },
               onDaySelected: (selectedDay, focusedDay) {
                 final today = DateTime.now();
-
-                // Normalize the selectedDay and today to compare only the date part
                 final normalizedSelectedDay = DateTime(
                     selectedDay.year, selectedDay.month, selectedDay.day);
                 final normalizedToday =
                     DateTime(today.year, today.month, today.day);
 
-                // If selectedDay is after today, do nothing
                 if (normalizedSelectedDay.isAfter(normalizedToday)) {
                   return;
                 }
@@ -144,7 +119,7 @@ class _LedgerPageState extends State<LedgerPage> {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
                   });
-                  _panelController.show(); // Open panel
+                  _panelController.show();
                 } else {
                   if (!_panelController.isPanelShown) {
                     _panelController.show();
@@ -153,7 +128,6 @@ class _LedgerPageState extends State<LedgerPage> {
                   }
                 }
               },
-
               locale: 'ko_KR',
               selectedDayPredicate: (day) {
                 return isSameDay(_selectedDay, day);
@@ -257,20 +231,6 @@ class _LedgerPageState extends State<LedgerPage> {
                     },
                   ),
                 ),
-                // const Divider(),
-                // Expanded(
-                //   child: ListView.builder(
-                //     itemCount: 5,
-                //     itemBuilder: (context, index) {
-                //       return ListTile(
-                //         title: Text('${index + 1}주차'),
-                //         onTap: () {
-                //           Navigator.pop(context, index + 1);
-                //         },
-                //       );
-                //     },
-                //   ),
-                // ),
               ],
             ),
           ),
@@ -285,216 +245,216 @@ class _LedgerPageState extends State<LedgerPage> {
     });
   }
 
-  Widget _buildSlidingUpPanelContent() {
+  Widget _buildSlidingUpPanelContent(BuildContext context) {
     if (_selectedDay == null) {
       return Center(
         child: Text("선택된 날짜가 없습니다.", style: body1(Colors.black)),
       );
     }
 
-    final DateTime selectedDateOnly = DateTime(
-      _selectedDay!.year,
-      _selectedDay!.month,
-      _selectedDay!.day,
-    );
+    return Consumer<LedgerProvider>(
+      builder: (context, ledgerProvider, child) {
+        final ledger = ledgerProvider.ledgers.firstWhere(
+          (l) => isSameDay(l.date, _selectedDay),
+          orElse: () => LedgerModel(date: _selectedDay!, sales: [], pays: []),
+        );
 
-    final incomeExpense = _incomeExpenseData.keys.firstWhere(
-      (date) =>
-          date.year == selectedDateOnly.year &&
-          date.month == selectedDateOnly.month &&
-          date.day == selectedDateOnly.day,
-      orElse: () => DateTime(0),
-    );
+        final hasData =
+            ledgerProvider.ledgers.any((l) => isSameDay(l.date, _selectedDay));
 
-    final hasData = incomeExpense != DateTime(0);
-
-    return Container(
-      padding: const EdgeInsets.only(left: 18.0, right: 50, bottom: 40),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 10.0, bottom: 24),
-              child:
-                  SvgPicture.asset('assets/icons/topDivider.svg', width: 130),
-            ),
-            Center(
-              child: !hasData
-                  ? Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 140),
-                        Center(
-                          child: Column(children: [
-                            Image.asset('assets/icons/ledgerIcon.png',
-                                width: 130),
-                            Text("오늘의 수입과 지출을 기록하세요!", style: body1(textBlack)),
-                          ]),
-                        ),
-                        const SizedBox(height: 130),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () => {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => AddLedgerPage(
-                                    selectedDate: _selectedDay!.toLocal(),
+        return Container(
+          padding: const EdgeInsets.only(left: 18.0, right: 50, bottom: 40),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 10.0, bottom: 24),
+                  child: SvgPicture.asset('assets/icons/topDivider.svg',
+                      width: 130),
+                ),
+                Center(
+                  child: !hasData
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 140),
+                            Center(
+                              child: Column(children: [
+                                Image.asset('assets/icons/ledgerIcon.png',
+                                    width: 130),
+                                Text("오늘의 수입과 지출을 기록하세요!",
+                                    style: body1(textBlack)),
+                              ]),
+                            ),
+                            const SizedBox(height: 130),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () => {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddLedgerPage(
+                                        selectedDate: _selectedDay!.toLocal(),
+                                      ),
+                                    ),
+                                  )
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: primaryBlue500,
+                                  foregroundColor: Colors.white,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                              )
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: primaryBlue500,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
+                                child:
+                                    Text('장부 추가', style: header4(Colors.white)),
                               ),
                             ),
-                            child: Text('장부 추가', style: header4(Colors.white)),
-                          ),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                            '${DateFormat('yyyy.MM.dd').format(_selectedDay!.toLocal())}',
-                            style: header3B(gray8)),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 33,
-                          child: ElevatedButton(
-                            onPressed: () => {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => LedgerDetailPage(
-                                    selectedDate: _selectedDay!.toLocal(),
+                          ],
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                                '${DateFormat('yyyy.MM.dd').format(_selectedDay!.toLocal())}',
+                                style: header3B(gray8)),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 33,
+                              child: ElevatedButton(
+                                onPressed: () => {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LedgerDetailPage(
+                                        selectedDate: _selectedDay!.toLocal(),
+                                      ),
+                                    ),
+                                  )
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    side: BorderSide(color: primaryBlue500),
                                   ),
                                 ),
-                              )
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: BorderSide(color: primaryBlue500),
+                                child: Text('자세히 보기',
+                                    style: header4(primaryBlue500)),
                               ),
                             ),
-                            child:
-                                Text('자세히 보기', style: header4(primaryBlue500)),
-                          ),
-                        ),
-                        SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Text('매출', style: body1(gray4)),
-                            const SizedBox(width: 12),
-                            Text(
-                                '${_incomeExpenseData[_selectedDay]?.income.toString()}원',
-                                style: header4(primaryBlue300))
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        Table(
-                          columnWidths: {
-                            0: FlexColumnWidth(3),
-                            1: FlexColumnWidth(2),
-                            2: FlexColumnWidth(1),
-                            3: FlexColumnWidth(3),
-                          },
-                          children: [
-                            TableRow(
+                            SizedBox(height: 16),
+                            Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Text('어획량', style: caption1(gray4)),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child:
-                                      Text('단가 (1kg)', style: caption1(gray4)),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Text(''),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Text('총합', style: caption1(gray4)),
-                                ),
+                                Text('매출', style: body1(gray4)),
+                                const SizedBox(width: 12),
+                                Text(
+                                    '${ledger.sales.fold(0, (sum, item) => sum + item.price)}원',
+                                    style: header4(primaryBlue300))
                               ],
                             ),
-                          ],
-                        ),
-                        _buildRevenueTable(),
-                        SizedBox(height: 30),
-                        Row(
-                          children: [
-                            Text('지출', style: body1(gray4)),
-                            const SizedBox(width: 12),
-                            Text(
-                                '${_incomeExpenseData[_selectedDay]?.expense.toString()}원',
-                                style: header4(primaryYellow900))
-                          ],
-                        ),
-                        SizedBox(height: 16),
-                        Table(
-                          columnWidths: {
-                            0: FlexColumnWidth(1),
-                            1: FlexColumnWidth(2),
-                          },
-                          children: [
-                            TableRow(
+                            SizedBox(height: 16),
+                            Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 12.0),
-                                  child: Text('이름', style: caption1(gray4)),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 12.0),
-                                  child: Text('가격', style: caption1(gray4)),
-                                ),
+                                Text("어획량", style: caption1(gray4)),
+                                SizedBox(width: 70),
+                                Text("단가 (1kg)", style: caption1(gray4)),
+                                SizedBox(width: 35),
+                                Text("총합", style: caption1(gray4))
                               ],
                             ),
+                            SizedBox(height: 8),
+                            _buildRevenueTable(ledger.sales),
+                            SizedBox(height: 30),
+                            Row(
+                              children: [
+                                Text('지출', style: body1(gray4)),
+                                const SizedBox(width: 12),
+                                Text(
+                                    '${ledger.pays.fold(0, (sum, item) => sum + item.amount)}원',
+                                    style: header4(primaryYellow900))
+                              ],
+                            ),
+                            SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Text("이름", style: caption1(gray4)),
+                                SizedBox(width: 75),
+                                Text("가격", style: caption1(gray4)),
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            _buildExpenseTable(ledger.pays),
                           ],
                         ),
-                        _buildExpenseTable(),
-                      ],
-                    ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
-  Table _buildRevenueTable() {
+  Table _buildRevenueTable(List<SaleModel> sales) {
     List<TableRow> rows = [];
 
-    // Sample data
-    List<Map<String, String>> data = [
-      {'item': '우럭 120kg', 'price': '2,000', 'total': '240,000원'},
-      {'item': '도다리 183kg', 'price': '988', 'total': '642,000원'},
-      {'item': '아귀 133kg', 'price': '1,230', 'total': '231,070원'},
-    ];
+    for (int i = 0; i < sales.length; i++) {
+      rows.add(
+        TableRow(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Text('${sales[i].species} ${sales[i].weight}kg',
+                  style: body2(black)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Text('X ${sales[i].price.toInt()}', style: body2(black)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Text('=', style: body2(black)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Text('${sales[i].price * sales[i].weight.toInt()}원',
+                  style: body2(black)),
+            ),
+          ],
+        ),
+      );
 
-    for (var entry in data) {
-      rows.add(_buildRevenueTableRow(
-          entry['item']!, entry['price']!, entry['total']!));
-      rows.add(TableRow(children: [
-        Divider(thickness: 1, color: gray1),
-        Divider(thickness: 1, color: gray1),
-        Divider(thickness: 1, color: gray1),
-        Divider(thickness: 1, color: gray1),
-      ]));
+      if (i < sales.length - 1) {
+        rows.add(
+          TableRow(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Divider(color: gray1, thickness: 1),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Divider(color: gray1, thickness: 1),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Divider(color: gray1, thickness: 1),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Divider(color: gray1, thickness: 1),
+              ),
+            ],
+          ),
+        );
+      }
     }
 
     return Table(
@@ -508,42 +468,40 @@ class _LedgerPageState extends State<LedgerPage> {
     );
   }
 
-  TableRow _buildRevenueTableRow(String item, String price, String total) {
-    return TableRow(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Text(item, style: body2(black)),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Text('× $price', style: body2(black)),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Text('=', style: body2(black)),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Text(total, style: body2(black)),
-        ),
-      ],
-    );
-  }
-
-  Table _buildExpenseTable() {
+  Table _buildExpenseTable(List<PayModel> pays) {
     List<TableRow> rows = [];
 
-    List<Map<String, String>> data = [
-      {'item': '인건비', 'price': '100,000원'},
-      {'item': '유류비', 'price': '50,000원'}
-    ];
-    for (var entry in data) {
-      rows.add(_buildExpenseTableRow(entry['item']!, entry['price']!));
-      rows.add(TableRow(children: [
-        Divider(thickness: 1, color: gray1),
-        Divider(thickness: 1, color: gray1),
-      ]));
+    for (int i = 0; i < pays.length; i++) {
+      rows.add(
+        TableRow(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Text(pays[i].category, style: body2(black)),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: Text('${pays[i].amount}원', style: body2(black)),
+            ),
+          ],
+        ),
+      );
+      if (i < pays.length - 1) {
+        rows.add(
+          TableRow(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Divider(color: gray1, thickness: 1),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                child: Divider(color: gray1, thickness: 1),
+              ),
+            ],
+          ),
+        );
+      }
     }
 
     return Table(
@@ -552,21 +510,6 @@ class _LedgerPageState extends State<LedgerPage> {
         1: FlexColumnWidth(2),
       },
       children: rows,
-    );
-  }
-
-  TableRow _buildExpenseTableRow(String item, String price) {
-    return TableRow(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Text(item, style: body2(black)),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(0.0),
-          child: Text('$price', style: body2(black)),
-        ),
-      ],
     );
   }
 
