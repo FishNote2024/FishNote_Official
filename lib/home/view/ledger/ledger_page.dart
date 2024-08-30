@@ -127,13 +127,11 @@ class _LedgerPageState extends State<LedgerPage> {
               onDaySelected: (selectedDay, focusedDay) {
                 final today = DateTime.now();
 
-                // Normalize the selectedDay and today to compare only the date part
                 final normalizedSelectedDay = DateTime(
                     selectedDay.year, selectedDay.month, selectedDay.day);
                 final normalizedToday =
                     DateTime(today.year, today.month, today.day);
 
-                // If selectedDay is after today, do nothing
                 if (normalizedSelectedDay.isAfter(normalizedToday)) {
                   return;
                 }
@@ -144,7 +142,7 @@ class _LedgerPageState extends State<LedgerPage> {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
                   });
-                  _panelController.show(); // Open panel
+                  _panelController.show();
                 } else {
                   if (!_panelController.isPanelShown) {
                     _panelController.show();
@@ -257,20 +255,6 @@ class _LedgerPageState extends State<LedgerPage> {
                     },
                   ),
                 ),
-                // const Divider(),
-                // Expanded(
-                //   child: ListView.builder(
-                //     itemCount: 5,
-                //     itemBuilder: (context, index) {
-                //       return ListTile(
-                //         title: Text('${index + 1}주차'),
-                //         onTap: () {
-                //           Navigator.pop(context, index + 1);
-                //         },
-                //       );
-                //     },
-                //   ),
-                // ),
               ],
             ),
           ),

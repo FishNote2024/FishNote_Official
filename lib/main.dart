@@ -1,4 +1,5 @@
 import 'package:fish_note/favorites/view/favorites_view.dart';
+import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/journal/view/journal_view.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/login/view/login_view.dart';
@@ -32,6 +33,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => UserInformationProvider()),
         ChangeNotifierProvider(create: (_) => NetRecordProvider()),
         ChangeNotifierProvider(create: (_) => LoginModelProvider()),
+        ChangeNotifierProvider(create: (_) => LedgerProvider()),
       ],
       child: const MyApp(),
     ),
@@ -81,8 +83,6 @@ class MyApp extends StatelessWidget {
         '/netPage2': (context) => const NetTabBarView(initialTabIndex: 1),
         '/myPage': (context) => const MyPageView(),
         '/journal': (context) => const JournalView(),
-        // '/getNetFish': (context) => const GetNetFish(),
-        // '/getNetAddFish': (context) => const GetNetAddFish(),
         '/getNetAddFishWeight': (context) => const AddThrowNetPage(),
         '/favorites': (context) => const FavoritesView(),
       },
