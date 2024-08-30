@@ -26,6 +26,14 @@ if (flutterVersionName == null) {
     flutterVersionName = "1.0"
 }
 
+def dotenv = new Properties()
+def envFile = file("${rootProject.projectDir}/../.env")
+if (envFile.exists()) {
+    envFile.withInputStream { stream -> dotenv.load(stream) }
+} else {
+    throw new FileNotFoundException("Could not find .env file at: ${envFile.path}")
+}
+
 android {
     namespace = "com.example.fish_note"
     compileSdk = flutter.compileSdkVersion
@@ -45,6 +53,11 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        def kakaoKey = dotenv['KAKAO_NATIVE_APP_KEY']
+        if (kakaoKey == null) {
+            throw new Exception("KAKAO_NATIVE_APP_KEY not found in .env file")
+        }
+        manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: kakaoKey]
     }
 
     buildTypes {
