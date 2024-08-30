@@ -1,8 +1,19 @@
+import 'package:fish_note/login/view/kakao_login.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../login/view/main_view_model.dart';
+
+Future<void> _clear() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear(); // 모든 저장된 데이터를 삭제
+}
 
 Widget buildLogoutDialog(BuildContext context) {
+  final viewModel = MainViewModel(KakaoLogin());
+
   return AlertDialog(
     insetPadding: const EdgeInsets.symmetric(horizontal: 24),
     shape: RoundedRectangleBorder(
@@ -18,9 +29,11 @@ Widget buildLogoutDialog(BuildContext context) {
         child: Text('취소하기', style: body2(primaryBlue500)),
       ),
       TextButton(
-        onPressed: () {
+        onPressed: () async {
           // 로그아웃 로직 추가
-          Navigator.of(context).pop(); // 다이얼로그 닫기
+          _clear();
+          viewModel.logout();
+          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false); // 다이얼로그 닫기
         },
         child: Text('로그아웃', style: body2(primaryBlue500)),
       ),
