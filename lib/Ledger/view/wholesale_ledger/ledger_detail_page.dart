@@ -1,6 +1,8 @@
+import 'package:fish_note/home/model/ledger_model.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class LedgerDetailPage extends StatefulWidget {
@@ -12,46 +14,13 @@ class LedgerDetailPage extends StatefulWidget {
 }
 
 class _LedgerDetailPageState extends State<LedgerDetailPage> {
-  List<Map<String, dynamic>> revenueEntries = [
-    {'어종': '', '위판량': '', '위판 수익': ''}
-  ];
-  List<Map<String, dynamic>> expenseEntries = [
-    {'구분': '', '비용': ''}
-  ];
-
-  void _addRevenueEntry() {
-    setState(() {
-      revenueEntries.add({
-        '어종': '',
-        '위판량': '',
-        '위판 수익': '',
-      });
-    });
-  }
-
-  void _deleteRevenueEntry(int index) {
-    setState(() {
-      revenueEntries.removeAt(index);
-    });
-  }
-
-  void _addExpenseEntry() {
-    setState(() {
-      expenseEntries.add({
-        '구분': '',
-        '비용': '',
-      });
-    });
-  }
-
-  void _deleteExpenseEntry(int index) {
-    setState(() {
-      expenseEntries.removeAt(index);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    // 해당 날짜에 맞는 LedgerModel을 Provider에서 가져옴
+    final ledgerProvider = Provider.of<LedgerProvider>(context);
+    final LedgerModel? ledger =
+        _getLedgerForDate(widget.selectedDate, ledgerProvider.ledgers);
+
     String formattedDate = DateFormat('MM월 dd일').format(widget.selectedDate);
 
     return Scaffold(
@@ -79,14 +48,28 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
-            children: [_buildRevenue(), _buildExpense()],
+            children: [
+              _buildRevenue(ledger?.sales ?? []), // 매출 정보
+              _buildExpense(ledger?.pays ?? []), // 지출 정보
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRevenue() {
+  LedgerModel? _getLedgerForDate(DateTime date, List<LedgerModel> ledgers) {
+    // 해당 날짜의 LedgerModel을 찾음
+    try {
+      return ledgers.firstWhere(
+        (ledger) => ledger.date == date,
+      );
+    } catch (e) {
+      return null; // 해당 날짜의 LedgerModel이 없을 경우 null 반환
+    }
+  }
+
+  Widget _buildRevenue(List<SaleModel> sales) {
     return Column(
       children: [
         Padding(
@@ -95,7 +78,8 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
             children: [
               Text("매출", style: body1(gray5)),
               const Spacer(),
-              Text("0원", style: header3B(textBlack)),
+              Text("${_calculateTotalRevenue(sales)}원",
+                  style: header3B(textBlack)),
             ],
           ),
         ),
@@ -116,18 +100,16 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: revenueEntries.length,
+                itemCount: sales.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      _buildRevenueEntryForm(index),
-                      if (index != revenueEntries.length - 1)
+                      _buildRevenueEntryForm(sales[index]),
+                      if (index != sales.length - 1)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
                           child: Divider(color: gray1),
                         ),
-                      Divider(color: gray1),
-                      _buildRevenueEntryForm(index),
                     ],
                   );
                 },
@@ -139,30 +121,26 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
     );
   }
 
-  Widget _buildRevenueEntryForm(int index) {
+  Widget _buildRevenueEntryForm(SaleModel sale) {
     return Column(
       children: [
         _buildRevenueFormRow(
-          index: index,
           label: "어종",
-          child: Container(child: Text("광어")),
+          child: Container(child: Text(sale.species)),
         ),
         _buildRevenueFormRow(
-          index: index,
           label: "위판량",
-          child: Container(child: Text("10kg")),
+          child: Container(child: Text("${sale.weight}kg")),
         ),
         _buildRevenueFormRow(
-          index: index,
           label: "위판 수익",
-          child: Container(child: Text("100,000원")),
+          child: Container(child: Text("${sale.price}원")),
         ),
       ],
     );
   }
 
-  Widget _buildRevenueFormRow(
-      {required String label, required Widget child, required int index}) {
+  Widget _buildRevenueFormRow({required String label, required Widget child}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
@@ -183,8 +161,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
     );
   }
 
-  // 지출
-  Widget _buildExpense() {
+  Widget _buildExpense(List<PayModel> pays) {
     return Column(
       children: [
         Padding(
@@ -193,7 +170,8 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
             children: [
               Text("지출", style: body1(gray5)),
               const Spacer(),
-              Text("0원", style: header3B(textBlack)),
+              Text("${_calculateTotalExpense(pays)}원",
+                  style: header3B(textBlack)),
             ],
           ),
         ),
@@ -217,14 +195,14 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: expenseEntries.length,
+                itemCount: pays.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      _buildExpenseEntryForm(index),
-                      if (index != expenseEntries.length - 1)
+                      _buildExpenseEntryForm(pays[index]),
+                      if (index != pays.length - 1)
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
+                          padding: const EdgeInsets.only(bottom: 8.0),
                           child: Divider(color: gray1),
                         ),
                     ],
@@ -238,25 +216,22 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
     );
   }
 
-  Widget _buildExpenseEntryForm(int index) {
+  Widget _buildExpenseEntryForm(PayModel pay) {
     return Column(
       children: [
         _buildExpenseFormRow(
-          index: index,
           label: "구분",
-          child: Text("연료비"),
+          child: Text(pay.category),
         ),
         _buildExpenseFormRow(
-          index: index,
           label: "비용",
-          child: Container(child: Text("100,000원")),
+          child: Container(child: Text("${pay.amount}원")),
         ),
       ],
     );
   }
 
-  Widget _buildExpenseFormRow(
-      {required String label, required Widget child, required int index}) {
+  Widget _buildExpenseFormRow({required String label, required Widget child}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Row(
@@ -275,5 +250,15 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
         ],
       ),
     );
+  }
+
+  // 총 매출 계산
+  int _calculateTotalRevenue(List<SaleModel> sales) {
+    return sales.fold(0, (total, sale) => total + sale.price);
+  }
+
+  // 총 지출 계산
+  int _calculateTotalExpense(List<PayModel> pays) {
+    return pays.fold(0, (total, pay) => total + pay.amount);
   }
 }
