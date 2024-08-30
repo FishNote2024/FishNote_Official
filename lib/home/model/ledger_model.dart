@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 
 class LedgerModel {
   final DateTime date;
-  List<SaleModel> sales = [];
-  List<PayModel> pays = [];
+  final List<SaleModel> sales;
+  final List<PayModel> pays;
 
-  LedgerModel(
-      {required this.date, this.sales = const [], this.pays = const []});
+  LedgerModel({
+    required this.date,
+    List<SaleModel>? sales,
+    List<PayModel>? pays,
+  })  : sales = sales ?? [],
+        pays = pays ?? [];
 }
 
 class SaleModel {
