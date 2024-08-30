@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SignUpLocation extends StatefulWidget {
@@ -245,6 +246,18 @@ class _SignUpLocationState extends State<SignUpLocation> {
 void _showLocationModal(BuildContext context, GeoPoint latlon, String id) {
   final TextEditingController controller = TextEditingController();
 
+  Future<void> completeRegistration() async {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+    // 위치 정보 등록 로직 추가
+    userInformationProvider.setLocation(latlon, controller.text, id);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true); // 로그인 상태 저장
+    await prefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
+    await prefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
+    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+  }
+
   showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(
@@ -253,8 +266,6 @@ void _showLocationModal(BuildContext context, GeoPoint latlon, String id) {
     isScrollControlled: true,
     backgroundColor: backgroundWhite,
     builder: (BuildContext context) {
-      final userInformationProvider = Provider.of<UserInformationProvider>(context);
-
       return Padding(
         padding: const EdgeInsets.all(24),
         child: Padding(
@@ -306,14 +317,7 @@ void _showLocationModal(BuildContext context, GeoPoint latlon, String id) {
               ),
               const SizedBox(height: 12),
               ElevatedButton(
-                onPressed: controller.text.isEmpty
-                    ? () => {}
-                    : () {
-                        // 위치 정보 등록 로직 추가
-                        userInformationProvider.setLocation(latlon, controller.text, id);
-                        Navigator.pop(context);
-                        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                      },
+                onPressed: controller.text.isEmpty ? () => {} : completeRegistration,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   elevation: 0,

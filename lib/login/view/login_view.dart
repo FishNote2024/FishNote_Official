@@ -57,15 +57,15 @@ class LoginViewState extends State<LoginView> {
       loginModelProvider.setKakaoId(viewModel.user!.id.toString());
       // 사용자 정보를 가져온다.
       await userInformationProvider.init(loginModelProvider.kakaoId);
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setBool('isLoggedIn', true); // 로그인 상태 저장
-      await prefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
-      await prefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
 
       if (!mounted) return; // 비동기 작업 중 상태가 언마운트된 경우 종료
 
       // 주요 조업 위치의 이름이 있는 경우 -> 회원가입이 완료되었다는 의미이므로 홈 화면으로 이동
       if (userInformationProvider.location.name != '') {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true); // 로그인 상태 저장
+        await prefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
+        await prefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       } else {
         // 사용자 이름 저장

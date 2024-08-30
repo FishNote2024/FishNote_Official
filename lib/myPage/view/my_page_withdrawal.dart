@@ -1,7 +1,12 @@
+import 'package:fish_note/login/view/kakao_login.dart';
+import 'package:fish_note/login/view/main_view_model.dart';
 import 'package:fish_note/myPage/components/bottom_button.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPageWithdrawal extends StatefulWidget {
   const MyPageWithdrawal({super.key});
@@ -12,6 +17,18 @@ class MyPageWithdrawal extends StatefulWidget {
 
 class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
   bool _agree = false;
+  final viewModel = MainViewModel(KakaoLogin());
+
+  Future<void> _withdrawal() async {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String id = prefs.getString('uid')!;
+    await prefs.clear();
+    userInformationProvider.withDrawal(id);
+    await viewModel.logout();
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +40,7 @@ class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
       bottomNavigationBar: BottomButton(
         text: "탈퇴하기",
         value: _agree ? "agree" : null,
-        onPressed: () => Navigator.pushReplacementNamed(context, '/'),
+        onPressed: _withdrawal,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),

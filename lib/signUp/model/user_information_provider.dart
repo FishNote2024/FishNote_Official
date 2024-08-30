@@ -153,4 +153,10 @@ class UserInformationProvider with ChangeNotifier {
     });
     notifyListeners();
   }
+
+  void withDrawal(String id) async {
+    final docRef = db.collection("users").doc(id);
+    await docRef.delete();
+    notifyListeners();
+  }
 }

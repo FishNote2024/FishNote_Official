@@ -82,8 +82,7 @@ class MyPageView extends StatelessWidget {
                       isRemovable: true,
                       onPressed: () =>
                           userInformationProvider.removeSpecies(item, loginModelProvider.kakaoId))),
-                  _buildSelectableItem('어종 추가하기',
-                      isAdd: true,
+                  _buildAddItem('어종 추가하기',
                       onPressed: () => Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) => const MyPageSpecies()))),
                   const SizedBox(height: 12),
@@ -95,8 +94,7 @@ class MyPageView extends StatelessWidget {
                       isRemovable: true,
                       onPressed: () => userInformationProvider.removeTechnique(
                           item, loginModelProvider.kakaoId))),
-                  _buildSelectableItem('어법 추가하기',
-                      isAdd: true,
+                  _buildAddItem('어법 추가하기',
                       onPressed: () => Navigator.of(context)
                           .push(MaterialPageRoute(builder: (context) => const MyPageTechnique()))),
                   const SizedBox(height: 12),
@@ -179,25 +177,17 @@ class MyPageView extends StatelessWidget {
   }
 
   Widget _buildSelectableItem(String title,
-      {bool isRemovable = false,
-      bool hasLocationIcon = false,
-      bool isAdd = false,
-      required VoidCallback onPressed}) {
+      {bool isRemovable = false, bool hasLocationIcon = false, required VoidCallback onPressed}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.only(left: 16, right: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
-        border: const Border(
-          top: BorderSide(color: gray3),
-          left: BorderSide(color: gray3),
-          right: BorderSide(color: gray3),
-          bottom: BorderSide(color: gray3),
-        ),
+        border: Border.all(color: gray3),
       ),
       child: Row(
         children: [
-          Expanded(child: Text(title, style: isAdd ? body2(gray4) : body1())),
+          Expanded(child: Text(title, style: body1())),
           if (hasLocationIcon)
             IconButton(
               icon: const Icon(Icons.location_on, color: textBlack),
@@ -208,17 +198,31 @@ class MyPageView extends StatelessWidget {
               icon: const Icon(Icons.close, color: textBlack),
               onPressed: onPressed,
             )
-          else if (isAdd)
-            IconButton(
-              onPressed: onPressed,
-              icon: const Icon(Icons.add_circle_outline, color: gray4),
-            )
           else if (!hasLocationIcon)
             TextButton(
               onPressed: onPressed,
               child: Text('수정하기', style: body2(primaryBlue500)),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAddItem(String title, {required VoidCallback onPressed}) {
+    return InkWell(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5),
+          border: Border.all(color: gray3),
+        ),
+        child: Row(
+          children: [
+            Expanded(child: Text(title, style: body2(gray4))),
+            const Icon(Icons.add_circle_outline, color: gray4, size: 24),
+          ],
+        ),
       ),
     );
   }
