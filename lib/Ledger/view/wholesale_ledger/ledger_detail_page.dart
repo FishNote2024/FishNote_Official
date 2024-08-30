@@ -38,7 +38,17 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
-              onPressed: () {},
+              onPressed: () {
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //     builder: (context) => LedgerEditPage(
+                //       selectedDate: widget.selectedDate,
+                //       ledger: ledger,
+                //     ),
+                //   ),
+                // );
+              },
               child: Text("수정하기", style: body2(primaryBlue500)),
             ),
           ),
