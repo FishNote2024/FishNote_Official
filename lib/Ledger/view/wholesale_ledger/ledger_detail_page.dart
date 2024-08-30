@@ -1,3 +1,4 @@
+import 'package:fish_note/Ledger/view/wholesale_ledger/update_ledger.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,7 +17,6 @@ class LedgerDetailPage extends StatefulWidget {
 class _LedgerDetailPageState extends State<LedgerDetailPage> {
   @override
   Widget build(BuildContext context) {
-    // 해당 날짜에 맞는 LedgerModel을 Provider에서 가져옴
     final ledgerProvider = Provider.of<LedgerProvider>(context);
     final LedgerModel? ledger =
         _getLedgerForDate(widget.selectedDate, ledgerProvider.ledgers);
@@ -39,15 +39,23 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
               onPressed: () {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => LedgerEditPage(
-                //       selectedDate: widget.selectedDate,
-                //       ledger: ledger,
-                //     ),
-                //   ),
-                // );
+                if (ledger != null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UpdateLedgerPage(
+                        selectedDate: widget.selectedDate,
+                        ledger: ledger,
+                      ),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('해당 날짜에 대한 장부가 없습니다.'),
+                    ),
+                  );
+                }
               },
               child: Text("수정하기", style: body2(primaryBlue500)),
             ),
@@ -69,13 +77,12 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
   }
 
   LedgerModel? _getLedgerForDate(DateTime date, List<LedgerModel> ledgers) {
-    // 해당 날짜의 LedgerModel을 찾음
     try {
       return ledgers.firstWhere(
         (ledger) => ledger.date == date,
       );
     } catch (e) {
-      return null; // 해당 날짜의 LedgerModel이 없을 경우 null 반환
+      return null;
     }
   }
 
