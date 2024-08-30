@@ -2,6 +2,7 @@ import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SignUpPermission extends StatefulWidget {
   const SignUpPermission({super.key, required this.onNext});
@@ -18,6 +19,14 @@ class _SignUpPermissionState extends State<SignUpPermission> {
   bool _privacyAgree = false;
   bool _locationAgree = false;
   bool _ageAgree = false;
+
+  Future<void> _launchURL(Uri url) async {
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +73,10 @@ class _SignUpPermissionState extends State<SignUpPermission> {
                 label: Text("서비스 이용약관 (필수)", style: body2(gray8)),
                 icon: Icon(Icons.check_rounded, color: _serviceAgree ? primaryBlue400 : gray2),
               ),
-              TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
+              TextButton(
+                  onPressed: () => _launchURL(Uri.parse(
+                      'https://docs.google.com/document/d/1zfLtufAEKG5JRNrn9b_EuJyxWO8jpw3EIrd2f5bDNEs/edit?usp=sharing')),
+                  child: Text("보기", style: caption1(gray5))),
             ],
           ),
           const SizedBox(height: 8),
@@ -81,7 +93,10 @@ class _SignUpPermissionState extends State<SignUpPermission> {
                 label: Text("개인정보 처리방침 (필수)", style: body2(gray8)),
                 icon: Icon(Icons.check_rounded, color: _privacyAgree ? primaryBlue400 : gray2),
               ),
-              TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
+              TextButton(
+                  onPressed: () => _launchURL(Uri.parse(
+                      'https://docs.google.com/document/d/1PGIXls8ln1CyTLeGe67UePsapXoZfefWrbeYZn-eMKU/edit?usp=sharing')),
+                  child: Text("보기", style: caption1(gray5))),
             ],
           ),
           const SizedBox(height: 8),
@@ -98,7 +113,10 @@ class _SignUpPermissionState extends State<SignUpPermission> {
                 label: Text("위치정보 서비스 이용약관 (필수)", style: body2(gray8)),
                 icon: Icon(Icons.check_rounded, color: _locationAgree ? primaryBlue400 : gray2),
               ),
-              TextButton(onPressed: () => {}, child: Text("보기", style: caption1(gray5))),
+              TextButton(
+                  onPressed: () => _launchURL(Uri.parse(
+                      'https://docs.google.com/document/d/1gDxCWqtUtuxF6DIqRmqCzBnFjCt7NPtqWwT-pLVA7cA/edit?usp=sharing')),
+                  child: Text("보기", style: caption1(gray5))),
             ],
           ),
           const SizedBox(height: 8),
