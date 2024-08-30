@@ -24,6 +24,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
   late WebViewController _controller;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -41,12 +42,18 @@ class _SignUpLocationState extends State<SignUpLocation> {
   }
 
   Future<void> _getLocation() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
     setState(() {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
       _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
       latlon = GeoPoint(position.latitude, position.longitude);
+      _isLoading = false;
     });
   }
 
@@ -219,6 +226,14 @@ class _SignUpLocationState extends State<SignUpLocation> {
                   ],
                 ),
               ),
+              _isLoading
+                  ? Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      color: backgroundWhite.withOpacity(0.8),
+                      child: const Center(child: CircularProgressIndicator(color: primaryBlue500)),
+                    )
+                  : const SizedBox.shrink(),
             ],
           ),
         ),
