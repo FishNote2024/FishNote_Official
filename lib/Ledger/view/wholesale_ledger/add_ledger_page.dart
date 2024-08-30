@@ -1,5 +1,6 @@
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/net/model/net_record.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -236,9 +237,17 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   .toSet()
                   .toList();
 
-              // 어종이 없을 때 메시지를 추가
+              // 어종이 없을 때 userInfoProvider에서 species 가져오기
               if (speciesList.isEmpty) {
-                speciesList = ['해당 날짜에 양망한 어종이 없어요'];
+                final userInfoProvider = Provider.of<UserInformationProvider>(
+                    context,
+                    listen: false);
+                speciesList = userInfoProvider.species.toList();
+
+                // 만약 userInfoProvider에서도 어종이 없으면 기본 메시지 추가
+                if (speciesList.isEmpty) {
+                  speciesList = ['해당 날짜에 양망한 어종이 없어요'];
+                }
               }
 
               return DropdownButton<String>(
