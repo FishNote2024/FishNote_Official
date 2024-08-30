@@ -8,55 +8,48 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class AddLedgerPage extends StatefulWidget {
+class UpdateLedgerPage extends StatefulWidget {
   final DateTime selectedDate;
-  const AddLedgerPage({super.key, required this.selectedDate});
+  final LedgerModel ledger;
+
+  const UpdateLedgerPage({
+    Key? key,
+    required this.selectedDate,
+    required this.ledger,
+  }) : super(key: key);
 
   @override
-  State<AddLedgerPage> createState() => _AddLedgerPageState();
+  _UpdateLedgerPageState createState() => _UpdateLedgerPageState();
 }
 
-class _AddLedgerPageState extends State<AddLedgerPage> {
-  List<Map<String, dynamic>> revenueEntries = [
-    {'어종': '', '위판량': '', '위판 수익': ''}
-  ];
-  List<Map<String, dynamic>> expenseEntries = [
-    {'구분': '', '비용': ''}
-  ];
+class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
+  late List<Map<String, dynamic>> revenueEntries;
+  late List<Map<String, dynamic>> expenseEntries;
 
-  void _addRevenueEntry() {
-    setState(() {
-      revenueEntries.add({
-        '어종': '',
-        '위판량': '',
-        '위판 수익': '',
-      });
-    });
+  @override
+  void initState() {
+    super.initState();
+
+    // Initialize the revenue and expense entries based on the ledger passed
+    revenueEntries = widget.ledger.sales.map((sale) {
+      return {
+        '어종': sale.species,
+        '위판량': sale.weight.toString(),
+        '위판 수익': sale.price.toString(),
+      };
+    }).toList();
+
+    expenseEntries = widget.ledger.pays.map((pay) {
+      return {
+        '구분': pay.category,
+        '비용': pay.amount.toString(),
+      };
+    }).toList();
   }
 
-  void _deleteRevenueEntry(int index) {
-    setState(() {
-      revenueEntries.removeAt(index);
-    });
-  }
-
-  void _addExpenseEntry() {
-    setState(() {
-      expenseEntries.add({
-        '구분': '',
-        '비용': '',
-      });
-    });
-  }
-
-  void _deleteExpenseEntry(int index) {
-    setState(() {
-      expenseEntries.removeAt(index);
-    });
-  }
-
-  void _saveLedger(BuildContext context) {
-    List<SaleModel> sales = revenueEntries.map((entry) {
+  void _updateLedger(BuildContext context) {
+    // Create updated sales and pays lists from the form entries
+    List<SaleModel> updatedSales = revenueEntries.map((entry) {
       return SaleModel(
         species: entry['어종'],
         weight: double.tryParse(entry['위판량']) ?? 0.0,
@@ -64,22 +57,30 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       );
     }).toList();
 
-    List<PayModel> pays = expenseEntries.map((entry) {
+    List<PayModel> updatedPays = expenseEntries.map((entry) {
       return PayModel(
         category: entry['구분'],
         amount: int.tryParse(entry['비용']) ?? 0,
       );
     }).toList();
 
-    LedgerModel newLedger = LedgerModel(
+    // Update the existing ledger with new sales and pays
+    final updatedLedger = LedgerModel(
       date: widget.selectedDate,
-      sales: sales,
-      pays: pays,
+      sales: updatedSales,
+      pays: updatedPays,
     );
 
-    Provider.of<LedgerProvider>(context, listen: false).addLedger(newLedger);
+    // Notify the provider that the ledger has been updated
+    final provider = Provider.of<LedgerProvider>(context, listen: false);
+    final ledgerIndex = provider.ledgers
+        .indexWhere((ledger) => ledger.date == widget.selectedDate);
 
-    // 저장 후 이전 화면으로 이동
+    if (ledgerIndex != -1) {
+      provider.updateLedger(updatedLedger, ledgerIndex);
+    }
+
+    // Navigate back after saving
     Navigator.pop(context);
   }
 
@@ -96,7 +97,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
           onPressed: () {
-            _showExitConfirmationDialog(context);
+            Navigator.pop(context);
           },
         ),
         actions: [
@@ -104,7 +105,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
               onPressed: () {
-                _saveLedger(context);
+                _updateLedger(context);
               },
               child: Text("저장", style: body2(primaryYellow900)),
             ),
@@ -119,37 +120,6 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           ),
         ),
       ),
-    );
-  }
-
-  void _showExitConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "페이지에서 나가시겠습니까?",
-            style: header3B(textBlack),
-          ),
-          content: Text("작성한 내용이 저장되지 않고 사라집니다.\n정말 페이지에서 나가시겠습니까?",
-              style: body2(gray6)),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text("머무르기", style: caption1(primaryBlue500)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: Text("나가기", style: caption1(primaryBlue500)),
-            ),
-          ],
-        );
-      },
     );
   }
 
@@ -245,11 +215,15 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                 speciesList = userInfoProvider.species.toList();
               }
 
+              // DropdownButton의 value가 items에 포함되지 않은 경우 null로 설정
+              String? currentValue = revenueEntries[index]['어종'];
+              if (!speciesList.contains(currentValue)) {
+                currentValue = null;
+              }
+
               return DropdownButton<String>(
                 isExpanded: true,
-                value: revenueEntries[index]['어종']?.isEmpty ?? true
-                    ? null
-                    : revenueEntries[index]['어종'],
+                value: currentValue,
                 hint: Text("어종을 선택해주세요", style: body2(gray4)),
                 onChanged: (value) {
                   if (speciesList.length == 1 &&
@@ -293,6 +267,9 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
+                  controller: TextEditingController(
+                    text: revenueEntries[index]['위판량'],
+                  ),
                 ),
               ),
               SizedBox(width: 8),
@@ -318,6 +295,9 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
+                  controller: TextEditingController(
+                    text: revenueEntries[index]['위판 수익'],
+                  ),
                 ),
               ),
               SizedBox(width: 8),
@@ -468,6 +448,9 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
             ],
           ),
         ),
+        SizedBox(
+          height: 30,
+        )
       ],
     );
   }
@@ -519,6 +502,9 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
+                  controller: TextEditingController(
+                    text: expenseEntries[index]['비용'],
+                  ),
                 ),
               ),
               SizedBox(width: 8),
@@ -603,5 +589,36 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         ],
       ),
     );
+  }
+
+  void _addRevenueEntry() {
+    setState(() {
+      revenueEntries.add({
+        '어종': '',
+        '위판량': '',
+        '위판 수익': '',
+      });
+    });
+  }
+
+  void _deleteRevenueEntry(int index) {
+    setState(() {
+      revenueEntries.removeAt(index);
+    });
+  }
+
+  void _addExpenseEntry() {
+    setState(() {
+      expenseEntries.add({
+        '구분': '',
+        '비용': '',
+      });
+    });
+  }
+
+  void _deleteExpenseEntry(int index) {
+    setState(() {
+      expenseEntries.removeAt(index);
+    });
   }
 }
