@@ -14,6 +14,7 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/signUp/view/sign_up_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,9 @@ import 'signUp/model/user_information_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  KakaoSdk.init(nativeAppKey: '0e7b8b40fe199f687f7766e0391aa083');
+  await dotenv.load(fileName: ".env");
+  String kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY']!;
+  KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);
   await initializeDateFormatting('ko_KR', null);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
