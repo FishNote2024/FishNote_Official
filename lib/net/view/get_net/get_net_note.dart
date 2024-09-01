@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -20,8 +21,12 @@ class _GetNetNoteState extends State<GetNetNote> {
   void _submitMemo() {
     final netRecordProvider =
         Provider.of<NetRecordProvider>(context, listen: false);
-    netRecordProvider.updateRecord(widget.recordId,
-        memo: memo, isGet: true, getTime: DateTime.now());
+    final userId =
+        Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
+    print("userId: $userId");
+    Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
+        widget.recordId, userId,
+        getTime: DateTime.now(), isGet: true);
 
     print(
         "isGet updated : ${netRecordProvider.getRecordById(widget.recordId)?.isGet}");
@@ -44,12 +49,6 @@ class _GetNetNoteState extends State<GetNetNote> {
               _submitMemo();
             } else {
               _submitMemo();
-              // // 비어있어도 다음 페이지로 이동
-              // final netRecordProvider =
-              //     Provider.of<NetRecordProvider>(context, listen: false);
-              // netRecordProvider.updateRecord(widget.recordId,
-              //     getTime: DateTime.now());
-              // Navigator.pushReplacementNamed(context, '/netPage2');
             }
           },
           style: ElevatedButton.styleFrom(

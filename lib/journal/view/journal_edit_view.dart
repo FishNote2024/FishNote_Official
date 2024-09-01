@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -321,7 +322,12 @@ class _JournalEditViewState extends State<JournalEditView> {
             pickedTime.minute,
           );
           netRecordProvider.setThrowTime(selectedDateTime!);
-          netRecordProvider.updateRecord(widget.recordId,
+          // netRecordProvider.updateRecord(widget.recordId,
+          //     throwTime: selectedDateTime ?? DateTime.now());
+          final userId =
+              Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
+          Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
+              widget.recordId, userId,
               throwTime: selectedDateTime ?? DateTime.now());
         });
       }

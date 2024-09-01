@@ -110,19 +110,21 @@ class NetRecordProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _addRecordToFirestore(NetRecord record, String userId) async {
+  Future<void> _addRecordToFirestore(
+      NetRecord record, String userId, String recordId) async {
     String throwDateFormatted =
         DateFormat('yyyy-MM-dd').format(record.throwDate);
-    final collectionRef = db
+    final docRef = db
         .collection("users")
         .doc(userId)
         .collection("journal")
         .doc("record")
-        .collection(throwDateFormatted);
+        .collection(throwDateFormatted)
+        .doc(recordId); // Firestore에 UUID로 생성한 ID를 사용
 
     try {
-      DocumentReference docRef = await collectionRef.add({
-        'id': record.id,
+      await docRef.set({
+        'id': recordId, // 이 ID는 uuid로 생성한 ID를 사용합니다.
         'throwDate': record.throwDate,
         'getDate': record.getDate,
         'locationName': record.locationName,
@@ -136,7 +138,7 @@ class NetRecordProvider with ChangeNotifier {
       });
 
       _netRecords[_netRecords.indexOf(record)] = NetRecord(
-        id: record.id,
+        id: recordId,
         throwDate: record.throwDate,
         getDate: record.getDate,
         locationName: record.locationName,
@@ -185,20 +187,20 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
 
     // Firestore에 추가
-    _addRecordToFirestore(newRecord, userId);
+    _addRecordToFirestore(newRecord, userId, newId);
   }
 
-  void updateRecord(String id,
+  Future<void> updateRecord(String id, String userId,
       {Set<String>? species,
       List<double>? amount,
       String? memo,
       bool? isGet,
       DateTime? throwTime,
-      DateTime? getTime}) {
-    print("Updating record $id with throwTime: $throwTime, getTime: $getTime");
+      DateTime? getTime}) async {
     final recordIndex = _netRecords.indexWhere((record) => record.id == id);
     if (recordIndex != -1) {
       final existingRecord = _netRecords[recordIndex];
+
       _netRecords[recordIndex] = NetRecord(
         id: existingRecord.id,
         locationName: existingRecord.locationName,
@@ -210,8 +212,33 @@ class NetRecordProvider with ChangeNotifier {
         species: species ?? existingRecord.species,
         amount: amount ?? existingRecord.amount,
         memo: memo ?? existingRecord.memo,
+        fishData: existingRecord.fishData,
       );
       notifyListeners();
+
+      try {
+        String throwDateFormatted =
+            DateFormat('yyyy-MM-dd').format(existingRecord.throwDate);
+        final docRef = db
+            .collection("users")
+            .doc(userId)
+            .collection("journal")
+            .doc("record")
+            .collection(throwDateFormatted)
+            .doc(id);
+
+        await docRef.update({
+          if (isGet != null) 'isGet': isGet,
+          if (species != null) 'species': species.toList(),
+          if (amount != null) 'amount': amount,
+          if (memo != null) 'memo': memo,
+          if (throwTime != null) 'throwDate': throwTime,
+          if (getTime != null) 'getDate': getTime,
+        });
+        print('Record updated in Firestore successfully!');
+      } catch (e) {
+        print('Failed to update record in Firestore: $e');
+      }
     }
   }
 

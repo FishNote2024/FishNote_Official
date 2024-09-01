@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_add_fish.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
@@ -58,8 +59,16 @@ class _GetNetFishState extends State<GetNetFish> {
               ? null
               : () {
                   // 선택된 어종을 기록에 업데이트
-                  netRecordProvider.updateRecord(widget.recordId,
-                      species: selectedList.toSet());
+                  // netRecordProvider.updateRecord(widget.recordId,
+                  //     species: selectedList.toSet());
+                  final userId =
+                      Provider.of<LoginModelProvider>(context, listen: false)
+                          .kakaoId;
+                  print("userId: $userId");
+                  Provider.of<NetRecordProvider>(context, listen: false)
+                      .updateRecord(widget.recordId, userId,
+                          species: selectedList.toSet());
+
                   widget.onNext();
                 },
           style: ElevatedButton.styleFrom(
