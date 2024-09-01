@@ -22,8 +22,6 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
 
   final String apiUrl =
       'http://apis.data.go.kr/1192000/select0030List/getselect0030List';
-  // final String apiKey =
-  // 'P9snIt2gDleusE4uaQ9a1Tyx6/QaQRBJjRzr9H4ELGzbp263NM0Fvprpu1mr6Qqu6Efxqu35tgxg0JeKZtRnHA==';
   String baseDt = '20240816';
   Set<String> registeredSpecies = {};
   String mxtrNm = '';
