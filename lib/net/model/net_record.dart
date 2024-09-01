@@ -215,7 +215,8 @@ class NetRecordProvider with ChangeNotifier {
         fishData: existingRecord.fishData,
       );
       notifyListeners();
-
+      print("-> id = $id");
+      print("-> userId = $userId");
       try {
         String throwDateFormatted =
             DateFormat('yyyy-MM-dd').format(existingRecord.throwDate);
@@ -229,12 +230,17 @@ class NetRecordProvider with ChangeNotifier {
 
         await docRef.update({
           if (isGet != null) 'isGet': isGet,
-          if (species != null) 'species': species.toList(),
-          if (amount != null) 'amount': amount,
+          if (species != null && species.isNotEmpty)
+            'species': species.toList(),
+          if (amount != null && amount.isNotEmpty) 'amount': amount,
           if (memo != null) 'memo': memo,
           if (throwTime != null) 'throwDate': throwTime,
           if (getTime != null) 'getDate': getTime,
         });
+        print("Document path: ${docRef.path}");
+
+        print(
+            "--> isget = $isGet, species=  $species $amount $memo $throwTime $getTime");
         print('Record updated in Firestore successfully!');
       } catch (e) {
         print('Failed to update record in Firestore: $e');
