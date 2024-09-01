@@ -153,9 +153,16 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                                       "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
                                   Map<String, dynamic> weatherInfo =
                                       entry.value;
-                                  String rain = (weatherInfo['PCP'] == "강수없음")
-                                      ? "0mm"
-                                      : weatherInfo['PCP'];
+                                  String rain;
+                                  if (weatherInfo['PCP'] == "강수없음") {
+                                    rain = "0mm";
+                                  } else if (weatherInfo['PCP'] == "1mm 미만") {
+                                    rain = "1mm";
+                                  } else {
+                                    rain = weatherInfo['PCP'];
+                                  }
+
+
 
                                   String direction = _convertVecToDirection(
                                       int.parse(weatherInfo['VEC']));
