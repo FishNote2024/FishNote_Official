@@ -21,7 +21,11 @@ class _GetNetNoteState extends State<GetNetNote> {
     final netRecordProvider =
         Provider.of<NetRecordProvider>(context, listen: false);
     netRecordProvider.updateRecord(widget.recordId,
-        memo: memo, getTime: DateTime.now());
+        memo: memo, isGet: true, getTime: DateTime.now());
+
+    print(
+        "isGet updated : ${netRecordProvider.getRecordById(widget.recordId)?.isGet}");
+
     print("getTime : ${DateTime.now()}");
     print(netRecordProvider.getRecordById(widget.recordId)?.getDate.toString());
     Navigator.pushReplacementNamed(context, '/netPage2');

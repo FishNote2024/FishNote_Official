@@ -38,11 +38,11 @@ class NetRecordProvider with ChangeNotifier {
   final int _id = 0;
   List<double> _location = [];
   String _locationName = '';
-  String _throwTime = '';
-  String _getNetTime = '';
+  DateTime _throwTime = DateTime.now();
+  DateTime _getNetTime = DateTime.now();
   String _waveHeight = '';
   final double _waterTemperature = 0.0;
-  final bool _isGet = false;
+  bool _isGet = false;
   final Set<String> _species = {};
   final List<String> _technique = [];
   List<double> _amount = [];
@@ -50,8 +50,8 @@ class NetRecordProvider with ChangeNotifier {
   String _memo = '';
 
   String get locationName => _locationName;
-  String get throwTime => _throwTime;
-  String get getNetTime => _getNetTime;
+  DateTime get throwTime => _throwTime;
+  DateTime get getNetTime => _getNetTime;
   String get waveHeight => _waveHeight;
   double get waterTemperature => _waterTemperature;
   bool get isGet => _isGet;
@@ -72,11 +72,16 @@ class NetRecordProvider with ChangeNotifier {
   }
 
   void setThrowTime(DateTime throwTime) {
-    _throwTime = DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(throwTime);
+    _throwTime = throwTime;
     notifyListeners();
   }
 
-  void setGetNetTime(String getNetTime) {
+  void setIsGet(bool bool) {
+    _isGet = bool;
+    notifyListeners();
+  }
+
+  void setGetNetTime(DateTime getNetTime) {
     _getNetTime = getNetTime;
     notifyListeners();
   }
@@ -126,6 +131,7 @@ class NetRecordProvider with ChangeNotifier {
       {Set<String>? species,
       List<double>? amount,
       String? memo,
+      bool? isGet,
       DateTime? getTime}) {
     final recordIndex = _netRecords.indexWhere((record) => record.id == id);
     if (recordIndex != -1) {
@@ -137,13 +143,14 @@ class NetRecordProvider with ChangeNotifier {
         location: existingRecord.location,
         getDate: getTime ?? existingRecord.getDate, // getTime 업데이트 추가
         daysSince: existingRecord.daysSince,
-        isGet: existingRecord.isGet,
+        isGet: isGet ?? existingRecord.isGet,
         species: species ?? existingRecord.species,
         amount: amount ?? existingRecord.amount,
         memo: memo ?? existingRecord.memo,
       );
       notifyListeners();
     }
+    print("isGet updated : ${getRecordById(id)?.isGet}");
   }
 
   NetRecord? getRecordById(int id) {
