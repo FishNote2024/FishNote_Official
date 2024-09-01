@@ -1,6 +1,7 @@
 import 'package:fish_note/myPage/view/my_page_view.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import '../../../../theme/colors.dart';
@@ -17,10 +18,12 @@ class MarketPriceTable extends StatefulWidget {
 
 class _MarketPriceTableState extends State<MarketPriceTable> {
   final Dio dio = Dio();
+  String apiKey = dotenv.env['MARKET_PRICE_API_KEY']!;
+
   final String apiUrl =
       'http://apis.data.go.kr/1192000/select0030List/getselect0030List';
-  final String apiKey =
-      'P9snIt2gDleusE4uaQ9a1Tyx6/QaQRBJjRzr9H4ELGzbp263NM0Fvprpu1mr6Qqu6Efxqu35tgxg0JeKZtRnHA==';
+  // final String apiKey =
+  // 'P9snIt2gDleusE4uaQ9a1Tyx6/QaQRBJjRzr9H4ELGzbp263NM0Fvprpu1mr6Qqu6Efxqu35tgxg0JeKZtRnHA==';
   String baseDt = '20240816';
   Set<String> registeredSpecies = {};
   String mxtrNm = '';
@@ -48,7 +51,9 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
       if (response.statusCode == 200) {
         var document = xml.XmlDocument.parse(response.data);
         final items = document.findAllElements('item');
-
+        print("데이터 가져오기 성공");
+        print(response.data);
+        print("response 끝");
         for (var item in items) {
           String mprcStdCodeNm = item.findElements('mprcStdCodeNm').single.text;
 
