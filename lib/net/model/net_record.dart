@@ -129,18 +129,19 @@ class NetRecordProvider with ChangeNotifier {
 
   void updateRecord(int id,
       {Set<String>? species,
-      List<double>? amount,
-      String? memo,
-      bool? isGet,
-      DateTime? getTime}) {
+        List<double>? amount,
+        String? memo,
+        bool? isGet,
+        DateTime? throwTime,
+        DateTime? getTime}) {
     final recordIndex = _netRecords.indexWhere((record) => record.id == id);
     if (recordIndex != -1) {
       final existingRecord = _netRecords[recordIndex];
       _netRecords[recordIndex] = NetRecord(
         id: existingRecord.id,
-        throwDate: existingRecord.throwDate,
         locationName: existingRecord.locationName,
         location: existingRecord.location,
+        throwDate: throwTime ?? existingRecord.throwDate, // throwTime 업데이트 추가
         getDate: getTime ?? existingRecord.getDate, // getTime 업데이트 추가
         daysSince: existingRecord.daysSince,
         isGet: isGet ?? existingRecord.isGet,
@@ -150,7 +151,6 @@ class NetRecordProvider with ChangeNotifier {
       );
       notifyListeners();
     }
-    print("isGet updated : ${getRecordById(id)?.isGet}");
   }
 
   NetRecord? getRecordById(int id) {

@@ -21,6 +21,7 @@ class _JournalViewState extends State<JournalView> {
   late List<NetRecord> _netRecords;
   late final ValueNotifier<List<NetRecord>> _selectedEvents;
   final DateTime _today = DateTime.now();
+  late NetRecordProvider netRecordProvider;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   final PanelController _panelController = PanelController();
@@ -42,6 +43,7 @@ class _JournalViewState extends State<JournalView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _panelController.hide(); // 앱 시작 시 패널을 숨김
     });
+
   }
 
 
@@ -115,23 +117,19 @@ class _JournalViewState extends State<JournalView> {
                           children: netRecord.expand((event) {
                             // event에 대해 마커 리스트 생성
                             List<Widget> markers = [];
-
-                            if (!event.isGet) {
-                              // isGet이 true인 경우
-                              // throwDate에 대해 primaryBlue500 색상의 마커 추가
-                              if (isSameDay(event.throwDate, day)) {
-                                markers.add(
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 40, right: 2),
-                                    child: const Icon(
-                                      size: 5,
-                                      Icons.circle,
-                                      color: primaryBlue500,
-                                    ),
+                            if (isSameDay(event.throwDate, day)) {
+                              markers.add(
+                                Container(
+                                  margin: const EdgeInsets.only(top: 40, right: 2),
+                                  child: const Icon(
+                                    size: 5,
+                                    Icons.circle,
+                                    color: primaryBlue500,
                                   ),
-                                );
-                              }
-                              // getDate에 대해 primaryYellow700 색상의 마커 추가
+                                ),
+                              );
+                            }
+                            if (event.isGet) {
                               if (isSameDay(event.getDate, day)) {
                                 markers.add(
                                   Container(
@@ -140,20 +138,6 @@ class _JournalViewState extends State<JournalView> {
                                       size: 5,
                                       Icons.circle,
                                       color: primaryYellow700,
-                                    ),
-                                  ),
-                                );
-                              }
-                            } else {
-                              // isGet이 false인 경우 throwDate에 대해 primaryBlue500 색상의 마커 추가
-                              if (isSameDay(event.throwDate, day)) {
-                                markers.add(
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 40, right: 2),
-                                    child: const Icon(
-                                      size: 5,
-                                      Icons.circle,
-                                      color: primaryBlue500,
                                     ),
                                   ),
                                 );

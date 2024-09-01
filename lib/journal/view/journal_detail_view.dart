@@ -1,4 +1,5 @@
 import 'package:fish_note/journal/view/journal_edit_view.dart';
+import 'package:fish_note/journal/view/journal_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class JournalDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     final DateTime date = events.first.throwDate; // NetRecord의 throwDate 사용
 
+    print(events.length);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: backgroundBlue,
@@ -22,7 +24,12 @@ class JournalDetailView extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(context,
+              MaterialPageRoute(
+                builder: (context) => const JournalView(
+                ),
+              ),
+            );
           },
         ),
         title: Text(DateFormat('MM.dd (E)', 'ko_KR').format(date)),
@@ -52,7 +59,7 @@ class JournalDetailView extends StatelessWidget {
           final action = "투망"; // 투망(throw)을 표시
           final locationName = event.locationName;
 
-          if (event.isGet) {
+          if (!event.isGet) {
             // isGet이 true일 때 반환할 Card
             return Card(
               color: Colors.white,
@@ -110,7 +117,7 @@ class JournalDetailView extends StatelessWidget {
                             style: body2(gray5), // "파고:" 텍스트의 스타일
                           ),
                           TextSpan(
-                            text: '${event.locationName}', // 파고 정보 사용
+                            text: '${event.id}', // 파고 정보 사용
                             style: body2(black), // 파고 부분의 스타일
                           ),
                         ],
