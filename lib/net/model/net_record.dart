@@ -73,7 +73,7 @@ class NetRecordProvider with ChangeNotifier {
           .doc(userId)
           .collection("journal")
           .doc("record");
-
+      print("Firestore path: ${journalRef.path}");
       // 각 날짜별로 하위 컬렉션 접근
       final datesSnapshot = await journalRef.collection("2024-09-02").get();
 
