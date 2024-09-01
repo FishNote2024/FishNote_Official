@@ -21,6 +21,8 @@ class JournalEditView extends StatefulWidget {
 class _JournalEditViewState extends State<JournalEditView> {
   DateTime? selectedDateTime;
   DateTime? originalDateTime;
+  DateTime? selectedGetTime; // 양망시간
+  DateTime? selectedThrowTime; // 투망시간
   TextEditingController _dateTimeController = TextEditingController();
   TextEditingController _memoController = TextEditingController();
   late NetRecordProvider netRecordProvider;
@@ -32,6 +34,8 @@ class _JournalEditViewState extends State<JournalEditView> {
     originalDateTime = widget.events.first.throwDate;
     selectedDateTime = originalDateTime;
     _memoController.text = widget.events.first.memo ?? '';
+    selectedGetTime = widget.events.first.getDate;
+    selectedThrowTime = widget.events.first.throwDate;
     _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
         .format(originalDateTime!);
   }
@@ -64,12 +68,13 @@ class _JournalEditViewState extends State<JournalEditView> {
               // Prepare updated data
               Set<String> updatedSpecies = widget.events.first.species;
               List<double> updatedAmount = widget.events.first.amount;
-              DateTime updatedThrowTime =
-                  selectedDateTime ?? widget.events.first.throwDate;
               String updatedLocationName = widget.events.first.locationName;
               List<double> updatedLocation = widget.events.first.location;
-              DateTime updatedGetTime = widget.events.first.getDate;
               String updatedMemo = _memoController.text;
+              DateTime updatedThrowTime =
+                  selectedThrowTime ?? widget.events.first.throwDate;
+              DateTime updatedGetTime =
+                  selectedGetTime ?? widget.events.first.getDate;
 
               // Call the update method
               netRecordProvider.updateRecord(
@@ -118,9 +123,9 @@ class _JournalEditViewState extends State<JournalEditView> {
             _buildEditableTextField(
               label: '투망시간',
               initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                  .format(event.throwDate),
+                  .format(selectedThrowTime ?? event.throwDate),
               icon: Icons.calendar_today,
-              onIconPressed: () => _handleCalendarIconPressed(event.throwDate),
+              onIconPressed: () => _handleThrowTimeChange(event.throwDate),
             ),
             const SizedBox(height: 8),
             Row(
@@ -153,9 +158,9 @@ class _JournalEditViewState extends State<JournalEditView> {
             _buildEditableTextField(
               label: '양망시간',
               initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                  .format(event.getDate),
+                  .format(selectedGetTime ?? event.getDate),
               icon: Icons.calendar_today,
-              onIconPressed: () => _handleCalendarIconPressed(event.getDate),
+              onIconPressed: () => _handleGetTimeChange(event.getDate),
             ),
             const SizedBox(height: 16),
             _buildAddSpeciesButton(index),
@@ -357,7 +362,7 @@ class _JournalEditViewState extends State<JournalEditView> {
     );
   }
 
-  Future _handleCalendarIconPressed(DateTime date) async {
+  Future _handleThrowTimeChange(DateTime date) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: date,
@@ -379,21 +384,46 @@ class _JournalEditViewState extends State<JournalEditView> {
 
       if (pickedTime != null) {
         setState(() {
-          selectedDateTime = DateTime(
+          selectedThrowTime = DateTime(
             pickedDate.year,
             pickedDate.month,
             pickedDate.day,
             pickedTime.hour,
             pickedTime.minute,
           );
-          netRecordProvider.setThrowTime(selectedDateTime!);
+        });
+      }
+    }
+  }
 
-          final userId =
-              Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-          Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
-            widget.recordId,
-            userId,
-            throwTime: selectedDateTime ?? DateTime.now(),
+  Future _handleGetTimeChange(DateTime date) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      confirmText: "확인",
+      cancelText: "뒤로",
+    );
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(date),
+        initialEntryMode: TimePickerEntryMode.input,
+        hourLabelText: "시",
+        minuteLabelText: "분",
+        cancelText: "뒤로",
+        confirmText: "확인",
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          selectedGetTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
           );
         });
       }
