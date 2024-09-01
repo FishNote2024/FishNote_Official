@@ -29,6 +29,7 @@ class _LedgerPageState extends State<LedgerPage> {
   @override
   void initState() {
     super.initState();
+    _selectedDay = DateTime.now();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_panelController.isAttached) {
         _panelController.hide();
@@ -586,7 +587,7 @@ class _LedgerPageState extends State<LedgerPage> {
           ],
         ),
         const SizedBox(height: 13.0),
-        LineChartView(),
+        LineChartView(time: _selectedDay! ),
       ],
     );
   }

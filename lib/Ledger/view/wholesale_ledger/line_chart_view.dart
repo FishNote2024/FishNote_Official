@@ -1,11 +1,13 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../theme/colors.dart';
 import '../../../theme/font.dart';
 
 // 현재는 월간 기준입니다.
 class LineChartView extends StatefulWidget {
-  const LineChartView({super.key});
+  final DateTime time;
+  const LineChartView({super.key, required this.time});
 
   @override
   State<LineChartView> createState() => _LineChartViewState();
@@ -77,24 +79,27 @@ class _LineChartViewState extends State<LineChartView> {
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
     final style = caption2(gray4);
     Widget text;
+    DateTime baseDate = widget.time;
+    DateFormat dateFormat = DateFormat('MM.dd');
+
+    // 현재 날짜 기준으로 2주 전부터 2주 후까지의 날짜 계산
     switch (value.toInt()) {
+      case 0:
+        text = Text(dateFormat.format(baseDate.subtract(Duration(days: 14))), style: style);
+        break;
       case 1:
-        text = Text('5월 4주차', style: style);
+        text = Text(dateFormat.format(baseDate.subtract(Duration(days: 7))), style: style);
         break;
       case 2:
-        text = Text('6월 1주차', style: style);
+        text = Text(dateFormat.format(baseDate), style: style);
         break;
       case 3:
-        text = Text('6월 2주차', style: style);
-        break;
-      case 4:
-        text = Text('6월 3주차', style: style);
+        text = Text(dateFormat.format(baseDate.add(Duration(days: 7))), style: style);
         break;
       default:
-        text = Text('5월 3주차', style: style);
+        text = Text(dateFormat.format(baseDate.add(Duration(days: 14))), style: style);
         break;
     }
-
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 15,
