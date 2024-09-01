@@ -195,6 +195,8 @@ class NetRecordProvider with ChangeNotifier {
       List<double>? amount,
       String? memo,
       bool? isGet,
+      String? locationName,
+      List<double>? location,
       DateTime? throwTime,
       DateTime? getTime}) async {
     final recordIndex = _netRecords.indexWhere((record) => record.id == id);
@@ -239,8 +241,14 @@ class NetRecordProvider with ChangeNotifier {
         });
         print("Document path: ${docRef.path}");
 
+        print("--> isget = $isGet");
+        // 확인 중
         print(
-            "--> isget = $isGet, species=  $species $amount $memo $throwTime $getTime");
+            "throwTime= $throwTime, getTime= $getTime, locationName= $locationName, location= $location");
+        // 바뀐 것 확인한 것들
+        print("species=  $species, amount= $amount");
+        // 안바뀌는 것
+        print("memo= $memo, ");
         print('Record updated in Firestore successfully!');
       } catch (e) {
         print('Failed to update record in Firestore: $e');
