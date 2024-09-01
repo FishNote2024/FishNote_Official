@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
+import 'package:provider/provider.dart';
 import '../../net/model/net_record.dart';
 
 class JournalEditView extends StatefulWidget {
   final List<NetRecord> events;
+  final int recordId;
 
-  const JournalEditView({Key? key, required this.events}) : super(key: key);
+  const JournalEditView(
+      {Key? key, required this.events, required this.recordId})
+      : super(key: key);
 
   @override
   _JournalEditViewState createState() => _JournalEditViewState();
@@ -19,12 +23,24 @@ class _JournalEditViewState extends State<JournalEditView> {
   TextEditingController _dateTimeController = TextEditingController();
   late NetRecordProvider netRecordProvider;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   originalDateTime = widget.events.first.throwDate; // Initialize the original date
+  //   selectedDateTime = originalDateTime; // Initially, selected date is the original date
+  //   _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime!);
+  // }
   @override
   void initState() {
     super.initState();
-    originalDateTime = widget.events.first.throwDate; // Initialize the original date
-    selectedDateTime = originalDateTime; // Initially, selected date is the original date
-    _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime!);
+    // Provider를 사용하여 netRecordProvider 초기화
+    netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
+    originalDateTime =
+        widget.events.first.throwDate; // Initialize the original date
+    selectedDateTime =
+        originalDateTime; // Initially, selected date is the original date
+    _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+        .format(originalDateTime!);
   }
 
   @override
@@ -49,7 +65,8 @@ class _JournalEditViewState extends State<JournalEditView> {
           TextButton(
             onPressed: () {
               setState(() {
-                selectedDateTime = originalDateTime; // Revert to the original date
+                selectedDateTime =
+                    originalDateTime; // Revert to the original date
                 Navigator.pop(context); // Go back to the previous screen
               });
             },
@@ -84,7 +101,8 @@ class _JournalEditViewState extends State<JournalEditView> {
             const SizedBox(height: 8),
             _buildEditableTextField(
               label: '투망시간',
-              initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(event.throwDate),
+              initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+                  .format(event.throwDate),
               icon: Icons.calendar_today,
               onIconPressed: () => _handleCalendarIconPressed(event.throwDate),
             ),
@@ -118,7 +136,8 @@ class _JournalEditViewState extends State<JournalEditView> {
             const SizedBox(height: 8),
             _buildEditableTextField(
               label: '양망시간',
-              initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(event.getDate),
+              initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+                  .format(event.getDate),
               icon: Icons.calendar_today,
               onIconPressed: () => _handleCalendarIconPressed(event.getDate),
             ),
@@ -139,7 +158,8 @@ class _JournalEditViewState extends State<JournalEditView> {
     return Row(
       children: [
         Text(
-          DateFormat('HH:mm').format(event.throwDate) + ' ${event.locationName}',
+          DateFormat('HH:mm').format(event.throwDate) +
+              ' ${event.locationName}',
           style: header3B(gray8),
         ),
         const Spacer(),
@@ -158,9 +178,9 @@ class _JournalEditViewState extends State<JournalEditView> {
         labelText: label,
         suffixIcon: icon != null
             ? IconButton(
-          icon: Icon(icon),
-          onPressed: onIconPressed,
-        )
+                icon: Icon(icon),
+                onPressed: onIconPressed,
+              )
             : null,
         border: OutlineInputBorder(),
       ),
@@ -188,7 +208,8 @@ class _JournalEditViewState extends State<JournalEditView> {
               items: ["고등어", "참치", "연어"],
               onChanged: (newValue) {
                 setState(() {
-                  event.species.remove(event.species.elementAt(index)); // Remove the old value
+                  event.species.remove(
+                      event.species.elementAt(index)); // Remove the old value
                   event.species.add(newValue!); // Add the new value
                 });
               },
@@ -300,6 +321,8 @@ class _JournalEditViewState extends State<JournalEditView> {
             pickedTime.minute,
           );
           netRecordProvider.setThrowTime(selectedDateTime!);
+          netRecordProvider.updateRecord(widget.recordId,
+              throwTime: selectedDateTime ?? DateTime.now());
         });
       }
     }
@@ -367,7 +390,8 @@ class _JournalEditViewState extends State<JournalEditView> {
     required String initialValue,
     required Function(String) onChanged,
   }) {
-    TextEditingController controller = TextEditingController(text: initialValue);
+    TextEditingController controller =
+        TextEditingController(text: initialValue);
 
     return TextField(
       controller: controller,

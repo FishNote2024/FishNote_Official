@@ -2,7 +2,7 @@ import 'package:fish_note/journal/view/journal_edit_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
-import 'package:fish_note/net/model/net_record.dart';  // NetRecord를 가져옴
+import 'package:fish_note/net/model/net_record.dart'; // NetRecord를 가져옴
 import 'package:intl/intl.dart';
 
 class JournalDetailView extends StatelessWidget {
@@ -33,7 +33,8 @@ class JournalDetailView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => JournalEditView(events: events),
+                  builder: (context) => JournalEditView(
+                      recordId: events.first.id, events: events),
                 ),
               );
             },
@@ -63,7 +64,8 @@ class JournalDetailView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      DateFormat('HH:mm').format(event.throwDate) + ' ${locationName}', // throwDate 사용
+                      DateFormat('HH:mm').format(event.throwDate) +
+                          ' ${locationName}', // throwDate 사용
                       style: header3B(gray8),
                     ),
                     SizedBox(height: 16),
@@ -75,7 +77,8 @@ class JournalDetailView extends StatelessWidget {
                             style: body2(gray5), // "투망시간:" 텍스트의 스타일
                           ),
                           TextSpan(
-                            text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.throwDate), // throwDate 사용
+                            text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
+                                .format(event.throwDate), // throwDate 사용
                             style: body2(black), // 날짜 부분의 스타일
                           ),
                         ],
@@ -90,7 +93,8 @@ class JournalDetailView extends StatelessWidget {
                             style: body2(gray5), // "투망위치:" 텍스트의 스타일
                           ),
                           TextSpan(
-                            text: '위도 ${event.location[0]} 경도 ${event.location[1]}', // 위치 정보 사용
+                            text:
+                                '위도 ${event.location[0]} 경도 ${event.location[1]}', // 위치 정보 사용
                             style: body2(black), // 위치 부분의 스타일
                           ),
                         ],
@@ -123,7 +127,7 @@ class JournalDetailView extends StatelessWidget {
           } else {
             // isGet이 false일 때 반환할 Card
             return Card(
-              color: Colors.white,// 다른 카드와 구분을 위해 약간의 배경색을 추가
+              color: Colors.white, // 다른 카드와 구분을 위해 약간의 배경색을 추가
               margin: const EdgeInsets.symmetric(vertical: 8),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -131,7 +135,8 @@ class JournalDetailView extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      DateFormat('HH:mm').format(event.throwDate) + ' ${locationName}', // throwDate 사용
+                      DateFormat('HH:mm').format(event.throwDate) +
+                          ' ${locationName}', // throwDate 사용
                       style: header3B(gray8),
                     ),
                     SizedBox(height: 16),
@@ -143,7 +148,8 @@ class JournalDetailView extends StatelessWidget {
                             style: body2(gray5), // "투망시간:" 텍스트의 스타일
                           ),
                           TextSpan(
-                            text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.throwDate), // throwDate 사용
+                            text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
+                                .format(event.throwDate), // throwDate 사용
                             style: body2(black), // 날짜 부분의 스타일
                           ),
                         ],
@@ -158,7 +164,8 @@ class JournalDetailView extends StatelessWidget {
                             style: body2(gray5), // "투망위치:" 텍스트의 스타일
                           ),
                           TextSpan(
-                            text: '위도 ${event.location[0]} 경도 ${event.location[1]}', // 위치 정보 사용
+                            text:
+                                '위도 ${event.location[0]} 경도 ${event.location[1]}', // 위치 정보 사용
                             style: body2(black), // 위치 부분의 스타일
                           ),
                         ],
@@ -198,7 +205,8 @@ class JournalDetailView extends StatelessWidget {
                             style: body2(gray5), // "파고:" 텍스트의 스타일
                           ),
                           TextSpan(
-                            text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.getDate), // throwDate 사용
+                            text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
+                                .format(event.getDate), // throwDate 사용
                             style: body2(black), // 날짜 부분의 스타일
                           ),
                         ],
@@ -213,7 +221,8 @@ class JournalDetailView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: List.generate(event.species.length, (index) {
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0), // 간격 조정
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 8.0), // 간격 조정
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -225,7 +234,8 @@ class JournalDetailView extends StatelessWidget {
                                       style: body2(gray5),
                                     ),
                                     TextSpan(
-                                      text: '${event.species.elementAt(index)}\n', // species의 인덱스에 해당하는 값 가져오기
+                                      text:
+                                          '${event.species.elementAt(index)}\n', // species의 인덱스에 해당하는 값 가져오기
                                       style: body2(black),
                                     ),
                                     TextSpan(
@@ -241,13 +251,16 @@ class JournalDetailView extends StatelessWidget {
                                       style: body2(gray5),
                                     ),
                                     TextSpan(
-                                      text: '${event.amount[index]} kg', // amount의 인덱스에 해당하는 값 가져오기
+                                      text:
+                                          '${event.amount[index]} kg', // amount의 인덱스에 해당하는 값 가져오기
                                       style: body2(black),
                                     ),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 16,),
+                              SizedBox(
+                                height: 16,
+                              ),
                               Divider(), // 항목들 사이에 구분선을 추가
                             ],
                           ),
@@ -271,18 +284,13 @@ class JournalDetailView extends StatelessWidget {
                         minHeight: 100.0, // 최소 높이를 100으로 설정
                       ),
                       child: Text(
-                      event.memo??"",
+                        event.memo ?? "",
                         style: body2(black), // 원하는 텍스트 스타일
                       ),
                     )
-
-
                   ],
-
                 ),
-
               ),
-
             );
           }
         },
