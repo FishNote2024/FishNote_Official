@@ -7,7 +7,7 @@ import '../../net/model/net_record.dart';
 
 class JournalEditView extends StatefulWidget {
   final List<NetRecord> events;
-  final int recordId;
+  final String recordId;
 
   const JournalEditView(
       {Key? key, required this.events, required this.recordId})

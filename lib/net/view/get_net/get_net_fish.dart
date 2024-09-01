@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 class GetNetFish extends StatefulWidget {
   final VoidCallback onNext;
-  final int recordId;
+  final String recordId;
 
   const GetNetFish({super.key, required this.onNext, required this.recordId});
 

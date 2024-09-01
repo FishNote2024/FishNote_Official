@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class GetNetNote extends StatefulWidget {
   final VoidCallback onNext;
-  final int recordId;
+  final String recordId;
 
   const GetNetNote({super.key, required this.onNext, required this.recordId});
 

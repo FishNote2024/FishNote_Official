@@ -110,8 +110,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        GetNetView(record: record),
+                                    builder: (context) => GetNetView(
+                                        recordId: record.id, record: record),
                                   ),
                                 );
                               },

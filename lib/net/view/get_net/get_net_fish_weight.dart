@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class GetNetFishWeight extends StatefulWidget {
   final VoidCallback onNext;
-  final int recordId;
+  final String recordId;
 
   const GetNetFishWeight(
       {super.key, required this.onNext, required this.recordId});

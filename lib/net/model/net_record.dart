@@ -2,13 +2,14 @@ import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class NetRecord {
   final DateTime throwDate;
   final DateTime getDate;
   final String locationName;
   final int daysSince;
-  final int id;
+  final String id;
   final Set<String> species;
   final List<double> amount;
   final bool isGet;
@@ -31,11 +32,9 @@ class NetRecord {
 }
 
 class NetRecordProvider with ChangeNotifier {
+  final Uuid uuid = Uuid();
   List<NetRecord> _netRecords = [];
-  int _nextId = 1; // 다음에 사용할 ID 값
   List<NetRecord> get netRecords => _netRecords;
-
-  final int _id = 0;
   List<double> _location = [];
   String _locationName = '';
   DateTime _throwTime = DateTime.now();
@@ -114,16 +113,15 @@ class NetRecordProvider with ChangeNotifier {
   Future<void> _addRecordToFirestore(NetRecord record, String userId) async {
     String throwDateFormatted =
         DateFormat('yyyy-MM-dd').format(record.throwDate);
-    final docRef = db
+    final collectionRef = db
         .collection("users")
         .doc(userId)
         .collection("journal")
         .doc("record")
-        .collection(throwDateFormatted)
-        .doc();
+        .collection(throwDateFormatted);
 
     try {
-      await docRef.set({
+      DocumentReference docRef = await collectionRef.add({
         'id': record.id,
         'throwDate': record.throwDate,
         'getDate': record.getDate,
@@ -136,10 +134,99 @@ class NetRecordProvider with ChangeNotifier {
         'memo': record.memo,
         'fishData': record.fishData,
       });
-      print('Record added to Firestore successfully!');
+
+      _netRecords[_netRecords.indexOf(record)] = NetRecord(
+        id: record.id,
+        throwDate: record.throwDate,
+        getDate: record.getDate,
+        locationName: record.locationName,
+        daysSince: record.daysSince,
+        isGet: record.isGet,
+        location: record.location,
+        species: record.species,
+        amount: record.amount,
+        memo: record.memo,
+        fishData: record.fishData,
+      );
+
+      notifyListeners();
     } catch (e) {
       print('Failed to add record to Firestore: $e');
     }
+  }
+
+  void addNewRecord(
+    String name,
+    List<double> location,
+    DateTime throwTime,
+    bool isGet, {
+    String? memo,
+    Set<String>? species,
+    DateTime? getNetTime,
+    List<double>? amount,
+    required String userId,
+  }) {
+    final newId = uuid.v4();
+    final newRecord = NetRecord(
+      id: newId,
+      throwDate: throwTime,
+      location: location,
+      getDate: getNetTime ?? DateTime.now(),
+      locationName: name,
+      daysSince: 0,
+      isGet: isGet,
+      species: species ?? {},
+      amount: amount ?? [],
+      memo: memo ?? '',
+    );
+
+    // 로컬 상태에 추가
+    _netRecords.add(newRecord);
+    notifyListeners();
+
+    // Firestore에 추가
+    _addRecordToFirestore(newRecord, userId);
+  }
+
+  void updateRecord(String id,
+      {Set<String>? species,
+      List<double>? amount,
+      String? memo,
+      bool? isGet,
+      DateTime? throwTime,
+      DateTime? getTime}) {
+    print("Updating record $id with throwTime: $throwTime, getTime: $getTime");
+    final recordIndex = _netRecords.indexWhere((record) => record.id == id);
+    if (recordIndex != -1) {
+      final existingRecord = _netRecords[recordIndex];
+      _netRecords[recordIndex] = NetRecord(
+        id: existingRecord.id,
+        locationName: existingRecord.locationName,
+        location: existingRecord.location,
+        throwDate: throwTime ?? existingRecord.throwDate,
+        getDate: getTime ?? existingRecord.getDate,
+        daysSince: existingRecord.daysSince,
+        isGet: isGet ?? existingRecord.isGet,
+        species: species ?? existingRecord.species,
+        amount: amount ?? existingRecord.amount,
+        memo: memo ?? existingRecord.memo,
+      );
+      notifyListeners();
+    }
+  }
+
+  NetRecord? getRecordById(String id) {
+    try {
+      return _netRecords.firstWhere((record) => record.id == id);
+    } catch (e) {
+      return null; // 해당 ID의 기록이 없을 경우 null 반환
+    }
+  }
+
+  void setDaysSince(DateTime today) {
+    final diff = today.difference(_throwTime as DateTime).inDays;
+    _daysSince = diff;
+    notifyListeners();
   }
 
   void addFish(String species, double weight) {
@@ -171,11 +258,6 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setTechnique(List<String> technique) {
-    _technique.addAll(technique);
-    notifyListeners();
-  }
-
   void setAmount(List<double> amount) {
     _amount = amount;
     notifyListeners();
@@ -183,80 +265,6 @@ class NetRecordProvider with ChangeNotifier {
 
   void setMemo(String memo) {
     _memo = memo;
-    notifyListeners();
-  }
-
-  void addNewRecord(
-    String name,
-    List<double> location,
-    DateTime throwTime,
-    bool isGet, {
-    String? memo,
-    Set<String>? species,
-    DateTime? getNetTime,
-    List<double>? amount,
-    required String userId,
-  }) {
-    // 먼저 새로운 NetRecord 객체를 생성합니다.
-    final newRecord = NetRecord(
-      id: _nextId++,
-      throwDate: throwTime,
-      location: location,
-      getDate: getNetTime ?? DateTime.now(),
-      locationName: name,
-      daysSince: 0,
-      isGet: isGet,
-      species: species ?? {},
-      amount: amount ?? [],
-      memo: memo ?? '',
-    );
-
-    // 로컬 상태에 추가
-    _netRecords.add(newRecord);
-    notifyListeners();
-
-    // Firestore에 추가
-    _addRecordToFirestore(newRecord, userId);
-  }
-
-  void updateRecord(int id,
-      {Set<String>? species,
-      List<double>? amount,
-      String? memo,
-      bool? isGet,
-      DateTime? throwTime,
-      DateTime? getTime}) {
-    print("Updating record $id with throwTime: $throwTime, getTime: $getTime");
-    final recordIndex = _netRecords.indexWhere((record) => record.id == id);
-    if (recordIndex != -1) {
-      final existingRecord = _netRecords[recordIndex];
-      _netRecords[recordIndex] = NetRecord(
-        id: existingRecord.id,
-        locationName: existingRecord.locationName,
-        location: existingRecord.location,
-        throwDate: throwTime ?? existingRecord.throwDate,
-        getDate: getTime ?? existingRecord.getDate,
-        daysSince: existingRecord.daysSince,
-        isGet: isGet ?? existingRecord.isGet,
-        species: species ?? existingRecord.species,
-        amount: amount ?? existingRecord.amount,
-        memo: memo ?? existingRecord.memo,
-      );
-      notifyListeners();
-    }
-  }
-
-  NetRecord? getRecordById(int id) {
-    try {
-      return _netRecords.firstWhere((record) => record.id == id);
-    } catch (e) {
-      return null; // 해당 ID의 기록이 없을 경우 null 반환
-    }
-  }
-
-  void setDaysSince(DateTime today) {
-    final diff = today.difference(_throwTime as DateTime).inDays;
-    _daysSince = diff;
     notifyListeners();
   }
 }

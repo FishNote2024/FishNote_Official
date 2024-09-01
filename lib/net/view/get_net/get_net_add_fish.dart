@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class GetNetAddFish extends StatefulWidget {
-  final int recordId;
+  final String recordId;
   const GetNetAddFish({super.key, required this.recordId});
 
   @override

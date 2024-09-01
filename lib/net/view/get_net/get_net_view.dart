@@ -12,8 +12,11 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 class GetNetView extends StatefulWidget {
   final NetRecord? record;
   final List<String>? fishList;
+  final String recordId;
 
-  const GetNetView({Key? key, this.record, this.fishList}) : super(key: key);
+  const GetNetView(
+      {Key? key, this.record, this.fishList, required this.recordId})
+      : super(key: key);
 
   @override
   State<GetNetView> createState() => _GetNetViewState();
@@ -22,6 +25,13 @@ class GetNetView extends StatefulWidget {
 class _GetNetViewState extends State<GetNetView> {
   int _currentPage = 1;
   final int _totalPages = 4;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print('recordId: ${widget.recordId}');
+  }
 
   void _nextPage([List<String>? selectedFish]) {
     setState(() {
