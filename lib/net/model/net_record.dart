@@ -65,28 +65,43 @@ class NetRecordProvider with ChangeNotifier {
   final db = FirebaseFirestore.instance;
 
   Future<void> init(String userId) async {
-    final collectionRef =
-        db.collection("users").doc(userId).collection("journal");
+    final db = FirebaseFirestore.instance;
 
     try {
-      final querySnapshot = await collectionRef.get();
-      if (querySnapshot.docs.isNotEmpty) {
-        _netRecords = querySnapshot.docs.map((doc) {
-          final data = doc.data();
-          return NetRecord(
-            id: doc.data()['id'],
-            throwDate: (doc.data()['throwDate'] as Timestamp).toDate(),
-            getDate: (doc.data()['getDate'] as Timestamp).toDate(),
-            locationName: doc.data()['locationName'],
-            daysSince: doc.data()['daysSince'],
-            isGet: doc.data()['isGet'],
-            location: List<double>.from(doc.data()['location']),
-            species: Set<String>.from(doc.data()['species']),
-            amount: List<double>.from(doc.data()['amount']),
-            memo: doc.data()['memo'],
-            fishData: Map<String, double>.from(doc.data()['fishData']),
+      // "journal" 컬렉션의 "record" 문서에 접근
+      final journalRef = db
+          .collection("users")
+          .doc(userId)
+          .collection("journal")
+          .doc("record");
+
+      // 각 날짜별로 하위 컬렉션 접근
+      final datesSnapshot = await journalRef.collection("2024-09-02").get();
+
+      if (datesSnapshot.docs.isNotEmpty) {
+        for (var dateDoc in datesSnapshot.docs) {
+          final data = dateDoc.data();
+
+          // 각 필드에 대해 null 체크를 추가
+          _netRecords.add(
+            NetRecord(
+              id: data['id'] ?? 0,
+              throwDate:
+                  (data['throwDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              getDate:
+                  (data['getDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              locationName: data['locationName'] ?? '',
+              daysSince: data['daysSince'] ?? 0,
+              isGet: data['isGet'] ?? false,
+              location: List<double>.from(data['location'] ?? [0.0, 0.0]),
+              species: Set<String>.from(data['species'] ?? <String>{}),
+              amount: List<double>.from(data['amount'] ?? <double>[]),
+              memo: data['memo'] ?? '',
+              fishData: Map<String, double>.from(
+                  data['fishData'] ?? <String, double>{}),
+            ),
           );
-        }).toList();
+        }
         notifyListeners();
       } else {
         print('No records found in Firestore');
@@ -103,8 +118,8 @@ class NetRecordProvider with ChangeNotifier {
         .collection("users")
         .doc(userId)
         .collection("journal")
-        .doc(throwDateFormatted)
-        .collection(record.id.toString())
+        .doc("record")
+        .collection(throwDateFormatted)
         .doc();
 
     try {
