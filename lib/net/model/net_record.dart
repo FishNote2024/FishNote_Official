@@ -62,6 +62,71 @@ class NetRecordProvider with ChangeNotifier {
   Map<String, double> fishData = {};
   String get memo => _memo;
 
+  final db = FirebaseFirestore.instance;
+
+  Future<void> init(String userId) async {
+    final collectionRef =
+        db.collection("users").doc(userId).collection("journal");
+
+    try {
+      final querySnapshot = await collectionRef.get();
+      if (querySnapshot.docs.isNotEmpty) {
+        _netRecords = querySnapshot.docs.map((doc) {
+          final data = doc.data();
+          return NetRecord(
+            id: doc.data()['id'],
+            throwDate: (doc.data()['throwDate'] as Timestamp).toDate(),
+            getDate: (doc.data()['getDate'] as Timestamp).toDate(),
+            locationName: doc.data()['locationName'],
+            daysSince: doc.data()['daysSince'],
+            isGet: doc.data()['isGet'],
+            location: List<double>.from(doc.data()['location']),
+            species: Set<String>.from(doc.data()['species']),
+            amount: List<double>.from(doc.data()['amount']),
+            memo: doc.data()['memo'],
+            fishData: Map<String, double>.from(doc.data()['fishData']),
+          );
+        }).toList();
+        notifyListeners();
+      } else {
+        print('No records found in Firestore');
+      }
+    } catch (e) {
+      print("Error getting records: $e");
+    }
+  }
+
+  Future<void> _addRecordToFirestore(NetRecord record, String userId) async {
+    String throwDateFormatted =
+        DateFormat('yyyy-MM-dd').format(record.throwDate);
+    final docRef = db
+        .collection("users")
+        .doc(userId)
+        .collection("journal")
+        .doc(throwDateFormatted)
+        .collection(record.id.toString())
+        .doc();
+
+    try {
+      await docRef.set({
+        'id': record.id,
+        'throwDate': record.throwDate,
+        'getDate': record.getDate,
+        'locationName': record.locationName,
+        'daysSince': record.daysSince,
+        'isGet': record.isGet,
+        'location': record.location,
+        'species': record.species.toList(),
+        'amount': record.amount,
+        'memo': record.memo,
+        'fishData': record.fishData,
+      });
+      print('Record added to Firestore successfully!');
+    } catch (e) {
+      print('Failed to add record to Firestore: $e');
+    }
+  }
+
   void addFish(String species, double weight) {
     fishData[species] = weight;
   }
@@ -107,15 +172,21 @@ class NetRecordProvider with ChangeNotifier {
   }
 
   void addNewRecord(
-      String name, List<double> location, DateTime throwTime, bool isGet,
-      {String? memo,
-      Set<String>? species,
-      DateTime? getNetTime,
-      List<double>? amount}) {
-    _netRecords.add(NetRecord(
+    String name,
+    List<double> location,
+    DateTime throwTime,
+    bool isGet, {
+    String? memo,
+    Set<String>? species,
+    DateTime? getNetTime,
+    List<double>? amount,
+    required String userId,
+  }) {
+    // 먼저 새로운 NetRecord 객체를 생성합니다.
+    final newRecord = NetRecord(
       id: _nextId++,
       throwDate: throwTime,
-      location: location, // location 추가
+      location: location,
       getDate: getNetTime ?? DateTime.now(),
       locationName: name,
       daysSince: 0,
@@ -123,8 +194,14 @@ class NetRecordProvider with ChangeNotifier {
       species: species ?? {},
       amount: amount ?? [],
       memo: memo ?? '',
-    ));
+    );
+
+    // 로컬 상태에 추가
+    _netRecords.add(newRecord);
     notifyListeners();
+
+    // Firestore에 추가
+    _addRecordToFirestore(newRecord, userId);
   }
 
   void updateRecord(int id,
