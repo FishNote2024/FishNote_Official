@@ -19,20 +19,11 @@ class _GetNetNoteState extends State<GetNetNote> {
   String memo = "";
 
   void _submitMemo() {
-    final netRecordProvider =
-        Provider.of<NetRecordProvider>(context, listen: false);
     final userId =
         Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-    print("userId: $userId");
     Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
         widget.recordId, userId,
         getTime: DateTime.now(), isGet: true);
-
-    print(
-        "isGet updated : ${netRecordProvider.getRecordById(widget.recordId)?.isGet}");
-
-    print("getTime : ${DateTime.now()}");
-    print(netRecordProvider.getRecordById(widget.recordId)?.getDate.toString());
     Navigator.pushReplacementNamed(context, '/netPage2');
   }
 

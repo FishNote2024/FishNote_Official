@@ -81,7 +81,7 @@ class NetRecordProvider with ChangeNotifier {
         for (var dateDoc in datesSnapshot.docs) {
           final data = dateDoc.data();
 
-          // 각 필드에 대해 null 체크를 추가
+          // 각 필드에 대해 null 체크 추가하기 (null이면 기본값으로 설정)
           _netRecords.add(
             NetRecord(
               id: data['id'] ?? 0,
@@ -124,7 +124,7 @@ class NetRecordProvider with ChangeNotifier {
 
     try {
       await docRef.set({
-        'id': recordId, // 이 ID는 uuid로 생성한 ID를 사용합니다.
+        'id': recordId,
         'throwDate': record.throwDate,
         'getDate': record.getDate,
         'locationName': record.locationName,

@@ -59,12 +59,9 @@ class _GetNetFishState extends State<GetNetFish> {
               ? null
               : () {
                   // 선택된 어종을 기록에 업데이트
-                  // netRecordProvider.updateRecord(widget.recordId,
-                  //     species: selectedList.toSet());
                   final userId =
                       Provider.of<LoginModelProvider>(context, listen: false)
                           .kakaoId;
-                  print("userId: $userId");
                   Provider.of<NetRecordProvider>(context, listen: false)
                       .updateRecord(widget.recordId, userId,
                           species: selectedList.toSet());

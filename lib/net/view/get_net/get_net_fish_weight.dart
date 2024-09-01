@@ -65,19 +65,13 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
   }
 
   void _submitData() {
-    final netRecordProvider =
-        Provider.of<NetRecordProvider>(context, listen: false);
-
     List<double> weights = [];
     for (var entry in _controllers.entries) {
       weights.add(double.parse(entry.value.text));
     }
 
-    // 업데이트 호출
-    // netRecordProvider.updateRecord(widget.recordId, amount: weights);
     final userId =
         Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-    print("userId: $userId");
     Provider.of<NetRecordProvider>(context, listen: false)
         .updateRecord(widget.recordId, userId, amount: weights);
 

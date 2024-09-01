@@ -26,13 +26,6 @@ class _GetNetViewState extends State<GetNetView> {
   int _currentPage = 1;
   final int _totalPages = 4;
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    print('recordId: ${widget.recordId}');
-  }
-
   void _nextPage([List<String>? selectedFish]) {
     setState(() {
       if (_currentPage < _totalPages - 1) {

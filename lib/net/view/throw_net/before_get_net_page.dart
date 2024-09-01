@@ -44,9 +44,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
     final allRecords = Provider.of<NetRecordProvider>(context).netRecords;
 
     // amount가 없는 기록만 필터링
-    final records = allRecords
-        .where((record) => record.amount == null || record.amount.isEmpty)
-        .toList();
+    final records =
+        allRecords.where((record) => record.isGet == false).toList();
 
     return Scaffold(
       backgroundColor: backgroundBlue,
