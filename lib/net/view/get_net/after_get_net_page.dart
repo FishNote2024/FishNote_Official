@@ -17,10 +17,9 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
   Widget build(BuildContext context) {
     final records = Provider.of<NetRecordProvider>(context);
 
-    // 어획량이 있는 기록만 필터링
-    final filteredRecords = records.netRecords
-        .where((record) => record.amount != null && record.amount.isNotEmpty)
-        .toList();
+    // Get인 기록만 필터링
+    final filteredRecords =
+        records.netRecords.where((record) => record.isGet).toList();
 
     return Scaffold(
       backgroundColor: backgroundBlue,

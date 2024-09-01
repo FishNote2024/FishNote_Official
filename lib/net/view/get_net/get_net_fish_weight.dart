@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:flutter/material.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -6,7 +7,7 @@ import 'package:provider/provider.dart';
 
 class GetNetFishWeight extends StatefulWidget {
   final VoidCallback onNext;
-  final int recordId;
+  final String recordId;
 
   const GetNetFishWeight(
       {super.key, required this.onNext, required this.recordId});
@@ -64,16 +65,15 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
   }
 
   void _submitData() {
-    final netRecordProvider =
-        Provider.of<NetRecordProvider>(context, listen: false);
-
     List<double> weights = [];
     for (var entry in _controllers.entries) {
       weights.add(double.parse(entry.value.text));
     }
 
-    // 업데이트 호출
-    netRecordProvider.updateRecord(widget.recordId, amount: weights);
+    final userId =
+        Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
+    Provider.of<NetRecordProvider>(context, listen: false)
+        .updateRecord(widget.recordId, userId, amount: weights);
 
     widget.onNext();
   }

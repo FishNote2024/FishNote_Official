@@ -1,3 +1,4 @@
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_view.dart';
 import 'package:fish_note/net/view/throw_net/add_throw_net_page.dart';
@@ -16,6 +17,8 @@ class BeforeGetNetPage extends StatefulWidget {
 
 class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
   Future<void> _navigateToAddThrowNetPage() async {
+    final loginModelProvider = Provider.of<LoginModelProvider>(context,
+        listen: false); // listen: false 추가
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -29,8 +32,9 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
       final DateTime throwTime = result['throwTime'];
 
       // NetRecordProvider를 통해 상태 업데이트
-      Provider.of<NetRecordProvider>(context, listen: false)
-          .addNewRecord(name, location, throwTime, false);
+      Provider.of<NetRecordProvider>(context, listen: false) // listen: false 추가
+          .addNewRecord(name, location, throwTime, false,
+              userId: loginModelProvider.kakaoId);
     }
   }
 
@@ -40,9 +44,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
     final allRecords = Provider.of<NetRecordProvider>(context).netRecords;
 
     // amount가 없는 기록만 필터링
-    final records = allRecords
-        .where((record) => record.amount == null || record.amount.isEmpty)
-        .toList();
+    final records =
+        allRecords.where((record) => record.isGet == false).toList();
 
     return Scaffold(
       backgroundColor: backgroundBlue,
@@ -106,8 +109,8 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        GetNetView(record: record),
+                                    builder: (context) => GetNetView(
+                                        recordId: record.id, record: record),
                                   ),
                                 );
                               },
