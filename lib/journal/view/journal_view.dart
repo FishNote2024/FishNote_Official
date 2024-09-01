@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../net/model/net_record.dart';
 import '../components/DetailButton.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../../../../theme/font.dart';
 import '../../../../theme/colors.dart';
-import 'package:fish_note/journal/model/fish_daily.dart';
 
 import 'journal_detail_view.dart';
 
@@ -17,51 +18,41 @@ class JournalView extends StatefulWidget {
 }
 
 class _JournalViewState extends State<JournalView> {
-  late final ValueNotifier<List<FishDaily>> _selectedEvents;
+  late List<NetRecord> _netRecords;
+  late final ValueNotifier<List<NetRecord>> _selectedEvents;
   final DateTime _today = DateTime.now();
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   final PanelController _panelController = PanelController();
   DateTime? _selectedPanelDate;
 
-  bool hasEventsOnDay(DateTime day) {
-    return _events.any((event) => isSameDay(event.datetime, day));
-  }
-  // 이벤트 데이터 (예시)
-  final List<FishDaily> _events = [
-    FishDaily(DateTime.utc(2024, 8, 18, 7, 30), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "하얀부표"),
-    FishDaily(DateTime.utc(2024, 8, 18, 19, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "문어대가리"),
-    FishDaily(DateTime.utc(2024, 8, 19, 8, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "빨간부표"),
-    FishDaily(DateTime.utc(2024, 8, 20, 9, 0), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "말머리"),
-    FishDaily(DateTime.utc(2024, 8, 20, 12, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "오징어클럽"),
-    FishDaily(DateTime.utc(2024, 8, 20, 13, 0), false, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "광어핫플"),
-    FishDaily(DateTime.utc(2024, 8, 20, 16, 30), true, {'lat': 37.7749, 'lng': -122.4194}, '2.2m', "닉네임"),
 
-  ];
+  bool hasEventsOnDay(DateTime day) {
+    // _netRecords가 초기화되지 않았을 경우 빈 리스트를 반환하도록 방어 코드 추가
+    if (_netRecords.isEmpty) return false;
+    return _netRecords.any((event) => isSameDay(event.throwDate, day));
+  }
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
     _selectedPanelDate = _today;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
+    _selectedEvents = ValueNotifier<List<NetRecord>>([]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _panelController.hide(); // 앱 시작 시 패널을 숨김
     });
   }
 
-  @override
-  void dispose() {
-    _selectedEvents.dispose();
-    super.dispose();
-  }
 
-  List<FishDaily> _getEventsForDay(DateTime day) {
-    return _events.where((event) => isSameDay(event.datetime, day)).toList();
+  List<NetRecord> _getEventsForDay(DateTime day) {
+    return _netRecords.where((event) => isSameDay(event.throwDate, day)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    _netRecords = Provider.of<NetRecordProvider>(context).netRecords;
+
     return Scaffold(
       backgroundColor: backgroundBlue,
       appBar: AppBar(
@@ -85,7 +76,7 @@ class _JournalViewState extends State<JournalView> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 17),
-                child: TableCalendar<FishDaily>(
+                child: TableCalendar<NetRecord>(
                   firstDay: DateTime.utc(2010, 10, 16),
                   lastDay: DateTime.utc(2030, 3, 14),
                   focusedDay: _focusedDay,
@@ -112,34 +103,64 @@ class _JournalViewState extends State<JournalView> {
                   },
                   calendarFormat: CalendarFormat.month,
                   calendarBuilders: CalendarBuilders(
-                    markerBuilder: (context, day, events) {
-                      // 오늘 날짜나 선택된 날짜에서는 마커를 표시하지 않음
-                      if (events.isNotEmpty &&
+                    markerBuilder: (context, day, netRecord) {
+                      // netRecord 리스트가 비어있지 않고, day가 _focusedDay나 _selectedDay가 아닌 경우 마커 생성
+                      if (netRecord.isNotEmpty &&
                           !isSameDay(day, _focusedDay) &&
-                          !isSameDay(day, _selectedDay) &&
-                          !isSameDay(day, _today)) {
+                          !isSameDay(day, _selectedDay)
+                          // && !isSameDay(day, _today)
+                      ) {
                         return Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: events.map((event) {
-                            if ((event as FishDaily).tooMang) {
-                              return Container(
-                                margin: const EdgeInsets.only(top: 40, right: 2),
-                                child: const Icon(
-                                  size: 5,
-                                  Icons.circle,
-                                  color: primaryBlue500,
-                                ),
-                              );
+                          children: netRecord.expand((event) {
+                            // event에 대해 마커 리스트 생성
+                            List<Widget> markers = [];
+
+                            if (!event.isGet) {
+                              // isGet이 true인 경우
+                              // throwDate에 대해 primaryBlue500 색상의 마커 추가
+                              if (isSameDay(event.throwDate, day)) {
+                                markers.add(
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 40, right: 2),
+                                    child: const Icon(
+                                      size: 5,
+                                      Icons.circle,
+                                      color: primaryBlue500,
+                                    ),
+                                  ),
+                                );
+                              }
+                              // getDate에 대해 primaryYellow700 색상의 마커 추가
+                              if (isSameDay(event.getDate, day)) {
+                                markers.add(
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 40, right: 2),
+                                    child: const Icon(
+                                      size: 5,
+                                      Icons.circle,
+                                      color: primaryYellow700,
+                                    ),
+                                  ),
+                                );
+                              }
                             } else {
-                              return Container(
-                                margin: const EdgeInsets.only(top: 40, right: 2),
-                                child: const Icon(
-                                  size: 5,
-                                  Icons.circle,
-                                  color: primaryYellow700,
-                                ),
-                              );
+                              // isGet이 false인 경우 throwDate에 대해 primaryBlue500 색상의 마커 추가
+                              if (isSameDay(event.throwDate, day)) {
+                                markers.add(
+                                  Container(
+                                    margin: const EdgeInsets.only(top: 40, right: 2),
+                                    child: const Icon(
+                                      size: 5,
+                                      Icons.circle,
+                                      color: primaryBlue500,
+                                    ),
+                                  ),
+                                );
+                              }
                             }
+
+                            return markers;
                           }).toList(),
                         );
                       }
@@ -205,7 +226,8 @@ class _JournalViewState extends State<JournalView> {
         const SizedBox(height: 16.0),
         Center(
           child: hasEventsOnDay(_selectedDay!)
-              ? DetailButton(
+              ?
+          DetailButton(
             onPressed: () {
               Navigator.push(
                 context,
@@ -220,7 +242,16 @@ class _JournalViewState extends State<JournalView> {
             color: primaryBlue500,
           )
               : DetailButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => JournalDetailView(
+                    events: _getEventsForDay(_selectedDay!),
+                  ),
+                ),
+              );
+            },
             text: "자세히 보기",
             color: gray3,
           ),
@@ -228,7 +259,7 @@ class _JournalViewState extends State<JournalView> {
         const SizedBox(height: 16.0),
 
         hasEventsOnDay(_selectedDay!)
-            ? ValueListenableBuilder<List<FishDaily>>(
+            ? ValueListenableBuilder<List<NetRecord>>(
           valueListenable: _selectedEvents,
           builder: (context, value, _) {
             return ListView.builder(
@@ -237,7 +268,6 @@ class _JournalViewState extends State<JournalView> {
               itemCount: value.length,
               itemBuilder: (context, index) {
                 final event = value[index];
-                final action = event.tooMang ? "투망" : "양망";
                 return Card(
                   color: Colors.white,
                   margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -247,19 +277,19 @@ class _JournalViewState extends State<JournalView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat('HH:mm').format(event.datetime) + ' ${event.locationName}',
+                          DateFormat('HH:mm').format(event.throwDate) + ' ${event.locationName}',
                           style: header3B(primaryBlue500),
                         ),
                         SizedBox(height: 16),
-                        Text('투망 시간 : ' + DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.datetime),
+                        Text('투망 시간 : ' + DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.throwDate),
 
-                              style: body2(gray8)
-                            ),
+                            style: body2(gray8)
+                        ),
                         SizedBox(height: 4),
                         Text(
-                              '투망 위치 : 위도 ${event.location['lat']} 경도 ${event.location['lng']}',
-                              style: TextStyle(fontSize: 14),
-                            ),
+                          '투망 위치 : 위도 ${event.location[0]} 경도 ${event.location[1]}',
+                          style: TextStyle(fontSize: 14),
+                        ),
                         SizedBox(height: 16.5),
                         Text(
                           '해상 기록',
@@ -267,7 +297,7 @@ class _JournalViewState extends State<JournalView> {
                         ),
                         SizedBox(height: 16.5),
                         Text(
-                          '파고: ${event.wav}',
+                          '파고: ${event.locationName}', //파고
                           style: body1(gray8),
                         ),
                       ],
@@ -282,9 +312,9 @@ class _JournalViewState extends State<JournalView> {
           alignment: Alignment.topCenter, // 세로로 맨 위에, 가로로 중앙에 배치
           child: Column(
             children: [
-              Text(
-                "이미지",
-                style: body1(gray8),
+              SizedBox(height: 65),
+              Image.asset(
+                'assets/icons/no_journal.png',
               ),
               Text(
                 "오늘도 만선 하세요!",
