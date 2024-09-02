@@ -127,33 +127,46 @@ class _JournalEditViewState extends State<JournalEditView> {
             ),
             const SizedBox(height: 16),
             _buildSectionTitle('해상기록'),
-            const SizedBox(height: 8),
-            _buildEditableTextField(
-              label: '파고',
-              initialValue: event.locationName,
+            SizedBox(height: 16.5),
+            Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: '파고: ',
+                    style: body2(gray5), // "파고:" 텍스트의 스타일
+                  ),
+                  TextSpan(
+                    text: '${event.id}', // 파고 정보 사용
+                    style: body2(black), // 파고 부분의 스타일
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            _buildSectionTitle('양망기록'),
-            const SizedBox(height: 8),
-            _buildEditableTextField(
-              label: '양망시간',
-              initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                  .format(event.getDate),
-              icon: Icons.calendar_today,
-              onIconPressed: () => _handleCalendarIconPressed(event.getDate),
-            ),
-            const SizedBox(height: 16),
-            _buildAddSpeciesButton(index),
-            _buildSpeciesList(event),
-            const SizedBox(height: 16),
-            _buildSectionTitle('메모'),
-            const SizedBox(height: 8),
-            _buildEditableMemo(event.memo ?? ''),
+            if (event.isGet) ...[
+              const SizedBox(height: 16),
+              _buildSectionTitle('양망기록'),
+              const SizedBox(height: 8),
+              _buildEditableTextField(
+                label: '양망시간',
+                initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+                    .format(event.getDate),
+                icon: Icons.calendar_today,
+                onIconPressed: () => _handleCalendarIconPressedGet(event.getDate),
+              ),
+              const SizedBox(height: 16),
+              _buildAddSpeciesButton(index),
+              _buildSpeciesList(event),
+              const SizedBox(height: 16),
+              _buildSectionTitle('메모'),
+              const SizedBox(height: 8),
+              _buildEditableMemo(event.memo ?? ''),
+            ],
           ],
         ),
       ),
     );
   }
+
 
   Widget _buildHeader(NetRecord event) {
     return Row(
@@ -179,9 +192,9 @@ class _JournalEditViewState extends State<JournalEditView> {
         labelText: label,
         suffixIcon: icon != null
             ? IconButton(
-                icon: Icon(icon),
-                onPressed: onIconPressed,
-              )
+          icon: Icon(icon),
+          onPressed: onIconPressed,
+        )
             : null,
         border: OutlineInputBorder(),
       ),
@@ -206,7 +219,7 @@ class _JournalEditViewState extends State<JournalEditView> {
             _buildDropdownField(
               label: '어종',
               value: event.species.elementAt(index),
-              items: ["고등어", "참치", "연어"],
+              items: netRecordProvider.species,
               onChanged: (newValue) {
                 setState(() {
                   event.species.remove(
@@ -334,7 +347,7 @@ class _JournalEditViewState extends State<JournalEditView> {
     }
   }
 
-  Future _handleCalendarThrowIconPressed(DateTime date) async {
+  Future _handleCalendarIconPressedGet(DateTime date) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: date,
@@ -364,6 +377,13 @@ class _JournalEditViewState extends State<JournalEditView> {
             pickedTime.minute,
           );
           netRecordProvider.setThrowTime(selectedDateTime!);
+          // netRecordProvider.updateRecord(widget.recordId,
+          //     throwTime: selectedDateTime ?? DateTime.now());
+          final userId =
+              Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
+          Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
+              widget.recordId, userId,
+              getTime: selectedDateTime ?? DateTime.now());
         });
       }
     }
@@ -372,7 +392,7 @@ class _JournalEditViewState extends State<JournalEditView> {
   Widget _buildDropdownField({
     required String label,
     required String? value,
-    required List<String> items,
+    required Set<String> items,
     required Function(String?) onChanged,
   }) {
     return DropdownButtonFormField<String>(
@@ -397,7 +417,7 @@ class _JournalEditViewState extends State<JournalEditView> {
     required Function(String) onChanged,
   }) {
     TextEditingController controller =
-        TextEditingController(text: initialValue);
+    TextEditingController(text: initialValue);
 
     return TextField(
       controller: controller,

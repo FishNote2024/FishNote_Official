@@ -73,7 +73,7 @@ class NetRecordProvider with ChangeNotifier {
           .doc(userId)
           .collection("journal")
           .doc("record");
-
+      print("Firestore path: ${journalRef.path}");
       // 각 날짜별로 하위 컬렉션 접근
       final datesSnapshot = await journalRef.collection("2024-09-02").get();
 
@@ -195,6 +195,8 @@ class NetRecordProvider with ChangeNotifier {
       List<double>? amount,
       String? memo,
       bool? isGet,
+      String? locationName,
+      List<double>? location,
       DateTime? throwTime,
       DateTime? getTime}) async {
     final recordIndex = _netRecords.indexWhere((record) => record.id == id);
@@ -215,7 +217,8 @@ class NetRecordProvider with ChangeNotifier {
         fishData: existingRecord.fishData,
       );
       notifyListeners();
-
+      print("-> id = $id");
+      print("-> userId = $userId");
       try {
         String throwDateFormatted =
             DateFormat('yyyy-MM-dd').format(existingRecord.throwDate);
@@ -229,12 +232,23 @@ class NetRecordProvider with ChangeNotifier {
 
         await docRef.update({
           if (isGet != null) 'isGet': isGet,
-          if (species != null) 'species': species.toList(),
-          if (amount != null) 'amount': amount,
+          if (species != null && species.isNotEmpty)
+            'species': species.toList(),
+          if (amount != null && amount.isNotEmpty) 'amount': amount,
           if (memo != null) 'memo': memo,
           if (throwTime != null) 'throwDate': throwTime,
           if (getTime != null) 'getDate': getTime,
         });
+        print("Document path: ${docRef.path}");
+
+        print("--> isget = $isGet");
+        // update에서 잘 되는지 확인 중
+        print(
+            "throwTime= $throwTime, getTime= $getTime, locationName= $locationName, location= $location");
+        // 바뀐 것 확인한 것들
+        print("species=  $species, amount= $amount, memo= $memo, ");
+        // 안바뀌는 것
+        print("");
         print('Record updated in Firestore successfully!');
       } catch (e) {
         print('Failed to update record in Firestore: $e');
