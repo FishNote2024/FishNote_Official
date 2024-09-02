@@ -1,4 +1,5 @@
 import 'package:fish_note/home/model/ledger_model.dart';
+import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -56,6 +57,8 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   }
 
   void _saveLedger(BuildContext context) {
+    final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+
     List<SaleModel> sales = revenueEntries.map((entry) {
       return SaleModel(
         species: entry['어종'],
@@ -73,20 +76,42 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
 
     LedgerModel newLedger = LedgerModel(
       date: widget.selectedDate,
+      totalSales: getTotalRevenue(),
+      totalPays: getTotalExpense(),
       sales: sales,
       pays: pays,
     );
 
-    Provider.of<LedgerProvider>(context, listen: false).addLedger(newLedger);
+    Provider.of<LedgerProvider>(context, listen: false)
+        .addLedger(newLedger, loginModelProvider.kakaoId);
 
     // 저장 후 이전 화면으로 이동
     Navigator.pop(context);
   }
 
+  int getTotalRevenue() {
+    return revenueEntries.fold(0, (sum, entry) {
+      int price = int.tryParse(entry['위판 수익']) ?? 0;
+      double weight = double.tryParse(entry['위판량']) ?? 0.0;
+      return sum + (price * weight).round();
+    });
+  }
+
+  int getTotalExpense() {
+    return expenseEntries.fold(0, (sum, entry) {
+      int price = int.tryParse(entry['비용']) ?? 0;
+      return sum + price;
+    });
+  }
+
+  String formatNumber(int number) {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(number);
+  }
+
   @override
   Widget build(BuildContext context) {
-    String formattedDate =
-        DateFormat.yMMMMd('ko_KR').format(widget.selectedDate);
+    String formattedDate = DateFormat.yMMMMd('ko_KR').format(widget.selectedDate);
 
     return Scaffold(
       appBar: AppBar(
@@ -113,7 +138,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [_buildRevenue(context), _buildExpense()],
           ),
@@ -131,8 +156,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
             "페이지에서 나가시겠습니까?",
             style: header3B(textBlack),
           ),
-          content: Text("작성한 내용이 저장되지 않고 사라집니다.\n정말 페이지에서 나가시겠습니까?",
-              style: body2(gray6)),
+          content: Text("작성한 내용이 저장되지 않고 사라집니다.\n정말 페이지에서 나가시겠습니까?", style: body2(gray6)),
           actions: [
             TextButton(
               onPressed: () {
@@ -154,20 +178,23 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   }
 
   Widget _buildRevenue(BuildContext context) {
+    int totalRevenue = getTotalRevenue(); // 합계 계산
+    String formattedTotalRevenue = formatNumber(totalRevenue); // 합계 형식화
+
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0, right: 4, top: 5, bottom: 24),
+          padding: const EdgeInsets.only(left: 4.0, right: 4, top: 5, bottom: 24),
           child: Row(
             children: [
               Text("매출", style: body1(gray5)),
               const Spacer(),
-              Text("0원", style: header3B(textBlack)),
+              Text("$formattedTotalRevenue원", style: header3B(textBlack)),
             ],
           ),
         ),
         Container(
-          padding: EdgeInsets.fromLTRB(16, 6, 16, 6),
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: gray1),
@@ -178,18 +205,18 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
               Row(
                 children: [
                   Text("위판", style: header4(gray8)),
-                  Spacer(),
+                  const Spacer(),
                   OutlinedButton(
                     onPressed: _addRevenueEntry,
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.transparent),
+                      side: const BorderSide(color: Colors.transparent),
                       padding: EdgeInsets.zero,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text('위판 추가하기 ', style: body2(gray4)),
-                        Icon(Icons.add_circle_outline, color: gray4),
+                        const Icon(Icons.add_circle_outline, color: gray4),
                       ],
                     ),
                   ),
@@ -198,15 +225,15 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
               const SizedBox(height: 16),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: revenueEntries.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
                       _buildRevenueEntryForm(context, index),
                       if (index != revenueEntries.length - 1)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 16.0),
                           child: Divider(color: gray1),
                         ),
                     ],
@@ -225,8 +252,8 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("삭제"),
-          content: Text("위판을 삭제하시겠습니까?"),
+          title: const Text("삭제"),
+          content: const Text("위판을 삭제하시겠습니까?"),
           actions: [
             TextButton(
               onPressed: () {
@@ -247,8 +274,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
     );
   }
 
-  Widget _buildRevenueFormRow(
-      {required String label, required Widget child, required int index}) {
+  Widget _buildRevenueFormRow({required String label, required Widget child, required int index}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -260,7 +286,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           Expanded(
             child: Container(
               height: 33,
-              padding: EdgeInsets.fromLTRB(10, 6, 10, 6),
+              padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
               decoration: BoxDecoration(
                 border: Border.all(color: gray4, width: 1),
                 borderRadius: BorderRadius.circular(4),
@@ -275,20 +301,23 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
 
   // 지출
   Widget _buildExpense() {
+    int totalExpense = getTotalExpense(); // 합계 계산
+    String formattedTotalExpense = formatNumber(totalExpense); // 합계 형식화
+
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0, right: 4, top: 40, bottom: 24),
+          padding: const EdgeInsets.only(left: 4.0, right: 4, top: 40, bottom: 24),
           child: Row(
             children: [
               Text("지출", style: body1(gray5)),
               const Spacer(),
-              Text("0원", style: header3B(textBlack)),
+              Text("$formattedTotalExpense원", style: header3B(textBlack)),
             ],
           ),
         ),
         Container(
-          padding: EdgeInsets.fromLTRB(16, 6, 16, 6),
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: gray1),
@@ -299,18 +328,18 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
               Row(
                 children: [
                   Text("지출 내역", style: header4(gray8)),
-                  Spacer(),
+                  const Spacer(),
                   OutlinedButton(
                     onPressed: _addExpenseEntry,
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.transparent),
+                      side: const BorderSide(color: Colors.transparent),
                       padding: EdgeInsets.zero,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text('지출 추가하기 ', style: body2(gray4)),
-                        Icon(Icons.add_circle_outline, color: gray4),
+                        const Icon(Icons.add_circle_outline, color: gray4),
                       ],
                     ),
                   ),
@@ -319,15 +348,15 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
               const SizedBox(height: 16),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: expenseEntries.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
                       _buildExpenseEntryForm(index),
                       if (index != expenseEntries.length - 1)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 16.0),
                           child: Divider(color: gray1),
                         ),
                     ],
@@ -351,18 +380,15 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
             builder: (context, netRecordProvider, child) {
               // 선택된 날짜에 해당하는 어종을 가져옴
               List<String> speciesList = netRecordProvider.netRecords
-                  .where((record) =>
-                      record.isGet &&
-                      isSameDay(record.getDate, widget.selectedDate))
+                  .where((record) => record.isGet && isSameDay(record.getDate, widget.selectedDate))
                   .expand((record) => record.species)
                   .toSet()
                   .toList();
 
               // 어종이 없을 때 userInfoProvider에서 species 가져오기
               if (speciesList.isEmpty) {
-                final userInfoProvider = Provider.of<UserInformationProvider>(
-                    context,
-                    listen: false);
+                final userInfoProvider =
+                    Provider.of<UserInformationProvider>(context, listen: false);
                 speciesList = userInfoProvider.species.toList();
               }
 
@@ -373,8 +399,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                     : revenueEntries[index]['어종'],
                 hint: Text("어종을 선택해주세요", style: body2(gray4)),
                 onChanged: (value) {
-                  if (speciesList.length == 1 &&
-                      speciesList[0] == '해당 날짜에 양망한 어종이 없어요') {
+                  if (speciesList.length == 1 && speciesList[0] == '해당 날짜에 양망한 어종이 없어요') {
                     // 어종이 없을 때는 선택하지 않음
                     return;
                   }
@@ -382,16 +407,14 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                     revenueEntries[index]['어종'] = value;
                   });
                 },
-                items:
-                    speciesList.map<DropdownMenuItem<String>>((String value) {
+                items: speciesList.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
-                    child: Text(value, style: body2(textBlack)),
-                    enabled: !(speciesList.length == 1 &&
-                        speciesList[0] == '해당 날짜에 양망한 어종이 없어요'), // 비활성화 설정
+                    enabled: !(speciesList.length == 1 && speciesList[0] == '해당 날짜에 양망한 어종이 없어요'),
+                    child: Text(value, style: body2(textBlack)), // 비활성화 설정
                   );
                 }).toList(),
-                underline: SizedBox.shrink(),
+                underline: const SizedBox.shrink(),
               );
             },
           ),
@@ -416,7 +439,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   keyboardType: TextInputType.number,
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text("kg", style: body2(gray4)),
             ],
           ),
@@ -441,29 +464,28 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   keyboardType: TextInputType.number,
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text("원", style: body2(gray4)),
             ],
           ),
         ),
         Row(
           children: [
-            Spacer(),
+            const Spacer(),
             if (revenueEntries.length > 1) // 리스트 길이가 1 초과인 경우에만 삭제 버튼 표시
               OutlinedButton(
                 onPressed: () {
                   _showDeleteConfirmationDialog(context, index);
                 },
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.transparent),
+                  side: const BorderSide(color: Colors.transparent),
                   padding: EdgeInsets.zero,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text('삭제하기 ', style: body2(alertRedBackground)),
-                    Icon(Icons.delete_forever_outlined,
-                        color: alertRedBackground),
+                    const Icon(Icons.delete_forever_outlined, color: alertRedBackground),
                   ],
                 ),
               ),
@@ -481,17 +503,15 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           label: "구분",
           child: DropdownButton<String>(
             isExpanded: true,
-            value: expenseEntries[index]['구분']?.isEmpty ?? true
-                ? null
-                : expenseEntries[index]['구분'],
+            value:
+                expenseEntries[index]['구분']?.isEmpty ?? true ? null : expenseEntries[index]['구분'],
             hint: Text("지출 구분을 선택해주세요", style: body2(gray4)),
             onChanged: (value) {
               setState(() {
                 expenseEntries[index]['구분'] = value;
               });
             },
-            items: <String>['유류비', '인건비', '어구', '기타']
-                .map<DropdownMenuItem<String>>(
+            items: <String>['유류비', '인건비', '어구', '기타'].map<DropdownMenuItem<String>>(
               (String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -499,7 +519,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                 );
               },
             ).toList(),
-            underline: SizedBox.shrink(),
+            underline: const SizedBox.shrink(),
           ),
         ),
         _buildExpenseFormRow(
@@ -522,29 +542,28 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   keyboardType: TextInputType.number,
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text("원", style: body2(gray4)),
             ],
           ),
         ),
         Row(
           children: [
-            Spacer(),
+            const Spacer(),
             if (expenseEntries.length > 1) // 리스트 길이가 1 초과인 경우에만 삭제 버튼 표시
               OutlinedButton(
                 onPressed: () {
                   _showDeleteExpenseConfirmationDialog(context, index);
                 },
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.transparent),
+                  side: const BorderSide(color: Colors.transparent),
                   padding: EdgeInsets.zero,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text('삭제하기 ', style: body2(alertRedBackground)),
-                    Icon(Icons.delete_forever_outlined,
-                        color: alertRedBackground),
+                    const Icon(Icons.delete_forever_outlined, color: alertRedBackground),
                   ],
                 ),
               ),
@@ -559,8 +578,8 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("삭제"),
-          content: Text("지출 내역을 삭제하시겠습니까?"),
+          title: const Text("삭제"),
+          content: const Text("지출 내역을 삭제하시겠습니까?"),
           actions: [
             TextButton(
               onPressed: () {
@@ -581,8 +600,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
     );
   }
 
-  Widget _buildExpenseFormRow(
-      {required String label, required Widget child, required int index}) {
+  Widget _buildExpenseFormRow({required String label, required Widget child, required int index}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
@@ -594,7 +612,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           Expanded(
             child: Container(
               height: 33,
-              padding: EdgeInsets.fromLTRB(10, 6, 10, 6),
+              padding: const EdgeInsets.fromLTRB(10, 6, 10, 6),
               decoration: BoxDecoration(
                 border: Border.all(color: gray4, width: 1),
                 borderRadius: BorderRadius.circular(4),
