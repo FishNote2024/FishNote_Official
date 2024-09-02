@@ -31,6 +31,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   late UserInformationProvider userInformationProvider;
   late LoginModelProvider loginModelProvider;
 
+
   @override
   void initState() {
     super.initState();
@@ -42,11 +43,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         .now()); //'0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'
     String formattedDate =
         closestForecastTime.getFormattedDate(DateTime.now()); //'20240809'
-    weatherData = apiService.fetchData(
-        nx: 36.190,
-        ny: 129.358,
-        closestTime: closestTime,
-        formattedDate: formattedDate);
+        weatherData = apiService.fetchData(
+          nx: 36.190,
+          ny: 129.358,
+          closestTime: closestTime,
+          formattedDate: formattedDate,
+        ).then((data) {
+          if (data.isNotEmpty) {
+            String waveHeight = data.entries.first.value['WAV'];
+            Provider.of<WaveProvider>(context, listen: false).setWavString(waveHeight);
+          }
+          return data; // 계속해서 FutureBuilder에 data 전달
+        });
 
 
 // 날짜 문자열을 DateTime 객체로 변환
