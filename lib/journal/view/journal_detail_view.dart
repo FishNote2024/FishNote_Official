@@ -1,4 +1,5 @@
 import 'package:fish_note/journal/view/journal_edit_view.dart';
+import 'package:fish_note/journal/view/journal_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +23,12 @@ class JournalDetailView extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const JournalView(),
+              ),
+            );
           },
         ),
         title: Text(DateFormat('MM.dd (E)', 'ko_KR').format(date)),
@@ -53,7 +59,7 @@ class JournalDetailView extends StatelessWidget {
           final action = "투망"; // 투망(throw)을 표시
           final locationName = event.locationName;
 
-          if (event.isGet) {
+          if (!event.isGet) {
             // isGet이 true일 때 반환할 Card
             return Card(
               color: Colors.white,
@@ -217,6 +223,7 @@ class JournalDetailView extends StatelessWidget {
                       '어획',
                       style: header3B(gray8),
                     ),
+                    SizedBox(height: 16.5),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: List.generate(event.species.length, (index) {
@@ -236,14 +243,6 @@ class JournalDetailView extends StatelessWidget {
                                     TextSpan(
                                       text:
                                           '${event.species.elementAt(index)}\n', // species의 인덱스에 해당하는 값 가져오기
-                                      style: body2(black),
-                                    ),
-                                    TextSpan(
-                                      text: '어법             ',
-                                      style: body2(gray5),
-                                    ),
-                                    TextSpan(
-                                      text: '외끌이대형저인망\n', // 예시로 고정된 어법
                                       style: body2(black),
                                     ),
                                     TextSpan(

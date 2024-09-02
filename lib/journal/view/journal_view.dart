@@ -1,3 +1,4 @@
+import 'package:fish_note/home/view/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../net/model/net_record.dart';
@@ -58,6 +59,17 @@ class _JournalViewState extends State<JournalView> {
       appBar: AppBar(
         backgroundColor: backgroundBlue,
         centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const Home(),
+              ),
+            );
+          },
+        ),
         title: const Text("조업 일지"),
       ),
       body: SlidingUpPanel(
@@ -116,7 +128,7 @@ class _JournalViewState extends State<JournalView> {
                             // event에 대해 마커 리스트 생성
                             List<Widget> markers = [];
 
-                            if (!event.isGet) {
+                            if (event.isGet) {
                               // isGet이 true인 경우
                               // throwDate에 대해 primaryBlue500 색상의 마커 추가
                               if (isSameDay(event.throwDate, day)) {
