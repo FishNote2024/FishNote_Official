@@ -16,6 +16,7 @@ class NetRecord {
   final String? memo;
   final List<double> location; // location을 위도, 경도로 저장
   Map<String, double> fishData;
+  final String? wave;
 
   NetRecord(
       {required this.throwDate,
@@ -28,6 +29,7 @@ class NetRecord {
       this.species = const {},
       this.amount = const [],
       this.memo,
+      this.wave,
       this.fishData = const {}});
 }
 
@@ -47,6 +49,7 @@ class NetRecordProvider with ChangeNotifier {
   List<double> _amount = [];
   int _daysSince = 0;
   String _memo = '';
+  String _wave = " ";
 
   String get locationName => _locationName;
   DateTime get throwTime => _throwTime;
@@ -60,6 +63,7 @@ class NetRecordProvider with ChangeNotifier {
   List<double> get location => _location;
   Map<String, double> fishData = {};
   String get memo => _memo;
+  String get wave => _wave;
 
   final db = FirebaseFirestore.instance;
 
@@ -96,6 +100,7 @@ class NetRecordProvider with ChangeNotifier {
               species: Set<String>.from(data['species'] ?? <String>{}),
               amount: List<double>.from(data['amount'] ?? <double>[]),
               memo: data['memo'] ?? '',
+              wave: data["wave"] ?? '',
               fishData: Map<String, double>.from(
                   data['fishData'] ?? <String, double>{}),
             ),
@@ -134,6 +139,7 @@ class NetRecordProvider with ChangeNotifier {
         'species': record.species.toList(),
         'amount': record.amount,
         'memo': record.memo,
+        'wave': record.wave,
         'fishData': record.fishData,
       });
 
@@ -148,6 +154,7 @@ class NetRecordProvider with ChangeNotifier {
         species: record.species,
         amount: record.amount,
         memo: record.memo,
+        wave: record.wave,
         fishData: record.fishData,
       );
 
@@ -163,6 +170,7 @@ class NetRecordProvider with ChangeNotifier {
     DateTime throwTime,
     bool isGet, {
     String? memo,
+    String? wave,
     Set<String>? species,
     DateTime? getNetTime,
     List<double>? amount,
@@ -180,6 +188,7 @@ class NetRecordProvider with ChangeNotifier {
       species: species ?? {},
       amount: amount ?? [],
       memo: memo ?? '',
+      wave: wave ?? '',
     );
 
     // 로컬 상태에 추가

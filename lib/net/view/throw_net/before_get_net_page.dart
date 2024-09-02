@@ -1,3 +1,4 @@
+import 'package:fish_note/home/view/weather/wave_provider.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/get_net/get_net_view.dart';
@@ -19,6 +20,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
   Future<void> _navigateToAddThrowNetPage() async {
     final loginModelProvider = Provider.of<LoginModelProvider>(context,
         listen: false); // listen: false 추가
+    final waveProvider = Provider.of<WaveProvider>(context, listen: false);
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -30,11 +32,13 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
       final String name = result['name'];
       final List<double> location = result['location'];
       final DateTime throwTime = result['throwTime'];
+      final String wave = waveProvider.wave;
 
       // NetRecordProvider를 통해 상태 업데이트
       Provider.of<NetRecordProvider>(context, listen: false) // listen: false 추가
           .addNewRecord(name, location, throwTime, false,
-              userId: loginModelProvider.kakaoId);
+              userId: loginModelProvider.kakaoId, wave:wave
+      );
     }
   }
 

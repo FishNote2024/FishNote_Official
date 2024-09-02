@@ -120,7 +120,7 @@ class JournalDetailView extends StatelessWidget {
                             style: body2(gray5), // "파고:" 텍스트의 스타일
                           ),
                           TextSpan(
-                            text: '${event.locationName}', // 파고 정보 사용
+                            text: '${event.wave}m', // 파고 정보 사용
                             style: body2(black), // 파고 부분의 스타일
                           ),
                         ],

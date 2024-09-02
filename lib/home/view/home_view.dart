@@ -1,5 +1,6 @@
 import 'package:fish_note/home/view/net_wait_card.dart';
 import 'package:fish_note/home/view/vertical_outlined_button.dart';
+import 'package:fish_note/home/view/weather/wave_provider.dart';
 import 'package:fish_note/home/view/weather/weather_detail_view.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
@@ -46,6 +47,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         ny: 129.358,
         closestTime: closestTime,
         formattedDate: formattedDate);
+
 
 // 날짜 문자열을 DateTime 객체로 변환
     int year = int.parse(formattedDate.substring(0, 4));
@@ -175,9 +177,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               return const Center(
                                   child: Text('No data available'));
                             }
-
                             data = snapshot.data!;
 
+                            if (snapshot.hasData) {
+                              Map<String, dynamic> data = snapshot.data!;
+                              if (!Provider.of<WaveProvider>(context, listen: false).isSet) {
+                                String waveHeight = data.entries.first.value['WAV'];  // 'WAV' 키를 사용하여 파고 데이터 접근
+                                Provider.of<WaveProvider>(context, listen: false).setWavString(waveHeight);  // 파고 데이터를 Provider에 저장
+                              }
+                            }
                             if (!_hasJumped) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 _scrollController.jumpTo(

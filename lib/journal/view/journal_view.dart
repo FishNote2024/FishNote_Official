@@ -309,7 +309,7 @@ class _JournalViewState extends State<JournalView> {
                         ),
                         SizedBox(height: 16.5),
                         Text(
-                          '파고: ${event.locationName}', //파고
+                          '파고: ${event.wave}m', //파고
                           style: body1(gray8),
                         ),
                       ],
