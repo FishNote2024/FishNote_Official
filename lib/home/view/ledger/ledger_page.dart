@@ -566,7 +566,7 @@ class _LedgerPageState extends State<LedgerPage> {
           ],
         ),
         const SizedBox(height: 13.0),
-        const LineChartView(),
+        LineChartView(time: _selectedDay?? DateTime.now()),
       ],
     );
   }
