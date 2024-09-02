@@ -28,15 +28,15 @@ class UserInformationProvider with ChangeNotifier {
       final doc = await docRef.get();
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
-        _ageRange = data['ageRange'];
-        _yearExperience = data['yearExperience'];
-        _affiliation = data['affiliation'];
-        _species = Set<String>.from(data['species']);
-        _technique = Set<String>.from(data['technique']);
-        _location.setName(data['location']['name']);
-        _location.setLatlon(data['location']['latlon']);
+        _ageRange = data['ageRange'] as String;
+        _yearExperience = data['yearExperience'] as String;
+        _affiliation = data['affiliation'] as String;
+        _species = (data['species'] as List<dynamic>).map((e) => e as String).toSet();
+        _technique = (data['technique'] as List<dynamic>).map((e) => e as String).toSet();
+        _location.setName(data['location']['name'] as String);
+        _location.setLatlon(data['location']['latlon'] as GeoPoint);
         _favorites.clear();
-        for (var favorite in data['favorites']) {
+        for (var favorite in data['favorites'] as List<dynamic>) {
           _favorites.add(Location(favorite['name'], (favorite['latlon'])));
         }
         notifyListeners();
