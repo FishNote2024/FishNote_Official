@@ -1,10 +1,10 @@
-import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:fish_note/theme/colors.dart';
-import 'package:fish_note/theme/font.dart';
 import 'package:provider/provider.dart';
 import '../../net/model/net_record.dart';
+import 'package:fish_note/login/model/login_model_provider.dart';
+import 'package:fish_note/theme/colors.dart';
+import 'package:fish_note/theme/font.dart';
 
 class JournalEditView extends StatefulWidget {
   final List<NetRecord> events;
@@ -20,26 +20,22 @@ class JournalEditView extends StatefulWidget {
 
 class _JournalEditViewState extends State<JournalEditView> {
   DateTime? selectedDateTime;
-  DateTime? originalDateTime; // Store the original date
+  DateTime? originalDateTime;
+  DateTime? selectedGetTime; // 양망시간
+  DateTime? selectedThrowTime; // 투망시간
   TextEditingController _dateTimeController = TextEditingController();
+  TextEditingController _memoController = TextEditingController();
   late NetRecordProvider netRecordProvider;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   originalDateTime = widget.events.first.throwDate; // Initialize the original date
-  //   selectedDateTime = originalDateTime; // Initially, selected date is the original date
-  //   _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime!);
-  // }
   @override
   void initState() {
     super.initState();
-    // Provider를 사용하여 netRecordProvider 초기화
     netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
-    originalDateTime =
-        widget.events.first.throwDate; // Initialize the original date
-    selectedDateTime =
-        originalDateTime; // Initially, selected date is the original date
+    originalDateTime = widget.events.first.throwDate;
+    selectedDateTime = originalDateTime;
+    _memoController.text = widget.events.first.memo ?? '';
+    selectedGetTime = widget.events.first.getDate;
+    selectedThrowTime = widget.events.first.throwDate;
     _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
         .format(originalDateTime!);
   }
@@ -65,11 +61,35 @@ class _JournalEditViewState extends State<JournalEditView> {
         actions: [
           TextButton(
             onPressed: () {
-              setState(() {
-                selectedDateTime =
-                    originalDateTime; // Revert to the original date
-                Navigator.pop(context); // Go back to the previous screen
-              });
+              final userId =
+                  Provider.of<LoginModelProvider>(context, listen: false)
+                      .kakaoId;
+
+              // Prepare updated data
+              Set<String> updatedSpecies = widget.events.first.species;
+              List<double> updatedAmount = widget.events.first.amount;
+              String updatedLocationName = widget.events.first.locationName;
+              List<double> updatedLocation = widget.events.first.location;
+              String updatedMemo = _memoController.text;
+              DateTime updatedThrowTime =
+                  selectedThrowTime ?? widget.events.first.throwDate;
+              DateTime updatedGetTime =
+                  selectedGetTime ?? widget.events.first.getDate;
+
+              // Call the update method
+              netRecordProvider.updateRecord(
+                widget.recordId,
+                userId,
+                species: updatedSpecies,
+                amount: updatedAmount,
+                throwTime: updatedThrowTime,
+                getTime: updatedGetTime,
+                locationName: updatedLocationName,
+                location: updatedLocation,
+                memo: updatedMemo,
+              );
+
+              Navigator.pop(context);
             },
             child: Text(
               '수정완료',
@@ -103,9 +123,9 @@ class _JournalEditViewState extends State<JournalEditView> {
             _buildEditableTextField(
               label: '투망시간',
               initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                  .format(event.throwDate),
+                  .format(selectedThrowTime ?? event.throwDate),
               icon: Icons.calendar_today,
-              onIconPressed: () => _handleCalendarIconPressed(event.throwDate),
+              onIconPressed: () => _handleThrowTimeChange(event.throwDate),
             ),
             const SizedBox(height: 8),
             Row(
@@ -138,9 +158,9 @@ class _JournalEditViewState extends State<JournalEditView> {
             _buildEditableTextField(
               label: '양망시간',
               initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                  .format(event.getDate),
+                  .format(selectedGetTime ?? event.getDate),
               icon: Icons.calendar_today,
-              onIconPressed: () => _handleCalendarIconPressed(event.getDate),
+              onIconPressed: () => _handleGetTimeChange(event.getDate),
             ),
             const SizedBox(height: 16),
             _buildAddSpeciesButton(index),
@@ -209,9 +229,8 @@ class _JournalEditViewState extends State<JournalEditView> {
               items: ["고등어", "참치", "연어"],
               onChanged: (newValue) {
                 setState(() {
-                  event.species.remove(
-                      event.species.elementAt(index)); // Remove the old value
-                  event.species.add(newValue!); // Add the new value
+                  event.species.remove(event.species.elementAt(index));
+                  event.species.add(newValue!);
                 });
               },
             ),
@@ -258,7 +277,7 @@ class _JournalEditViewState extends State<JournalEditView> {
           onPressed: () {
             setState(() {
               widget.events[eventIndex].species.add('새로운 어종');
-              widget.events[eventIndex].amount.add(0.0); // 새로운 어종에 대한 어획량 추가
+              widget.events[eventIndex].amount.add(0.0);
             });
           },
           child: Text(
@@ -283,90 +302,13 @@ class _JournalEditViewState extends State<JournalEditView> {
       ),
       child: TextField(
         maxLines: null,
-        controller: TextEditingController(text: memo),
+        controller: _memoController,
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: '메모를 입력하세요',
         ),
       ),
     );
-  }
-
-  Future _handleCalendarIconPressed(DateTime date) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: date,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-      confirmText: "확인",
-      cancelText: "뒤로",
-    );
-    if (pickedDate != null) {
-      TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(date),
-        initialEntryMode: TimePickerEntryMode.input,
-        hourLabelText: "시",
-        minuteLabelText: "분",
-        cancelText: "뒤로",
-        confirmText: "확인",
-      );
-
-      if (pickedTime != null) {
-        setState(() {
-          selectedDateTime = DateTime(
-            pickedDate.year,
-            pickedDate.month,
-            pickedDate.day,
-            pickedTime.hour,
-            pickedTime.minute,
-          );
-          netRecordProvider.setThrowTime(selectedDateTime!);
-          // netRecordProvider.updateRecord(widget.recordId,
-          //     throwTime: selectedDateTime ?? DateTime.now());
-          final userId =
-              Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-          Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
-              widget.recordId, userId,
-              throwTime: selectedDateTime ?? DateTime.now());
-        });
-      }
-    }
-  }
-
-  Future _handleCalendarThrowIconPressed(DateTime date) async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: date,
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-      confirmText: "확인",
-      cancelText: "뒤로",
-    );
-    if (pickedDate != null) {
-      TimeOfDay? pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(date),
-        initialEntryMode: TimePickerEntryMode.input,
-        hourLabelText: "시",
-        minuteLabelText: "분",
-        cancelText: "뒤로",
-        confirmText: "확인",
-      );
-
-      if (pickedTime != null) {
-        setState(() {
-          selectedDateTime = DateTime(
-            pickedDate.year,
-            pickedDate.month,
-            pickedDate.day,
-            pickedTime.hour,
-            pickedTime.minute,
-          );
-          netRecordProvider.setThrowTime(selectedDateTime!);
-        });
-      }
-    }
   }
 
   Widget _buildDropdownField({
@@ -418,5 +360,73 @@ class _JournalEditViewState extends State<JournalEditView> {
         onChanged(newValue);
       },
     );
+  }
+
+  Future _handleThrowTimeChange(DateTime date) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      confirmText: "확인",
+      cancelText: "뒤로",
+    );
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(date),
+        initialEntryMode: TimePickerEntryMode.input,
+        hourLabelText: "시",
+        minuteLabelText: "분",
+        cancelText: "뒤로",
+        confirmText: "확인",
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          selectedThrowTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
+    }
+  }
+
+  Future _handleGetTimeChange(DateTime date) async {
+    DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: date,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+      confirmText: "확인",
+      cancelText: "뒤로",
+    );
+    if (pickedDate != null) {
+      TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(date),
+        initialEntryMode: TimePickerEntryMode.input,
+        hourLabelText: "시",
+        minuteLabelText: "분",
+        cancelText: "뒤로",
+        confirmText: "확인",
+      );
+
+      if (pickedTime != null) {
+        setState(() {
+          selectedGetTime = DateTime(
+            pickedDate.year,
+            pickedDate.month,
+            pickedDate.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
+    }
   }
 }
