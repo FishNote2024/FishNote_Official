@@ -23,6 +23,7 @@ class _LedgerPageState extends State<LedgerPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
   int _selectedValue = 0;
+  int _pieChartSelectedValue = 0;
   final PanelController _panelController = PanelController();
 
   @override
@@ -48,6 +49,40 @@ class _LedgerPageState extends State<LedgerPage> {
         }
       });
     }
+  }
+
+  // 총 매출 계산
+  int _calculateTotalRevenue(List<LedgerModel> ledgers) {
+    return ledgers.fold(0, (total, ledger) => total + ledger.totalSales);
+  }
+
+  // 총 지출 계산
+  int _calculateTotalExpense(List<LedgerModel> ledgers) {
+    return ledgers.fold(0, (total, ledger) => total + ledger.totalPays);
+  }
+
+  int weekOfYear(DateTime date) {
+    // 해당 연도의 첫 날과 첫 번째 토요일 찾기
+    DateTime firstDayOfYear = DateTime(date.year, 1, 1);
+    DateTime firstSaturday = firstDayOfYear;
+
+    // 첫 번째 토요일을 찾기 위해 해당 연도 첫 날부터 토요일을 찾음
+    while (firstSaturday.weekday != DateTime.saturday) {
+      firstSaturday = firstSaturday.add(const Duration(days: 1));
+    }
+
+    // 주어진 날짜와 첫 번째 토요일 사이의 일 수 차이를 계산
+    int daysSinceFirstSaturday = date.difference(firstSaturday).inDays;
+
+    // 주 번호를 계산
+    int weekNumber = (daysSinceFirstSaturday / 7).ceil() + 1;
+
+    // 첫 번째 주에 포함되지 않는 날짜에 대해 주 번호 조정
+    if (weekNumber <= 0) {
+      weekNumber = weekOfYear(DateTime(date.year - 1, 12, 31));
+    }
+
+    return weekNumber;
   }
 
   @override
@@ -496,63 +531,83 @@ class _LedgerPageState extends State<LedgerPage> {
   }
 
   Widget _buildTableLedger() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: EdgeInsets.zero,
-          child: Row(children: [
-            DropdownButton<int>(
-                value: _selectedValue,
-                items: [
-                  DropdownMenuItem(value: 0, child: Text('월간 총 이익', style: body1(gray5))),
-                  DropdownMenuItem(value: 1, child: Text('주간 총 이익', style: body1(gray5)))
+    return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
+      int totalRevenue = _selectedValue == 0
+          ? _calculateTotalRevenue(ledgerProvider.ledgers
+              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              .toList())
+          : _calculateTotalRevenue(ledgerProvider.ledgers
+              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              .toList());
+      int totalExpense = _selectedValue == 0
+          ? _calculateTotalExpense(ledgerProvider.ledgers
+              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              .toList())
+          : _calculateTotalExpense(ledgerProvider.ledgers
+              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              .toList());
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.zero,
+            child: Row(children: [
+              DropdownButton<int>(
+                  value: _selectedValue,
+                  items: [
+                    DropdownMenuItem(value: 0, child: Text('월간 총 이익', style: body1(gray5))),
+                    DropdownMenuItem(value: 1, child: Text('주간 총 이익', style: body1(gray5)))
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedValue = value!;
+                      _pieChartSelectedValue = 0;
+                    });
+                  },
+                  dropdownColor: Colors.white,
+                  style: body2(gray8),
+                  underline: Container(height: 0, color: Colors.transparent)),
+              const Spacer(),
+              Text("계좌연동 기능 준비중", style: body3(gray3))
+            ]),
+          ),
+          Text("${NumberFormat("#,###").format(totalRevenue)}원", style: header1B(primaryBlue500)),
+          const SizedBox(height: 20),
+          Column(
+            children: [
+              Row(
+                children: [
+                  Text('매출', style: body1(gray4)),
+                  const SizedBox(width: 12),
+                  Text('${NumberFormat("#,###").format(totalRevenue)}원',
+                      style: header4(primaryBlue300))
                 ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedValue = value!;
-                  });
-                },
-                dropdownColor: Colors.white,
-                style: body2(gray8),
-                underline: Container(height: 0, color: Colors.transparent)),
-            const Spacer(),
-            Text("계좌연동 기능 준비중", style: body3(gray3))
-          ]),
-        ),
-        Text("10,145,070원", style: header1B(primaryBlue500)),
-        const SizedBox(height: 20),
-        Column(
-          children: [
-            Row(
-              children: [
-                Text('매출', style: body1(gray4)),
-                const SizedBox(width: 12),
-                Text('50,245,070원', style: header4(primaryBlue300))
-              ],
-            ),
-            const Divider(color: gray1, thickness: 1, endIndent: 156),
-            Row(
-              children: [
-                Text('지출', style: body1(gray4)),
-                const SizedBox(width: 12),
-                Text('5,000,000원', style: header4(primaryYellow900))
-              ],
-            ),
-            const Divider(color: gray1, thickness: 1),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text('합계', style: body1(gray4)),
-                const SizedBox(width: 12),
-                Text('10,145,070원', style: header4(primaryBlue500))
-              ],
-            ),
-            const SizedBox(height: 40)
-          ],
-        ),
-      ],
-    );
+              ),
+              const Divider(color: gray1, thickness: 1, endIndent: 156),
+              Row(
+                children: [
+                  Text('지출', style: body1(gray4)),
+                  const SizedBox(width: 12),
+                  Text('${NumberFormat("#,###").format(totalExpense)}원',
+                      style: header4(primaryYellow900))
+                ],
+              ),
+              const Divider(color: gray1, thickness: 1),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text('합계', style: body1(gray4)),
+                  const SizedBox(width: 12),
+                  Text('${NumberFormat("#,###").format(totalRevenue - totalExpense)}원',
+                      style: header4(primaryBlue500))
+                ],
+              ),
+              const SizedBox(height: 40)
+            ],
+          ),
+        ],
+      );
+    });
   }
 
   Widget _buildLineChart() {
@@ -572,27 +627,37 @@ class _LedgerPageState extends State<LedgerPage> {
   }
 
   Widget _buildPieChart() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        DropdownButton<int>(
-            value: _selectedValue,
-            items: [
-              DropdownMenuItem(value: 0, child: Text('매출 통계', style: body1(gray8))),
-              DropdownMenuItem(value: 1, child: Text('지출 통계', style: body1(gray8)))
-            ],
-            onChanged: (value) {
-              setState(() {
-                _selectedValue = value!;
-              });
-            },
-            dropdownColor: Colors.white,
-            style: body2(gray8),
-            underline: Container(height: 0, color: Colors.transparent)),
-        const SizedBox(height: 20.0),
-        const PieChartView(),
-        const SizedBox(height: 30)
-      ],
-    );
+    return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
+      final ledgers = _selectedValue == 0
+          ? ledgerProvider.ledgers
+              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              .toList()
+          : ledgerProvider.ledgers
+              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              .toList();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          DropdownButton<int>(
+              value: _pieChartSelectedValue,
+              items: [
+                DropdownMenuItem(value: 0, child: Text('매출 통계', style: body1(gray8))),
+                DropdownMenuItem(value: 1, child: Text('지출 통계', style: body1(gray8)))
+              ],
+              onChanged: (value) {
+                setState(() {
+                  _pieChartSelectedValue = value!;
+                });
+              },
+              dropdownColor: Colors.white,
+              style: body2(gray8),
+              underline: Container(height: 0, color: Colors.transparent)),
+          const SizedBox(height: 20.0),
+          PieChartView(value: _pieChartSelectedValue, ledgers: ledgers),
+          const SizedBox(height: 30)
+        ],
+      );
+    });
   }
 }
