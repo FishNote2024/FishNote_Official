@@ -1,5 +1,6 @@
 import 'package:fish_note/favorites/view/favorites_view.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
+import 'package:fish_note/home/view/weather/wave_provider.dart';
 import 'package:fish_note/journal/view/journal_view.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/login/view/login_view.dart';
@@ -37,6 +38,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => NetRecordProvider()),
         ChangeNotifierProvider(create: (_) => LoginModelProvider()),
         ChangeNotifierProvider(create: (_) => LedgerProvider()),
+        ChangeNotifierProvider(create: (_) => WaveProvider()),
       ],
       child: const MyApp(),
     ),
