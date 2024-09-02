@@ -1,4 +1,6 @@
+import 'package:fish_note/journal/view/journal_detail_view.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fish_note/theme/colors.dart';
@@ -23,7 +25,8 @@ class _JournalEditViewState extends State<JournalEditView> {
   DateTime? originalDateTime; // Store the original date
   TextEditingController _dateTimeController = TextEditingController();
   late NetRecordProvider netRecordProvider;
-
+  late UserInformationProvider userInformationProvider;
+  late Set<String> species;
   // @override
   // void initState() {
   //   super.initState();
@@ -36,16 +39,19 @@ class _JournalEditViewState extends State<JournalEditView> {
     super.initState();
     // Provider를 사용하여 netRecordProvider 초기화
     netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
+    userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
     originalDateTime =
         widget.events.first.throwDate; // Initialize the original date
     selectedDateTime =
         originalDateTime; // Initially, selected date is the original date
     _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
         .format(originalDateTime!);
+    species ={...netRecordProvider.species, ...userInformationProvider.species};;
   }
 
   @override
   Widget build(BuildContext context) {
+    netRecordProvider.netRecords;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: backgroundBlue,
@@ -68,7 +74,12 @@ class _JournalEditViewState extends State<JournalEditView> {
               setState(() {
                 selectedDateTime =
                     originalDateTime; // Revert to the original date
-                Navigator.pop(context); // Go back to the previous screen
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => JournalDetailView(events: netRecordProvider.netRecords),
+                  ),
+                );// Go back to the previous screen
               });
             },
             child: Text(
@@ -218,8 +229,8 @@ class _JournalEditViewState extends State<JournalEditView> {
           children: [
             _buildDropdownField(
               label: '어종',
-              value: event.species.elementAt(index),
-              items: netRecordProvider.species,
+              value: species.elementAt(index),
+              items: species,
               onChanged: (newValue) {
                 setState(() {
                   event.species.remove(
