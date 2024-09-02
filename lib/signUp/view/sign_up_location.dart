@@ -32,7 +32,7 @@ class _SignUpLocationState extends State<SignUpLocation> {
     super.initState();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));
+      ..loadRequest(Uri.parse("https://fish-note-7d48e.web.app/"));
   }
 
   @override

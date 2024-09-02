@@ -35,7 +35,7 @@ class _MyPageLocationState extends State<MyPageLocation> {
     _lngController.text = userInformationProvider.location.latlon.longitude.toString();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"))
+      ..loadRequest(Uri.parse("https://fish-note-7d48e.web.app/"))
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {

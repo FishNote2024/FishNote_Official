@@ -36,7 +36,7 @@ class _FavoritesViewState extends State<FavoritesView> {
             ? showLocationBottomSheet(context, location, _nameController)
             : null;
       })
-      ..loadRequest(Uri.parse("https://fish-note-map.vercel.app"));
+      ..loadRequest(Uri.parse("https://fish-note-7d48e.web.app/"));
   }
 
   @override
