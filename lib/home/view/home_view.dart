@@ -31,6 +31,43 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   late UserInformationProvider userInformationProvider;
   late LoginModelProvider loginModelProvider;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _tabController = TabController(length: 2, vsync: this);
+  //   ApiService apiService = ApiService();
+  //   WeatherAPITimeSync closestForecastTime = WeatherAPITimeSync();
+  //   String closestTime = closestForecastTime.getClosestTime(DateTime.now());
+  //   String formattedDate = closestForecastTime.getFormattedDate(DateTime.now());
+  //
+  //   weatherData = apiService.fetchData(
+  //     nx: 36.190,
+  //     ny: 129.358,
+  //     closestTime: closestTime,
+  //     formattedDate: formattedDate,
+  //   ).then((data) {
+  //     if (data.isNotEmpty) {
+  //       String waveHeight = data.entries.first.value['WAV'];
+  //       Provider.of<WaveProvider>(context, listen: false).setWavString(waveHeight);
+  //     }
+  //     return data; // 계속해서 FutureBuilder에 data 전달
+  //   });
+  //
+  //   // 날짜 및 시간 계산
+  //   int year = int.parse(formattedDate.substring(0, 4));
+  //   int month = int.parse(formattedDate.substring(4, 6));
+  //   int day = int.parse(formattedDate.substring(6, 8));
+  //   int hour = int.parse(closestTime.substring(0, 2));
+  //   int minute = int.parse(closestTime.substring(2, 4));
+  //   DateTime dateTime = DateTime(year, month, day, hour, minute);
+  //   Duration difference = _initialTime.difference(dateTime);
+  //   differenceInMinutes = difference.inMinutes;
+  //
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     _scrollController.jumpTo(differenceInMinutes.toDouble() - 88);
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
@@ -42,12 +79,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         .now()); //'0200', '0500', '0800', '1100', '1400', '1700', '2000', '2300'
     String formattedDate =
         closestForecastTime.getFormattedDate(DateTime.now()); //'20240809'
-    weatherData = apiService.fetchData(
-        nx: 36.190,
-        ny: 129.358,
-        closestTime: closestTime,
-        formattedDate: formattedDate);
-
+        weatherData = apiService.fetchData(
+          nx: 36.190,
+          ny: 129.358,
+          closestTime: closestTime,
+          formattedDate: formattedDate,
+        ).then((data) {
+          if (data.isNotEmpty) {
+            String waveHeight = data.entries.first.value['WAV'];
+            print(waveHeight);
+            Provider.of<WaveProvider>(context, listen: false).setWavString(waveHeight);
+          }
+          return data; // 계속해서 FutureBuilder에 data 전달
+        });
 
 // 날짜 문자열을 DateTime 객체로 변환
     int year = int.parse(formattedDate.substring(0, 4));
@@ -179,13 +223,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                             }
                             data = snapshot.data!;
 
-                            if (snapshot.hasData) {
-                              Map<String, dynamic> data = snapshot.data!;
-                              if (!Provider.of<WaveProvider>(context, listen: false).isSet) {
-                                String waveHeight = data.entries.first.value['WAV'];  // 'WAV' 키를 사용하여 파고 데이터 접근
-                                Provider.of<WaveProvider>(context, listen: false).setWavString(waveHeight);  // 파고 데이터를 Provider에 저장
-                              }
-                            }
                             if (!_hasJumped) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
                                 _scrollController.jumpTo(
