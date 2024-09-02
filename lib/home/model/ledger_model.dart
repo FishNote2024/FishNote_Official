@@ -17,11 +17,6 @@ class LedgerModel {
     List<PayModel>? pays,
   })  : sales = sales ?? [],
         pays = pays ?? [];
-
-  @override
-  String toString() {
-    return 'LedgerModel{date: $date, sales: $sales, pays: $pays}';
-  }
 }
 
 class SaleModel {
@@ -30,11 +25,6 @@ class SaleModel {
   final int price;
 
   SaleModel({required this.species, required this.weight, required this.price});
-
-  @override
-  String toString() {
-    return 'SaleModel{species: $species, weight: $weight, price: $price}';
-  }
 }
 
 class PayModel {
@@ -42,18 +32,56 @@ class PayModel {
   final int amount;
 
   PayModel({required this.category, required this.amount});
-
-  @override
-  String toString() {
-    return 'PayModel{category: $category, amount: $amount}';
-  }
 }
 
 class LedgerProvider with ChangeNotifier {
   final List<LedgerModel> _ledgers = [];
+
   List<LedgerModel> get ledgers => _ledgers;
 
   final db = FirebaseFirestore.instance;
+
+  Future<void> init(String userId) async {
+    try {
+      // "journal" 컬렉션의 "record" 문서에 접근
+      final colRef = db.collection("users").doc(userId).collection("ledger");
+      // 각 날짜별로 하위 컬렉션 접근
+      final dateSnapshot = await colRef.get();
+
+      if (dateSnapshot.docs.isNotEmpty) {
+        for (var dateDoc in dateSnapshot.docs) {
+          final data = dateDoc.data();
+
+          // 각 필드에 대해 null 체크 추가하기 (null이면 기본값으로 설정)
+          _ledgers.add(
+            LedgerModel(
+              date: (data['date'] as Timestamp).toDate(),
+              totalPays: data['totalPays'] as int,
+              totalSales: data['totalSales'] as int,
+              sales: (data['sales'] as List<dynamic>).map((item) {
+                return SaleModel(
+                  species: item['species'] as String,
+                  weight: (item['weight'] as num).toDouble(), // double로 변환
+                  price: item['price'] as int,
+                );
+              }).toList(),
+              pays: (data['pays'] as List<dynamic>).map((item) {
+                return PayModel(
+                  category: item['category'] as String,
+                  amount: item['amount'] as int,
+                );
+              }).toList(),
+            ),
+          );
+        }
+        notifyListeners();
+      } else {
+        print('No records found in Firestore');
+      }
+    } catch (e) {
+      print("Error getting records: $e");
+    }
+  }
 
   Future<void> _addLedgerToFirestore(LedgerModel record, String userId) async {
     String dateFormatted = DateFormat('yyyy-MM-dd').format(record.date);
