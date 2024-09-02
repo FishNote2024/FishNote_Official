@@ -1,3 +1,4 @@
+import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,10 @@ import 'package:flutter/material.dart';
 import '../../../theme/colors.dart';
 
 class PieChartView extends StatefulWidget {
-  const PieChartView({super.key});
+  const PieChartView({super.key, required this.value, required this.ledgers});
+
+  final int value;
+  final List<LedgerModel> ledgers;
 
   @override
   State<PieChartView> createState() => _PieChartViewState();
@@ -13,14 +17,6 @@ class PieChartView extends StatefulWidget {
 
 class _PieChartViewState extends State<PieChartView> {
   int touchedIndex = 0;
-
-  // 데이터를 저장하는 리스트
-  final List<ChartData> data = [
-    ChartData(title: '기타', value: 40, color: primaryYellow100),
-    ChartData(title: '항목1', value: 30, color: primaryYellow300),
-    ChartData(title: '항목2', value: 16, color: primaryYellow500),
-    ChartData(title: '항목3', value: 15, color: primaryYellow700),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -43,13 +39,63 @@ class _PieChartViewState extends State<PieChartView> {
   }
 
   List<PieChartSectionData> showingSections() {
-    final radius = 120.0;
+    const radius = 120.0;
+    List<String> payCategoryList = [];
+    List<double> payAmountList = [];
+    List<String> saleSpeciesList = [];
+    List<double> salePriceList = [];
+    int totalPay = 0;
+    int totalSale = 0;
+    // 데이터를 저장하는 리스트
+
+    for (final ledger in widget.ledgers) {
+      totalPay += ledger.totalPays;
+      for (final pay in ledger.pays) {
+        if (payCategoryList.contains(pay.category)) {
+          payAmountList[payCategoryList.indexOf(pay.category)] += pay.amount;
+        } else {
+          payCategoryList.add(pay.category);
+          payAmountList.add(pay.amount.toDouble());
+        }
+      }
+    }
+
+    for (final ledger in widget.ledgers) {
+      totalSale += ledger.totalSales;
+      for (final sale in ledger.sales) {
+        if (saleSpeciesList.contains(sale.species)) {
+          salePriceList[saleSpeciesList.indexOf(sale.species)] +=
+              (sale.price * sale.weight).round().toDouble();
+        } else {
+          saleSpeciesList.add(sale.species);
+          salePriceList.add((sale.price * sale.weight).round().toDouble());
+        }
+      }
+    }
+
+    final List<ChartData> data = widget.value == 1
+        ? List.generate(payCategoryList.length, (index) {
+            return ChartData(
+              title: payCategoryList[index],
+              value: payAmountList[index],
+              color: Colors.yellow[900 - 100 * (index + 1)]!,
+            );
+          })
+        : List.generate(saleSpeciesList.length, (index) {
+            return ChartData(
+              title: saleSpeciesList[index],
+              value: salePriceList[index],
+              color: Colors.blue[900 - 100 * (index + 1)]!,
+            );
+          });
 
     return data.map((ChartData data) {
       return PieChartSectionData(
         color: data.color,
         value: data.value,
-        title: '${data.title}\n${data.value}%',
+        title: widget.value == 0
+            ? '${data.title}\n${(data.value / totalSale * 100).toStringAsFixed(1)}%'
+            : '${data.title}\n${(data.value / totalPay * 100).toStringAsFixed(1)}%',
         radius: radius,
         titleStyle: caption1(gray8),
       );

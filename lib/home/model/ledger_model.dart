@@ -29,7 +29,7 @@ class SaleModel {
 
 class PayModel {
   final String category;
-  final int amount;
+  int amount;
 
   PayModel({required this.category, required this.amount});
 }

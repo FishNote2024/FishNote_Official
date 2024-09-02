@@ -142,15 +142,15 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
       children: [
         _buildRevenueFormRow(
           label: "어종",
-          child: Container(child: Text(sale.species)),
+          child: Text(sale.species),
         ),
         _buildRevenueFormRow(
           label: "위판량",
-          child: Container(child: Text("${sale.weight}kg")),
+          child: Text("${sale.weight}kg"),
         ),
         _buildRevenueFormRow(
           label: "위판 수익",
-          child: Container(child: Text("${NumberFormat("#,###").format(sale.price)}원")),
+          child: Text("${NumberFormat("#,###").format(sale.price)}원"),
         ),
       ],
     );
@@ -241,7 +241,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
         ),
         _buildExpenseFormRow(
           label: "비용",
-          child: Container(child: Text("${NumberFormat("#,###").format(pay.amount)}원")),
+          child: Text("${NumberFormat("#,###").format(pay.amount)}원"),
         ),
       ],
     );
