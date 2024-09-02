@@ -1,3 +1,4 @@
+import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/view/kakao_login.dart';
 import 'package:fish_note/login/view/main_view_model.dart';
 import 'package:fish_note/net/model/net_record.dart';
@@ -37,14 +38,13 @@ class LoginViewState extends State<LoginView> {
       String id = prefs.getString('uid') ?? '';
       String name = prefs.getString('name') ?? 'guest';
       if (!mounted) return; // 비동기 작업 중 상태가 언마운트된 경우 종료
-      final userInformationProvider =
-          Provider.of<UserInformationProvider>(context, listen: false);
-      final loginModelProvider =
-          Provider.of<LoginModelProvider>(context, listen: false);
-      final netRecordProvider =
-          Provider.of<NetRecordProvider>(context, listen: false);
+      final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+      final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+      final netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
+      final ledgerProvider = Provider.of<LedgerProvider>(context, listen: false);
       await userInformationProvider.init(id);
       await netRecordProvider.init(id);
+      await ledgerProvider.init(id);
       loginModelProvider.setKakaoId(id);
       loginModelProvider.setName(name);
       if (!mounted) return; // 비동기 작업 중 상태가 언마운트된 경우 종료
@@ -53,16 +53,13 @@ class LoginViewState extends State<LoginView> {
   }
 
   Future<void> _checkSignUpStatus() async {
-    final userInformationProvider =
-        Provider.of<UserInformationProvider>(context, listen: false);
-    final loginModelProvider =
-        Provider.of<LoginModelProvider>(context, listen: false);
+    final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
 
     await viewModel.login();
     if (viewModel.user != null) {
       // 카카오 로그인 성공
-      loginModelProvider
-          .setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
+      loginModelProvider.setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
       loginModelProvider.setKakaoId(viewModel.user!.id.toString());
       // 사용자 정보를 가져온다.
       await userInformationProvider.init(loginModelProvider.kakaoId);
