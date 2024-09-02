@@ -1,6 +1,5 @@
 import 'package:fish_note/Ledger/view/wholesale_ledger/add_ledger_page.dart';
 import 'package:fish_note/Ledger/view/wholesale_ledger/ledger_detail_page.dart';
-import 'package:fish_note/Ledger/view/wholesale_ledger/ledger_model.dart';
 import 'package:fish_note/Ledger/view/wholesale_ledger/line_chart_view.dart';
 import 'package:fish_note/Ledger/view/wholesale_ledger/pie_chart_view.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
@@ -85,7 +84,7 @@ class _LedgerPageState extends State<LedgerPage> {
             panel: _buildSlidingUpPanelContent(context),
             minHeight: 460,
             maxHeight: 1000,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
           ),
         ],
       ),
@@ -104,10 +103,9 @@ class _LedgerPageState extends State<LedgerPage> {
               calendarFormat: CalendarFormat.month,
               onDaySelected: (selectedDay, focusedDay) {
                 final today = DateTime.now();
-                final normalizedSelectedDay = DateTime(
-                    selectedDay.year, selectedDay.month, selectedDay.day);
-                final normalizedToday =
-                    DateTime(today.year, today.month, today.day);
+                final normalizedSelectedDay =
+                    DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
+                final normalizedToday = DateTime(today.year, today.month, today.day);
 
                 if (normalizedSelectedDay.isAfter(normalizedToday)) {
                   return;
@@ -136,11 +134,9 @@ class _LedgerPageState extends State<LedgerPage> {
                 titleCentered: true,
                 formatButtonVisible: false,
                 titleTextStyle: body1(gray6),
-                headerPadding:
-                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
+                headerPadding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
                 leftChevronIcon: const Icon(Icons.arrow_back_ios, size: 15.0),
-                rightChevronIcon:
-                    const Icon(Icons.arrow_forward_ios, size: 15.0),
+                rightChevronIcon: const Icon(Icons.arrow_forward_ios, size: 15.0),
               ),
               daysOfWeekStyle: DaysOfWeekStyle(
                 weekdayStyle: body2(primaryBlue400),
@@ -193,16 +189,11 @@ class _LedgerPageState extends State<LedgerPage> {
           title: Center(
             child: Row(
               children: [
-                IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.arrow_back_ios, size: 14)),
-                Spacer(),
-                Text(DateFormat.yMMMM('ko_KR').format(_focusedDay),
-                    style: header4(black)),
-                Spacer(),
-                IconButton(
-                    onPressed: () {},
-                    icon: Icon(Icons.arrow_forward_ios, size: 14)),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_back_ios, size: 14)),
+                const Spacer(),
+                Text(DateFormat.yMMMM('ko_KR').format(_focusedDay), style: header4(black)),
+                const Spacer(),
+                IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 14)),
               ],
             ),
           ),
@@ -214,8 +205,7 @@ class _LedgerPageState extends State<LedgerPage> {
               children: [
                 Expanded(
                   child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       childAspectRatio: 1.5,
                     ),
@@ -225,8 +215,7 @@ class _LedgerPageState extends State<LedgerPage> {
                         onTap: () {
                           Navigator.pop(context, index + 1);
                         },
-                        child: Center(
-                            child: Text('${index + 1}월', style: body1(gray6))),
+                        child: Center(child: Text('${index + 1}월', style: body1(gray6))),
                       );
                     },
                   ),
@@ -256,11 +245,11 @@ class _LedgerPageState extends State<LedgerPage> {
       builder: (context, ledgerProvider, child) {
         final ledger = ledgerProvider.ledgers.firstWhere(
           (l) => isSameDay(l.date, _selectedDay),
-          orElse: () => LedgerModel(date: _selectedDay!, sales: [], pays: []),
+          orElse: () =>
+              LedgerModel(date: _selectedDay!, sales: [], pays: [], totalPays: 0, totalSales: 0),
         );
 
-        final hasData =
-            ledgerProvider.ledgers.any((l) => isSameDay(l.date, _selectedDay));
+        final hasData = ledgerProvider.ledgers.any((l) => isSameDay(l.date, _selectedDay));
 
         return Container(
           padding: const EdgeInsets.only(left: 18.0, right: 50, bottom: 40),
@@ -269,8 +258,7 @@ class _LedgerPageState extends State<LedgerPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0, bottom: 24),
-                  child: SvgPicture.asset('assets/icons/topDivider.svg',
-                      width: 130),
+                  child: SvgPicture.asset('assets/icons/topDivider.svg', width: 130),
                 ),
                 Center(
                   child: !hasData
@@ -281,10 +269,8 @@ class _LedgerPageState extends State<LedgerPage> {
                             const SizedBox(height: 140),
                             Center(
                               child: Column(children: [
-                                Image.asset('assets/icons/ledgerIcon.png',
-                                    width: 130),
-                                Text("오늘의 수입과 지출을 기록하세요!",
-                                    style: body1(textBlack)),
+                                Image.asset('assets/icons/ledgerIcon.png', width: 130),
+                                Text("오늘의 수입과 지출을 기록하세요!", style: body1(textBlack)),
                               ]),
                             ),
                             const SizedBox(height: 130),
@@ -304,14 +290,12 @@ class _LedgerPageState extends State<LedgerPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryBlue500,
                                   foregroundColor: Colors.white,
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(vertical: 12),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                child:
-                                    Text('장부 추가', style: header4(Colors.white)),
+                                child: Text('장부 추가', style: header4(Colors.white)),
                               ),
                             ),
                           ],
@@ -320,8 +304,7 @@ class _LedgerPageState extends State<LedgerPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
-                                '${DateFormat('yyyy.MM.dd').format(_selectedDay!.toLocal())}',
+                            Text(DateFormat('yyyy.MM.dd').format(_selectedDay!.toLocal()),
                                 style: header3B(gray8)),
                             const SizedBox(height: 12),
                             SizedBox(
@@ -342,54 +325,53 @@ class _LedgerPageState extends State<LedgerPage> {
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
-                                    side: BorderSide(color: primaryBlue500),
+                                    side: const BorderSide(color: primaryBlue500),
                                   ),
                                 ),
-                                child: Text('자세히 보기',
-                                    style: header4(primaryBlue500)),
+                                child: Text('자세히 보기', style: header4(primaryBlue500)),
                               ),
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Row(
                               children: [
                                 Text('매출', style: body1(gray4)),
                                 const SizedBox(width: 12),
                                 Text(
-                                    '${ledger.sales.fold(0, (sum, item) => sum + item.price)}원',
+                                    '${NumberFormat('#,###').format(ledger.sales.fold(0, (sum, item) => sum + (item.price * item.weight).round()))}원',
                                     style: header4(primaryBlue300))
                               ],
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Row(
                               children: [
                                 Text("어획량", style: caption1(gray4)),
-                                SizedBox(width: 70),
+                                const SizedBox(width: 70),
                                 Text("단가 (1kg)", style: caption1(gray4)),
-                                SizedBox(width: 35),
+                                const SizedBox(width: 35),
                                 Text("총합", style: caption1(gray4))
                               ],
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             _buildRevenueTable(ledger.sales),
-                            SizedBox(height: 30),
+                            const SizedBox(height: 30),
                             Row(
                               children: [
                                 Text('지출', style: body1(gray4)),
                                 const SizedBox(width: 12),
                                 Text(
-                                    '${ledger.pays.fold(0, (sum, item) => sum + item.amount)}원',
+                                    '${NumberFormat('#,###').format(ledger.pays.fold(0, (sum, item) => sum + (item.amount)))}원',
                                     style: header4(primaryYellow900))
                               ],
                             ),
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Row(
                               children: [
                                 Text("이름", style: caption1(gray4)),
-                                SizedBox(width: 75),
+                                const SizedBox(width: 75),
                                 Text("가격", style: caption1(gray4)),
                               ],
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             _buildExpenseTable(ledger.pays),
                           ],
                         ),
@@ -411,12 +393,11 @@ class _LedgerPageState extends State<LedgerPage> {
           children: [
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Text('${sales[i].species} ${sales[i].weight}kg',
-                  style: body2(black)),
+              child: Text('${sales[i].species} ${sales[i].weight}kg', style: body2(black)),
             ),
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Text('X ${sales[i].price.toInt()}', style: body2(black)),
+              child: Text('X ${NumberFormat('#,###').format(sales[i].price)}', style: body2(black)),
             ),
             Padding(
               padding: const EdgeInsets.all(0.0),
@@ -424,7 +405,8 @@ class _LedgerPageState extends State<LedgerPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Text('${sales[i].price * sales[i].weight.toInt()}원',
+              child: Text(
+                  '${NumberFormat('#,###').format((sales[i].price * sales[i].weight).round())}원',
                   style: body2(black)),
             ),
           ],
@@ -433,22 +415,22 @@ class _LedgerPageState extends State<LedgerPage> {
 
       if (i < sales.length - 1) {
         rows.add(
-          TableRow(
+          const TableRow(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: Divider(color: gray1, thickness: 1),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: Divider(color: gray1, thickness: 1),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: Divider(color: gray1, thickness: 1),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: Divider(color: gray1, thickness: 1),
               ),
             ],
@@ -458,7 +440,7 @@ class _LedgerPageState extends State<LedgerPage> {
     }
 
     return Table(
-      columnWidths: {
+      columnWidths: const {
         0: FlexColumnWidth(3),
         1: FlexColumnWidth(2),
         2: FlexColumnWidth(1),
@@ -481,21 +463,21 @@ class _LedgerPageState extends State<LedgerPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Text('${pays[i].amount}원', style: body2(black)),
+              child: Text('${NumberFormat('#,###').format(pays[i].amount)}원', style: body2(black)),
             ),
           ],
         ),
       );
       if (i < pays.length - 1) {
         rows.add(
-          TableRow(
+          const TableRow(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: Divider(color: gray1, thickness: 1),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
+                padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: Divider(color: gray1, thickness: 1),
               ),
             ],
@@ -505,7 +487,7 @@ class _LedgerPageState extends State<LedgerPage> {
     }
 
     return Table(
-      columnWidths: {
+      columnWidths: const {
         0: FlexColumnWidth(1),
         1: FlexColumnWidth(2),
       },
@@ -523,10 +505,8 @@ class _LedgerPageState extends State<LedgerPage> {
             DropdownButton<int>(
                 value: _selectedValue,
                 items: [
-                  DropdownMenuItem(
-                      child: Text('월간 총 이익', style: body1(gray5)), value: 0),
-                  DropdownMenuItem(
-                      child: Text('주간 총 이익', style: body1(gray5)), value: 1)
+                  DropdownMenuItem(value: 0, child: Text('월간 총 이익', style: body1(gray5))),
+                  DropdownMenuItem(value: 1, child: Text('주간 총 이익', style: body1(gray5)))
                 ],
                 onChanged: (value) {
                   setState(() {
@@ -551,7 +531,7 @@ class _LedgerPageState extends State<LedgerPage> {
                 Text('50,245,070원', style: header4(primaryBlue300))
               ],
             ),
-            Divider(color: gray1, thickness: 1, endIndent: 156),
+            const Divider(color: gray1, thickness: 1, endIndent: 156),
             Row(
               children: [
                 Text('지출', style: body1(gray4)),
@@ -559,7 +539,7 @@ class _LedgerPageState extends State<LedgerPage> {
                 Text('5,000,000원', style: header4(primaryYellow900))
               ],
             ),
-            Divider(color: gray1, thickness: 1),
+            const Divider(color: gray1, thickness: 1),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -568,7 +548,7 @@ class _LedgerPageState extends State<LedgerPage> {
                 Text('10,145,070원', style: header4(primaryBlue500))
               ],
             ),
-            SizedBox(height: 40)
+            const SizedBox(height: 40)
           ],
         ),
       ],
@@ -586,7 +566,7 @@ class _LedgerPageState extends State<LedgerPage> {
           ],
         ),
         const SizedBox(height: 13.0),
-        LineChartView(),
+        const LineChartView(),
       ],
     );
   }
@@ -598,10 +578,8 @@ class _LedgerPageState extends State<LedgerPage> {
         DropdownButton<int>(
             value: _selectedValue,
             items: [
-              DropdownMenuItem(
-                  child: Text('매출 통계', style: body1(gray8)), value: 0),
-              DropdownMenuItem(
-                  child: Text('지출 통계', style: body1(gray8)), value: 1)
+              DropdownMenuItem(value: 0, child: Text('매출 통계', style: body1(gray8))),
+              DropdownMenuItem(value: 1, child: Text('지출 통계', style: body1(gray8)))
             ],
             onChanged: (value) {
               setState(() {
@@ -612,7 +590,7 @@ class _LedgerPageState extends State<LedgerPage> {
             style: body2(gray8),
             underline: Container(height: 0, color: Colors.transparent)),
         const SizedBox(height: 20.0),
-        PieChartView(),
+        const PieChartView(),
         const SizedBox(height: 30)
       ],
     );

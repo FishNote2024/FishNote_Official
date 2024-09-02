@@ -18,8 +18,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
   @override
   Widget build(BuildContext context) {
     final ledgerProvider = Provider.of<LedgerProvider>(context);
-    final LedgerModel? ledger =
-        _getLedgerForDate(widget.selectedDate, ledgerProvider.ledgers);
+    final LedgerModel? ledger = _getLedgerForDate(widget.selectedDate, ledgerProvider.ledgers);
 
     String formattedDate = DateFormat('MM월 dd일').format(widget.selectedDate);
 
@@ -51,7 +50,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('해당 날짜에 대한 장부가 없습니다.'),
                     ),
                   );
@@ -64,7 +63,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
               _buildRevenue(ledger?.sales ?? []), // 매출 정보
@@ -90,18 +89,18 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0, right: 4, top: 5, bottom: 24),
+          padding: const EdgeInsets.only(left: 4.0, right: 4, top: 5, bottom: 24),
           child: Row(
             children: [
               Text("매출", style: body1(gray5)),
               const Spacer(),
-              Text("${_calculateTotalRevenue(sales)}원",
+              Text("${NumberFormat("#,###").format(_calculateTotalRevenue(sales))}원",
                   style: header3B(textBlack)),
             ],
           ),
         ),
         Container(
-          padding: EdgeInsets.fromLTRB(16, 6, 16, 6),
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: gray1),
@@ -111,20 +110,20 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
             children: [
               const SizedBox(height: 8),
               Row(
-                children: [Text("위판", style: header4(gray8)), Spacer()],
+                children: [Text("위판", style: header4(gray8)), const Spacer()],
               ),
               const SizedBox(height: 16),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: sales.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
                       _buildRevenueEntryForm(sales[index]),
                       if (index != sales.length - 1)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 16.0),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 16.0),
                           child: Divider(color: gray1),
                         ),
                     ],
@@ -151,7 +150,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
         ),
         _buildRevenueFormRow(
           label: "위판 수익",
-          child: Container(child: Text("${sale.price}원")),
+          child: Container(child: Text("${NumberFormat("#,###").format(sale.price)}원")),
         ),
       ],
     );
@@ -169,7 +168,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
           Expanded(
             child: Container(
               height: 33,
-              padding: EdgeInsets.fromLTRB(0, 6, 10, 6),
+              padding: const EdgeInsets.fromLTRB(0, 6, 10, 6),
               child: child,
             ),
           ),
@@ -182,18 +181,18 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 4.0, right: 4, top: 40, bottom: 24),
+          padding: const EdgeInsets.only(left: 4.0, right: 4, top: 40, bottom: 24),
           child: Row(
             children: [
               Text("지출", style: body1(gray5)),
               const Spacer(),
-              Text("${_calculateTotalExpense(pays)}원",
+              Text("${NumberFormat("#,###").format(_calculateTotalExpense(pays))}원",
                   style: header3B(textBlack)),
             ],
           ),
         ),
         Container(
-          padding: EdgeInsets.fromLTRB(16, 6, 16, 6),
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 6),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: gray1),
@@ -211,15 +210,15 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
               const SizedBox(height: 16),
               ListView.builder(
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemCount: pays.length,
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
                       _buildExpenseEntryForm(pays[index]),
                       if (index != pays.length - 1)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8.0),
                           child: Divider(color: gray1),
                         ),
                     ],
@@ -242,7 +241,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
         ),
         _buildExpenseFormRow(
           label: "비용",
-          child: Container(child: Text("${pay.amount}원")),
+          child: Container(child: Text("${NumberFormat("#,###").format(pay.amount)}원")),
         ),
       ],
     );
@@ -260,7 +259,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
           Expanded(
             child: Container(
               height: 33,
-              padding: EdgeInsets.fromLTRB(0, 6, 10, 6),
+              padding: const EdgeInsets.fromLTRB(0, 6, 10, 6),
               child: child,
             ),
           ),
@@ -271,7 +270,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
 
   // 총 매출 계산
   int _calculateTotalRevenue(List<SaleModel> sales) {
-    return sales.fold(0, (total, sale) => total + sale.price);
+    return sales.fold(0, (total, sale) => total + (sale.price * sale.weight).round());
   }
 
   // 총 지출 계산
