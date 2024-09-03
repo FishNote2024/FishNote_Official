@@ -23,7 +23,7 @@ class _GetNetNoteState extends State<GetNetNote> {
         Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
     Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
         widget.recordId, userId,
-        getTime: DateTime.now(), isGet: true);
+        getTime: DateTime.now(), isGet: true, memo: memo);
     Navigator.pushReplacementNamed(context, '/netPage2');
   }
 
