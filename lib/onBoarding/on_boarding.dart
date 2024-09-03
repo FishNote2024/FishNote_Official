@@ -4,6 +4,8 @@ import '../theme/colors.dart';
 import '../theme/font.dart';
 
 class OnboardingScreen extends StatefulWidget {
+  const OnboardingScreen({super.key});
+
   @override
   _OnboardingScreenState createState() => _OnboardingScreenState();
 }
@@ -22,7 +24,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _startPageTimer() {
     _pageTimer?.cancel();
-    _pageTimer = Timer.periodic(Duration(seconds: 3), (Timer timer) {
+    _pageTimer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       int nextPage = _pageController.page!.round() + 1;
 
       if (nextPage == 3) {
@@ -31,7 +33,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       } else {
         _pageController.animateToPage(
           nextPage,
-          duration: Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
       }
@@ -40,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _startButtonTimer() {
     _buttonTimer?.cancel();
-    _buttonTimer = Timer(Duration(seconds: 3), () {
+    _buttonTimer = Timer(const Duration(seconds: 3), () {
       setState(() {
         _showButton = true;
       });
@@ -89,11 +91,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () =>
+                        Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: primaryBlue500,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4))),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4))),
                     child: Text(
                       '피시노트 시작하기',
                       style: header3R(Colors.white),
@@ -113,13 +115,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         if (pageIndex < 3) {
           _pageController.animateToPage(
             pageIndex,
-            duration: Duration(milliseconds: 300),
+            duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
           );
         }
         _startPageTimer(); // 터치 후 타이머 재시작
       },
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         height: double.infinity,
         child: Image.asset(

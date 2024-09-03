@@ -255,7 +255,7 @@ void _showLocationModal(BuildContext context, GeoPoint latlon, String id) {
     await prefs.setBool('isLoggedIn', true); // 로그인 상태 저장
     await prefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
     await prefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
-    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+    Navigator.pushNamedAndRemoveUntil(context, '/onBoarding', (route) => false);
   }
 
   showModalBottomSheet(
