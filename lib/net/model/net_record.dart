@@ -256,8 +256,6 @@ class NetRecordProvider with ChangeNotifier {
             "throwTime= $throwTime, getTime= $getTime, locationName= $locationName, location= $location");
         // 바뀐 것 확인한 것들
         print("species=  $species, amount= $amount, memo= $memo, ");
-        // 안바뀌는 것
-        print("");
         print('Record updated in Firestore successfully!');
       } catch (e) {
         print('Failed to update record in Firestore: $e');
