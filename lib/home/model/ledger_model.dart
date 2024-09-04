@@ -17,11 +17,6 @@ class LedgerModel {
     List<PayModel>? pays,
   })  : sales = sales ?? [],
         pays = pays ?? [];
-
-  @override
-  String toString() {
-    return 'LedgerModel{date: $date, sales: $sales, pays: $pays, totalSales: $totalSales, totalPays: $totalPays}\n';
-  }
 }
 
 class SaleModel {
@@ -30,11 +25,6 @@ class SaleModel {
   final int price;
 
   SaleModel({required this.species, required this.weight, required this.price});
-
-  @override
-  String toString() {
-    return 'SaleModel{species: $species, weight: $weight, price: $price}\n';
-  }
 }
 
 class PayModel {
@@ -42,11 +32,6 @@ class PayModel {
   int amount;
 
   PayModel({required this.category, required this.amount});
-
-  @override
-  String toString() {
-    return 'PayModel{category: $category, amount: $amount}\n';
-  }
 }
 
 class LedgerProvider with ChangeNotifier {
