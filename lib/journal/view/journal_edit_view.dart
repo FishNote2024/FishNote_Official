@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:provider/provider.dart';
+import 'package:table_calendar/table_calendar.dart';
 import '../../net/model/net_record.dart';
 
 class JournalEditView extends StatefulWidget {
@@ -21,6 +22,7 @@ class JournalEditView extends StatefulWidget {
 }
 
 class _JournalEditViewState extends State<JournalEditView> {
+  String memo = "";
   DateTime? selectedDateTime;
   DateTime? originalDateTime; // Store the original date
   TextEditingController _dateTimeController = TextEditingController();
@@ -46,11 +48,13 @@ class _JournalEditViewState extends State<JournalEditView> {
         originalDateTime; // Initially, selected date is the original date
     _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
         .format(originalDateTime!);
-    species ={...netRecordProvider.species, ...userInformationProvider.species};;
+    species ={...netRecordProvider.species, ...userInformationProvider.species};
+    memo = widget.events.first.memo ?? '';
   }
 
   @override
   Widget build(BuildContext context) {
+    List<NetRecord> filteredEvents = netRecordProvider.netRecords.where((event) => isSameDay(event.throwDate, selectedDateTime!)).toList();
     netRecordProvider.netRecords;
     return Scaffold(
       appBar: AppBar(
@@ -65,19 +69,21 @@ class _JournalEditViewState extends State<JournalEditView> {
         ),
         title: Text(
           DateFormat('MM월 dd일 (E)', 'ko_KR').format(selectedDateTime!),
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color:black),
         ),
         centerTitle: true,
         actions: [
           TextButton(
             onPressed: () {
               setState(() {
-                selectedDateTime =
-                    originalDateTime; // Revert to the original date
+                final userId =
+                    Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
+                Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
+                    widget.recordId, userId, memo: memo);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => JournalDetailView(events: netRecordProvider.netRecords),
+                    builder: (context) => JournalDetailView(events: filteredEvents),
                   ),
                 );// Go back to the previous screen
               });
@@ -294,7 +300,9 @@ class _JournalEditViewState extends State<JournalEditView> {
     );
   }
 
-  Widget _buildEditableMemo(String memo) {
+  Widget _buildEditableMemo(String initialMemo) {
+    TextEditingController _memoController = TextEditingController(text: memo);
+
     return Container(
       padding: EdgeInsets.all(8.0),
       decoration: BoxDecoration(
@@ -307,7 +315,12 @@ class _JournalEditViewState extends State<JournalEditView> {
       ),
       child: TextField(
         maxLines: null,
-        controller: TextEditingController(text: memo),
+        controller: _memoController,
+        onChanged: (value) {
+          setState(() {
+            memo = value;
+          });
+        },
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: '메모를 입력하세요',

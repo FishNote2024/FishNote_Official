@@ -116,34 +116,28 @@ class _JournalViewState extends State<JournalView> {
                   calendarFormat: CalendarFormat.month,
                   calendarBuilders: CalendarBuilders(
                     markerBuilder: (context, day, netRecord) {
-                      // netRecord 리스트가 비어있지 않고, day가 _focusedDay나 _selectedDay가 아닌 경우 마커 생성
-                      if (netRecord.isNotEmpty &&
-                          !isSameDay(day, _focusedDay) &&
-                          !isSameDay(day, _selectedDay)
-                          // && !isSameDay(day, _today)
-                      ) {
+                      if (netRecord.isNotEmpty) {
                         return Row(
                           mainAxisSize: MainAxisSize.min,
                           children: netRecord.expand((event) {
                             // event에 대해 마커 리스트 생성
                             List<Widget> markers = [];
 
-                            if (event.isGet) {
-                              // isGet이 true인 경우
-                              // throwDate에 대해 primaryBlue500 색상의 마커 추가
-                              if (isSameDay(event.throwDate, day)) {
-                                markers.add(
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 40, right: 2),
-                                    child: const Icon(
-                                      size: 5,
-                                      Icons.circle,
-                                      color: primaryBlue500,
-                                    ),
+                            // throwDate에 대한 마커 추가
+                            if (isSameDay(event.throwDate, day)) {
+                              markers.add(
+                                Container(
+                                  margin: const EdgeInsets.only(top: 40, right: 2),
+                                  child: const Icon(
+                                    size: 5,
+                                    Icons.circle,
+                                    color: primaryBlue500,
                                   ),
-                                );
-                              }
-                              // getDate에 대해 primaryYellow700 색상의 마커 추가
+                                ),
+                              );
+                            }
+                            // getDate에 대한 마커 추가
+                            if (event.isGet) {
                               if (isSameDay(event.getDate, day)) {
                                 markers.add(
                                   Container(
@@ -156,22 +150,7 @@ class _JournalViewState extends State<JournalView> {
                                   ),
                                 );
                               }
-                            } else {
-                              // isGet이 false인 경우 throwDate에 대해 primaryBlue500 색상의 마커 추가
-                              if (isSameDay(event.throwDate, day)) {
-                                markers.add(
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 40, right: 2),
-                                    child: const Icon(
-                                      size: 5,
-                                      Icons.circle,
-                                      color: primaryBlue500,
-                                    ),
-                                  ),
-                                );
-                              }
                             }
-
                             return markers;
                           }).toList(),
                         );
@@ -254,16 +233,7 @@ class _JournalViewState extends State<JournalView> {
             color: primaryBlue500,
           )
               : DetailButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => JournalDetailView(
-                    events: _getEventsForDay(_selectedDay!),
-                  ),
-                ),
-              );
-            },
+            onPressed: () {},
             text: "자세히 보기",
             color: gray3,
           ),
