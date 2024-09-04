@@ -61,8 +61,6 @@ class _LineChartViewState extends State<LineChartView> {
                 1000000;
           });
 
-    print(values);
-
     return SizedBox(
       height: 250,
       child: Container(
