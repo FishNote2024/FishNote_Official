@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const Home(),
         '/ledger1': (context) => const LedgerTabBarView(initialTabIndex: 0),
         '/ledger2': (context) => const LedgerTabBarView(initialTabIndex: 1),
-        '/onBoarding': (context) => OnboardingScreen(),
+        '/onBoarding': (context) => const OnboardingScreen(),
         '/netPage1': (context) => const NetTabBarView(initialTabIndex: 0),
         '/netPage2': (context) => const NetTabBarView(initialTabIndex: 1),
         '/myPage': (context) => const MyPageView(),
