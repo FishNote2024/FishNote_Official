@@ -23,9 +23,9 @@ class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
     final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String id = prefs.getString('uid')!;
-    await prefs.clear();
-    userInformationProvider.withDrawal(id);
     await viewModel.logout();
+    userInformationProvider.withDrawal(id);
+    await prefs.clear();
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
@@ -40,7 +40,9 @@ class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
       bottomNavigationBar: BottomButton(
         text: "탈퇴하기",
         value: _agree ? "agree" : null,
-        onPressed: _withdrawal,
+        onPressed: () async {
+          await _withdrawal();
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),

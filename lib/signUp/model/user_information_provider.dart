@@ -155,6 +155,14 @@ class UserInformationProvider with ChangeNotifier {
   }
 
   void withDrawal(String id) async {
+    _ageRange = '';
+    _yearExperience = '';
+    _affiliation = '';
+    _species = {};
+    _technique = {};
+    _location.setName('');
+    _location.setLatlon(const GeoPoint(0, 0));
+    _favorites.clear();
     final docRef = db.collection("users").doc(id);
     await docRef.delete();
     notifyListeners();
