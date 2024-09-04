@@ -534,17 +534,23 @@ class _LedgerPageState extends State<LedgerPage> {
     return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
       int totalRevenue = _selectedValue == 0
           ? _calculateTotalRevenue(ledgerProvider.ledgers
-              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              // 현재 날짜로부터 30일 이전까지의 데이터만 필터링
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
               .toList())
           : _calculateTotalRevenue(ledgerProvider.ledgers
-              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              // 현재 날짜로부터 7일 이전까지의 데이터만 필터링
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
               .toList());
       int totalExpense = _selectedValue == 0
           ? _calculateTotalExpense(ledgerProvider.ledgers
-              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
               .toList())
           : _calculateTotalExpense(ledgerProvider.ledgers
-              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
               .toList());
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,29 +617,43 @@ class _LedgerPageState extends State<LedgerPage> {
   }
 
   Widget _buildLineChart() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Text('매출 추이', style: body1(gray8)),
-            const Spacer(),
-            Text("단위 1백만", style: body3(gray4))
-          ],
-        ),
-        const SizedBox(height: 13.0),
-        LineChartView(time: _selectedDay?? DateTime.now()),
-      ],
-    );
+    return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
+      final ledgers = _selectedValue == 0
+          ? ledgerProvider.ledgers
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
+              .toList()
+          : ledgerProvider.ledgers
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
+              .toList();
+
+      return Column(
+        children: [
+          Row(
+            children: [
+              Text('매출 추이', style: body1(gray8)),
+              const Spacer(),
+              Text("단위 1백만", style: body3(gray4))
+            ],
+          ),
+          const SizedBox(height: 13.0),
+          LineChartView(ledgers: ledgers, value: _selectedValue, time: _selectedDay ?? _focusedDay),
+        ],
+      );
+    });
   }
 
   Widget _buildPieChart() {
     return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
       final ledgers = _selectedValue == 0
           ? ledgerProvider.ledgers
-              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
               .toList()
           : ledgerProvider.ledgers
-              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
               .toList();
 
       return Column(
