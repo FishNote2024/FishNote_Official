@@ -60,6 +60,7 @@ class JournalDetailView extends StatelessWidget {
           final locationName = event.locationName;
 
           if (!event.isGet) {
+            print(event.wave);
             // isGet이 true일 때 반환할 Card
             return Card(
               color: Colors.white,
@@ -191,7 +192,7 @@ class JournalDetailView extends StatelessWidget {
                             style: body2(gray5), // "파고:" 텍스트의 스타일
                           ),
                           TextSpan(
-                            text: '${event.locationName}', // 파고 정보 사용
+                            text: '${event.wave}', // 파고 정보 사용
                             style: body2(black), // 파고 부분의 스타일
                           ),
                         ],
