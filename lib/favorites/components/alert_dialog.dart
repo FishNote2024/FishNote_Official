@@ -94,3 +94,30 @@ Widget buildCancelDialog(BuildContext context, bool isFavorite) {
     ],
   );
 }
+
+Widget buildOutDialog(BuildContext context) {
+  return AlertDialog(
+    insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(28),
+    ),
+    title: Text('페이지에서 나가시겠습니까?', style: header3B()),
+    content: Text('작성한 내용이 저장되지 않고 사라져요.\n정말 페이지에서 나가시겠습니까?', style: body2(gray6)),
+    actions: [
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop(); // 다이얼로그 닫기
+        },
+        child: Text('취소하기', style: body2(primaryBlue500)),
+      ),
+      TextButton(
+        onPressed: () {
+          // 제거 로직 추가
+          Navigator.of(context).pop(); // 다이얼로그 닫기
+          Navigator.of(context).pop();
+        },
+        child: Text('나가기', style: body2(primaryBlue500)),
+      ),
+    ],
+  );
+}

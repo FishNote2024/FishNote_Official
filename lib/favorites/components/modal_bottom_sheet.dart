@@ -105,6 +105,7 @@ Widget _buildFavoriteItem(
           location.setLatlon(favorite.latlon);
           location.setName(favorite.name);
           nameController.text = favorite.name;
+          showLocationBottomSheet(context, location, nameController);
         },
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -227,104 +228,107 @@ void showLocationModal(
           showDialog(
               context: context, builder: (context) => buildCancelDialog(context, isFavorite));
         },
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(
-                  isFavorite ? '즐겨찾기에 등록할 별명을 입력해주세요' : '주요 조업 위치의 별명을 입력해주세요',
-                  style: header3B(),
-                ),
-                const SizedBox(height: 18),
-                TextField(
-                  onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-                  controller: controller,
-                  cursorColor: primaryBlue500,
-                  style: const TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: backgroundWhite,
-                    enabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: primaryBlue500,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                    ),
-                    disabledBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: primaryBlue500,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                    ),
-                    focusedBorder: const OutlineInputBorder(
-                      borderSide: BorderSide(
-                        width: 1,
-                        color: primaryBlue500,
-                      ),
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                    ),
-                    hintText: '지역 별명을 입력해주세요',
-                    hintStyle: body1(gray3),
-                    contentPadding: const EdgeInsets.all(16),
+        child: StatefulBuilder(builder: (context, setState) {
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    isFavorite ? '즐겨찾기에 등록할 별명을 입력해주세요' : '주요 조업 위치의 별명을 입력해주세요',
+                    style: header3B(),
                   ),
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: controller.text.isEmpty
-                      ? () => {}
-                      : () {
-                          // 별명 등록 로직 추가
-                          if (isFavorite) {
-                            if (provider.favorites.any((favorite) =>
-                                favorite.latlon.latitude == latlon.latitude &&
-                                favorite.latlon.longitude == latlon.longitude)) {
-                              showSnackBar(context, '이미 존재하는 위치입니다');
-                              return;
-                            } else if (provider.favorites
-                                .any((favorite) => favorite.name == controller.text)) {
-                              showSnackBar(context, '이미 존재하는 별명입니다');
-                              return;
-                            } else if (provider.favorites.length == 10) {
-                              showSnackBar(context, '즐겨찾기는 최대 10개까지 등록 가능합니다');
-                              return;
+                  const SizedBox(height: 18),
+                  TextField(
+                    onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                    controller: controller,
+                    onChanged: (value) => setState(() {}),
+                    cursorColor: primaryBlue500,
+                    style: const TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: backgroundWhite,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: controller.text.isEmpty ? gray2 : primaryBlue500,
+                        ),
+                        borderRadius: const BorderRadius.all(Radius.circular(5)),
+                      ),
+                      disabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: controller.text.isEmpty ? gray2 : primaryBlue500,
+                        ),
+                        borderRadius: const BorderRadius.all(Radius.circular(5)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: controller.text.isEmpty ? gray2 : primaryBlue500,
+                        ),
+                        borderRadius: const BorderRadius.all(Radius.circular(5)),
+                      ),
+                      hintText: '지역 별명을 입력해주세요',
+                      hintStyle: body1(gray3),
+                      contentPadding: const EdgeInsets.all(16),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: controller.text.isEmpty
+                        ? () => {}
+                        : () {
+                            // 별명 등록 로직 추가
+                            if (isFavorite) {
+                              if (provider.favorites.any((favorite) =>
+                                  favorite.latlon.latitude == latlon.latitude &&
+                                  favorite.latlon.longitude == latlon.longitude)) {
+                                showSnackBar(context, '이미 존재하는 위치입니다');
+                                return;
+                              } else if (provider.favorites
+                                  .any((favorite) => favorite.name == controller.text)) {
+                                showSnackBar(context, '이미 존재하는 별명입니다');
+                                return;
+                              } else if (provider.favorites.length == 10) {
+                                showSnackBar(context, '즐겨찾기는 최대 10개까지 등록 가능합니다');
+                                return;
+                              } else {
+                                provider.addFavorite(
+                                    latlon, controller.text, loginModelProvider.kakaoId);
+                              }
                             } else {
-                              provider.addFavorite(
+                              provider.setLocation(
                                   latlon, controller.text, loginModelProvider.kakaoId);
                             }
-                          } else {
-                            provider.setLocation(
-                                latlon, controller.text, loginModelProvider.kakaoId);
-                          }
-                          controller.clear();
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          showSnackBar(
-                            context,
-                            isFavorite ? '해당 위치가 즐겨찾기에 추가되었습니다' : '해당 위치가 주요 조업 위치로 변경되었습니다',
-                          );
-                        },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    elevation: 0,
-                    backgroundColor: primaryBlue500,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                            controller.clear();
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                            showSnackBar(
+                              context,
+                              isFavorite ? '해당 위치가 즐겨찾기에 추가되었습니다' : '해당 위치가 주요 조업 위치로 변경되었습니다',
+                            );
+                          },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      elevation: 0,
+                      backgroundColor: controller.text.isEmpty ? gray2 : primaryBlue500,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
+                    child: Text('등록하기', style: header4(backgroundWhite)),
                   ),
-                  child: Text('등록하기', style: header4(backgroundWhite)),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ),
+          );
+        }),
       );
     },
   );
