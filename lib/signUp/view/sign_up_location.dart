@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/components/next_button.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
@@ -52,8 +53,13 @@ class _SignUpLocationState extends State<SignUpLocation> {
     setState(() {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
-      _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
-      latlon = GeoPoint(position.latitude, position.longitude);
+      if ((position.latitude > 31 && position.latitude < 40) &&
+          (position.longitude > 120 && position.longitude < 132)) {
+        _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
+        latlon = GeoPoint(position.latitude, position.longitude);
+      } else {
+        showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+      }
       _isLoading = false;
     });
   }
@@ -88,15 +94,20 @@ class _SignUpLocationState extends State<SignUpLocation> {
                       cursorColor: primaryBlue500,
                       keyboardType: TextInputType.number,
                       style: const TextStyle(color: Colors.black),
-                      onChanged: (value) => setState(() {
+                      onSubmitted: (value) => setState(() {
                         if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
-                          _controller.runJavaScript(
-                            'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
-                          );
-                          latlon = GeoPoint(
-                            double.parse(_latController.text),
-                            double.parse(_lngController.text),
-                          );
+                          if ((double.parse(_latController.text) > 31 &&
+                                  double.parse(_latController.text) < 40) &&
+                              (double.parse(_lngController.text) > 120 &&
+                                  double.parse(_lngController.text) < 132)) {
+                            _controller.runJavaScript(
+                              'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
+                            );
+                            latlon = GeoPoint(double.parse(_latController.text),
+                                double.parse(_lngController.text));
+                          } else {
+                            showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                          }
                         }
                       }),
                       decoration: InputDecoration(
@@ -137,15 +148,20 @@ class _SignUpLocationState extends State<SignUpLocation> {
                       cursorColor: primaryBlue500,
                       keyboardType: TextInputType.number,
                       style: const TextStyle(color: Colors.black),
-                      onChanged: (value) => setState(() {
+                      onSubmitted: (value) => setState(() {
                         if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
-                          _controller.runJavaScript(
-                            'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
-                          );
-                          latlon = GeoPoint(
-                            double.parse(_latController.text),
-                            double.parse(_lngController.text),
-                          );
+                          if ((double.parse(_latController.text) > 31 &&
+                                  double.parse(_latController.text) < 40) &&
+                              (double.parse(_lngController.text) > 120 &&
+                                  double.parse(_lngController.text) < 132)) {
+                            _controller.runJavaScript(
+                              'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
+                            );
+                            latlon = GeoPoint(double.parse(_latController.text),
+                                double.parse(_lngController.text));
+                          } else {
+                            showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                          }
                         }
                       }),
                       decoration: InputDecoration(
@@ -266,72 +282,75 @@ void _showLocationModal(BuildContext context, GeoPoint latlon, String id) {
     isScrollControlled: true,
     backgroundColor: backgroundWhite,
     builder: (BuildContext context) {
-      return Padding(
-        padding: const EdgeInsets.all(24),
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '주요 조업 위치의 별명을 입력해주세요',
-                style: header3B(),
-              ),
-              const SizedBox(height: 18),
-              TextField(
-                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
-                controller: controller,
-                cursorColor: primaryBlue500,
-                style: const TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: backgroundWhite,
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  disabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                  hintText: '지역 별명을 입력해주세요',
-                  hintStyle: body1(gray3),
-                  contentPadding: const EdgeInsets.all(16),
+      return StatefulBuilder(builder: (context, setState) {
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(
+                  '주요 조업 위치의 별명을 입력해주세요',
+                  style: header3B(),
                 ),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: controller.text.isEmpty ? () => {} : completeRegistration,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  elevation: 0,
-                  backgroundColor: primaryBlue500,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 18),
+                TextField(
+                  onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                  controller: controller,
+                  onChanged: (value) => setState(() {}),
+                  cursorColor: primaryBlue500,
+                  style: const TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: backgroundWhite,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 1,
+                        color: controller.text.isEmpty ? gray2 : primaryBlue500,
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 1,
+                        color: controller.text.isEmpty ? gray2 : primaryBlue500,
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        width: 1,
+                        color: controller.text.isEmpty ? gray2 : primaryBlue500,
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    ),
+                    hintText: '지역 별명을 입력해주세요',
+                    hintStyle: body1(gray3),
+                    contentPadding: const EdgeInsets.all(16),
                   ),
                 ),
-                child: Text('등록하기', style: header4(backgroundWhite)),
-              ),
-            ],
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: controller.text.isEmpty ? () => {} : completeRegistration,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    elevation: 0,
+                    backgroundColor: controller.text.isEmpty ? gray2 : primaryBlue500,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text('등록하기', style: header4(backgroundWhite)),
+                ),
+              ],
+            ),
           ),
-        ),
-      );
+        );
+      });
     },
   );
 }
