@@ -1,3 +1,4 @@
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
@@ -129,6 +130,12 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
               onPressed: () {
+                // revenueEntries에 ''이 있는 경우 저장하지 않음
+                if (revenueEntries.any(
+                    (entry) => entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
+                  showSnackBar(context, '위판 정보를 모두 입력해주세요');
+                  return;
+                }
                 _saveLedger(context);
               },
               child: Text("저장", style: body2(primaryYellow900)),

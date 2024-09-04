@@ -1,3 +1,4 @@
+import 'package:fish_note/favorites/components/alert_dialog.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
@@ -112,34 +113,40 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat.yMMMMd('ko_KR').format(widget.selectedDate);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: backgroundBlue,
-        centerTitle: true,
-        title: Text(formattedDate, style: body2(textBlack)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: TextButton(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        showDialog(context: context, builder: (context) => buildOutDialog(context));
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: backgroundBlue,
+          centerTitle: true,
+          title: Text(formattedDate, style: body2(textBlack)),
+          leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
               onPressed: () {
-                _updateLedger(context);
-              },
-              child: Text("저장", style: body2(primaryYellow900)),
+                showDialog(context: context, builder: (context) => buildOutDialog(context));
+              }),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: TextButton(
+                onPressed: () {
+                  _updateLedger(context);
+                },
+                child: Text("저장", style: body2(primaryYellow900)),
+              ),
             ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [_buildRevenue(context), _buildExpense()],
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [_buildRevenue(context), _buildExpense()],
+            ),
           ),
         ),
       ),
