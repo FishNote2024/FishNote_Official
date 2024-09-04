@@ -588,21 +588,26 @@ class _LedgerPageState extends State<LedgerPage> {
               // 현재 날짜로부터 30일 이전까지의 데이터만 필터링
               .where((ledger) => ledger.date
                   .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
+              .where((ledger) => ledger.date.isBefore(_selectedDay ?? _focusedDay))
               .toList())
           : _calculateTotalRevenue(ledgerProvider.ledgers
               // 현재 날짜로부터 7일 이전까지의 데이터만 필터링
               .where((ledger) => ledger.date
                   .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
+              .where((ledger) => ledger.date.isBefore(_selectedDay ?? _focusedDay))
               .toList());
       int totalExpense = _selectedValue == 0
           ? _calculateTotalExpense(ledgerProvider.ledgers
               .where((ledger) => ledger.date
                   .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
+              .where((ledger) => ledger.date.isBefore(_selectedDay ?? _focusedDay))
               .toList())
           : _calculateTotalExpense(ledgerProvider.ledgers
               .where((ledger) => ledger.date
                   .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
+              .where((ledger) => ledger.date.isBefore(_selectedDay ?? _focusedDay))
               .toList());
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -673,10 +678,12 @@ class _LedgerPageState extends State<LedgerPage> {
           ? ledgerProvider.ledgers
               .where((ledger) => ledger.date
                   .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
+              .where((ledger) => ledger.date.isBefore(_selectedDay ?? _focusedDay))
               .toList()
           : ledgerProvider.ledgers
               .where((ledger) => ledger.date
                   .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
+              .where((ledger) => ledger.date.isBefore(_selectedDay ?? _focusedDay))
               .toList();
 
       return Column(
@@ -701,10 +708,12 @@ class _LedgerPageState extends State<LedgerPage> {
           ? ledgerProvider.ledgers
               .where((ledger) => ledger.date
                   .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
+              .where((ledger) => ledger.date.isBefore(_selectedDay ?? _focusedDay))
               .toList()
           : ledgerProvider.ledgers
               .where((ledger) => ledger.date
                   .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
+              .where((ledger) => ledger.date.isBefore(_selectedDay ?? _focusedDay))
               .toList();
 
       return Column(
