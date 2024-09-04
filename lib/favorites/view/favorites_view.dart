@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/favorites/components/modal_bottom_sheet.dart';
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/signUp/model/location.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -56,8 +57,13 @@ class _FavoritesViewState extends State<FavoritesView> {
     setState(() {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
-      _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
-      location.setLatlon(GeoPoint(position.latitude, position.longitude));
+      if ((position.latitude > 31 && position.latitude < 40) &&
+          (position.longitude > 120 && position.longitude < 132)) {
+        _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
+        location.setLatlon(GeoPoint(position.latitude, position.longitude));
+      } else {
+        showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+      }
       _isLoading = false; // 로딩 상태 해제
     });
   }
@@ -93,15 +99,20 @@ class _FavoritesViewState extends State<FavoritesView> {
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
-                        onChanged: (value) => setState(() {
+                        onSubmitted: (value) => setState(() {
                           if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
-                            _controller.runJavaScript(
-                              'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
-                            );
-                            location.setLatlon(GeoPoint(
-                              double.parse(_latController.text),
-                              double.parse(_lngController.text),
-                            ));
+                            if ((double.parse(_latController.text) > 31 &&
+                                    double.parse(_latController.text) < 40) &&
+                                (double.parse(_lngController.text) > 120 &&
+                                    double.parse(_lngController.text) < 132)) {
+                              _controller.runJavaScript(
+                                'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
+                              );
+                              location.setLatlon(GeoPoint(double.parse(_latController.text),
+                                  double.parse(_lngController.text)));
+                            } else {
+                              showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                            }
                           }
                         }),
                         decoration: InputDecoration(
@@ -142,15 +153,20 @@ class _FavoritesViewState extends State<FavoritesView> {
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
-                        onChanged: (value) => setState(() {
+                        onSubmitted: (value) => setState(() {
                           if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
-                            _controller.runJavaScript(
-                              'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
-                            );
-                            location.setLatlon(GeoPoint(
-                              double.parse(_latController.text),
-                              double.parse(_lngController.text),
-                            ));
+                            if ((double.parse(_latController.text) > 31 &&
+                                    double.parse(_latController.text) < 40) &&
+                                (double.parse(_lngController.text) > 120 &&
+                                    double.parse(_lngController.text) < 132)) {
+                              _controller.runJavaScript(
+                                'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
+                              );
+                              location.setLatlon(GeoPoint(double.parse(_latController.text),
+                                  double.parse(_lngController.text)));
+                            } else {
+                              showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                            }
                           }
                         }),
                         decoration: InputDecoration(
