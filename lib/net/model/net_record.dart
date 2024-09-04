@@ -34,14 +34,14 @@ class NetRecord {
 }
 
 class NetRecordProvider with ChangeNotifier {
-  final Uuid uuid = Uuid();
-  List<NetRecord> _netRecords = [];
+  final Uuid uuid = const Uuid();
+  final List<NetRecord> _netRecords = [];
   List<NetRecord> get netRecords => _netRecords;
-  List<double> _location = [];
+  final List<double> _location = [];
   String _locationName = '';
   DateTime _throwTime = DateTime.now();
   DateTime _getNetTime = DateTime.now();
-  String _waveHeight = '';
+  final String _waveHeight = '';
   final double _waterTemperature = 0.0;
   bool _isGet = false;
   final Set<String> _species = {};
@@ -49,7 +49,7 @@ class NetRecordProvider with ChangeNotifier {
   List<double> _amount = [];
   int _daysSince = 0;
   String _memo = '';
-  String _wave = " ";
+  final String _wave = " ";
 
   String get locationName => _locationName;
   DateTime get throwTime => _throwTime;
@@ -72,12 +72,7 @@ class NetRecordProvider with ChangeNotifier {
 
     try {
       // "journal" 컬렉션의 "record" 문서에 접근
-      final journalRef = db
-          .collection("users")
-          .doc(userId)
-          .collection("journal")
-          .doc("record");
-      print("Firestore path: ${journalRef.path}");
+      final journalRef = db.collection("users").doc(userId).collection("journal").doc("record");
       // 각 날짜별로 하위 컬렉션 접근
       final datesSnapshot = await journalRef.collection("2024-09-02").get();
 
@@ -89,10 +84,8 @@ class NetRecordProvider with ChangeNotifier {
           _netRecords.add(
             NetRecord(
               id: data['id'] ?? 0,
-              throwDate:
-                  (data['throwDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-              getDate:
-                  (data['getDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              throwDate: (data['throwDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              getDate: (data['getDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
               locationName: data['locationName'] ?? '',
               daysSince: data['daysSince'] ?? 0,
               isGet: data['isGet'] ?? false,
@@ -101,8 +94,7 @@ class NetRecordProvider with ChangeNotifier {
               amount: List<double>.from(data['amount'] ?? <double>[]),
               memo: data['memo'] ?? '',
               wave: data["wave"] ?? '',
-              fishData: Map<String, double>.from(
-                  data['fishData'] ?? <String, double>{}),
+              fishData: Map<String, double>.from(data['fishData'] ?? <String, double>{}),
             ),
           );
         }
@@ -115,10 +107,8 @@ class NetRecordProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _addRecordToFirestore(
-      NetRecord record, String userId, String recordId) async {
-    String throwDateFormatted =
-        DateFormat('yyyy-MM-dd').format(record.throwDate);
+  Future<void> _addRecordToFirestore(NetRecord record, String userId, String recordId) async {
+    String throwDateFormatted = DateFormat('yyyy-MM-dd').format(record.throwDate);
     final docRef = db
         .collection("users")
         .doc(userId)
@@ -229,8 +219,7 @@ class NetRecordProvider with ChangeNotifier {
       print("-> id = $id");
       print("-> userId = $userId");
       try {
-        String throwDateFormatted =
-            DateFormat('yyyy-MM-dd').format(existingRecord.throwDate);
+        String throwDateFormatted = DateFormat('yyyy-MM-dd').format(existingRecord.throwDate);
         final docRef = db
             .collection("users")
             .doc(userId)
@@ -241,8 +230,7 @@ class NetRecordProvider with ChangeNotifier {
 
         await docRef.update({
           if (isGet != null) 'isGet': isGet,
-          if (species != null && species.isNotEmpty)
-            'species': species.toList(),
+          if (species != null && species.isNotEmpty) 'species': species.toList(),
           if (amount != null && amount.isNotEmpty) 'amount': amount,
           if (memo != null) 'memo': memo,
           if (throwTime != null) 'throwDate': throwTime,
@@ -272,7 +260,7 @@ class NetRecordProvider with ChangeNotifier {
   }
 
   void setDaysSince(DateTime today) {
-    final diff = today.difference(_throwTime as DateTime).inDays;
+    final diff = today.difference(_throwTime).inDays;
     _daysSince = diff;
     notifyListeners();
   }

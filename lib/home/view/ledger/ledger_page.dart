@@ -25,6 +25,8 @@ class _LedgerPageState extends State<LedgerPage> {
   int _selectedValue = 0;
   int _pieChartSelectedValue = 0;
   final PanelController _panelController = PanelController();
+  final firstDay = DateTime.utc(2020, 12, 31);
+  final lastDay = DateTime.utc(2031, 1, 1);
 
   @override
   void initState() {
@@ -59,30 +61,6 @@ class _LedgerPageState extends State<LedgerPage> {
   // 총 지출 계산
   int _calculateTotalExpense(List<LedgerModel> ledgers) {
     return ledgers.fold(0, (total, ledger) => total + ledger.totalPays);
-  }
-
-  int weekOfYear(DateTime date) {
-    // 해당 연도의 첫 날과 첫 번째 토요일 찾기
-    DateTime firstDayOfYear = DateTime(date.year, 1, 1);
-    DateTime firstSaturday = firstDayOfYear;
-
-    // 첫 번째 토요일을 찾기 위해 해당 연도 첫 날부터 토요일을 찾음
-    while (firstSaturday.weekday != DateTime.saturday) {
-      firstSaturday = firstSaturday.add(const Duration(days: 1));
-    }
-
-    // 주어진 날짜와 첫 번째 토요일 사이의 일 수 차이를 계산
-    int daysSinceFirstSaturday = date.difference(firstSaturday).inDays;
-
-    // 주 번호를 계산
-    int weekNumber = (daysSinceFirstSaturday / 7).ceil() + 1;
-
-    // 첫 번째 주에 포함되지 않는 날짜에 대해 주 번호 조정
-    if (weekNumber <= 0) {
-      weekNumber = weekOfYear(DateTime(date.year - 1, 12, 31));
-    }
-
-    return weekNumber;
   }
 
   @override
@@ -131,9 +109,9 @@ class _LedgerPageState extends State<LedgerPage> {
       children: [
         Stack(
           children: [
-            TableCalendar(
-              firstDay: DateTime.utc(2021, 10, 16),
-              lastDay: DateTime.utc(2030, 3, 14),
+            TableCalendar<LedgerModel>(
+              firstDay: firstDay,
+              lastDay: lastDay,
               focusedDay: _focusedDay,
               calendarFormat: CalendarFormat.month,
               onDaySelected: (selectedDay, focusedDay) {
@@ -192,6 +170,57 @@ class _LedgerPageState extends State<LedgerPage> {
                   shape: BoxShape.circle,
                 ),
               ),
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, day, ledgers) {
+                  ledgers = Provider.of<LedgerProvider>(context).ledgers;
+                  // netRecord 리스트가 비어있지 않고, day가 _focusedDay나 _selectedDay가 아닌 경우 마커 생성
+                  if (ledgers.isNotEmpty &&
+                          !isSameDay(day, _focusedDay) &&
+                          !isSameDay(day, _selectedDay)
+                      // && !isSameDay(day, _today)
+                      ) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: ledgers.expand((event) {
+                        // event에 대해 마커 리스트 생성
+                        List<Widget> markers = [];
+
+                        // isGet이 true인 경우
+                        // throwDate에 대해 primaryBlue500 색상의 마커 추가
+                        if (isSameDay(event.date, day)) {
+                          if (event.totalSales > 0) {
+                            markers.add(
+                              Container(
+                                margin: const EdgeInsets.only(top: 40, right: 2),
+                                child: const Icon(
+                                  size: 5,
+                                  Icons.circle,
+                                  color: primaryBlue500,
+                                ),
+                              ),
+                            );
+                          }
+                          if (event.totalPays > 0) {
+                            markers.add(
+                              Container(
+                                margin: const EdgeInsets.only(top: 40, right: 2),
+                                child: const Icon(
+                                  size: 5,
+                                  Icons.circle,
+                                  color: primaryYellow700,
+                                ),
+                              ),
+                            );
+                          }
+                        }
+
+                        return markers;
+                      }).toList(),
+                    );
+                  }
+                  return const SizedBox.shrink(); // 조건에 맞지 않으면 빈 공간 반환
+                },
+              ),
             ),
             Positioned(
               top: 20,
@@ -217,53 +246,75 @@ class _LedgerPageState extends State<LedgerPage> {
   }
 
   void _showMonthWeekPicker(BuildContext context) {
+    DateTime tempDay = _focusedDay;
     showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: Center(
-            child: Row(
-              children: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_back_ios, size: 14)),
-                const Spacer(),
-                Text(DateFormat.yMMMM('ko_KR').format(_focusedDay), style: header4(black)),
-                const Spacer(),
-                IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_forward_ios, size: 14)),
-              ],
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Center(
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          if (DateTime(tempDay.year - 1, tempDay.month, 1).isAfter(firstDay)) {
+                            tempDay = DateTime(tempDay.year - 1, tempDay.month, 1);
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.arrow_back_ios, size: 14)),
+                  const Spacer(),
+                  Text(
+                      DateFormat.y('ko_KR')
+                          .format(tempDay.year == _focusedDay.year ? _focusedDay : tempDay),
+                      style: header4(black)),
+                  const Spacer(),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          if (DateTime(tempDay.year + 1, tempDay.month, 1).isBefore(lastDay)) {
+                            tempDay = DateTime(tempDay.year + 1, tempDay.month, 1);
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.arrow_forward_ios, size: 14)),
+                ],
+              ),
             ),
-          ),
-          content: SizedBox(
-            height: 220,
-            width: 283,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 1.5,
+            content: SizedBox(
+              height: 220,
+              width: 283,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 1.5,
+                      ),
+                      itemCount: 12,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.pop(context, [tempDay.year, index + 1]);
+                          },
+                          child: Center(child: Text('${index + 1}월', style: body1(gray6))),
+                        );
+                      },
                     ),
-                    itemCount: 12,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        onTap: () {
-                          Navigator.pop(context, index + 1);
-                        },
-                        child: Center(child: Text('${index + 1}월', style: body1(gray6))),
-                      );
-                    },
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        );
+          );
+        });
       },
     ).then((selectedValue) {
       if (selectedValue != null) {
         setState(() {
-          _focusedDay = DateTime(2024, selectedValue, 1);
+          _focusedDay = DateTime(selectedValue[0], selectedValue[1], 1);
         });
       }
     });
@@ -534,17 +585,23 @@ class _LedgerPageState extends State<LedgerPage> {
     return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
       int totalRevenue = _selectedValue == 0
           ? _calculateTotalRevenue(ledgerProvider.ledgers
-              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              // 현재 날짜로부터 30일 이전까지의 데이터만 필터링
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
               .toList())
           : _calculateTotalRevenue(ledgerProvider.ledgers
-              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              // 현재 날짜로부터 7일 이전까지의 데이터만 필터링
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
               .toList());
       int totalExpense = _selectedValue == 0
           ? _calculateTotalExpense(ledgerProvider.ledgers
-              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
               .toList())
           : _calculateTotalExpense(ledgerProvider.ledgers
-              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
               .toList());
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,29 +668,43 @@ class _LedgerPageState extends State<LedgerPage> {
   }
 
   Widget _buildLineChart() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Text('매출 추이', style: body1(gray8)),
-            const Spacer(),
-            Text("단위 1백만", style: body3(gray4))
-          ],
-        ),
-        const SizedBox(height: 13.0),
-        LineChartView(time: _selectedDay?? DateTime.now()),
-      ],
-    );
+    return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
+      final ledgers = _selectedValue == 0
+          ? ledgerProvider.ledgers
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
+              .toList()
+          : ledgerProvider.ledgers
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
+              .toList();
+
+      return Column(
+        children: [
+          Row(
+            children: [
+              Text('매출 추이', style: body1(gray8)),
+              const Spacer(),
+              Text("단위 1백만", style: body3(gray4))
+            ],
+          ),
+          const SizedBox(height: 13.0),
+          LineChartView(ledgers: ledgers, value: _selectedValue, time: _selectedDay ?? _focusedDay),
+        ],
+      );
+    });
   }
 
   Widget _buildPieChart() {
     return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
       final ledgers = _selectedValue == 0
           ? ledgerProvider.ledgers
-              .where((ledger) => ledger.date.month == (_selectedDay?.month ?? _focusedDay.month))
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
               .toList()
           : ledgerProvider.ledgers
-              .where((ledger) => weekOfYear(ledger.date) == weekOfYear(_selectedDay ?? _focusedDay))
+              .where((ledger) => ledger.date
+                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
               .toList();
 
       return Column(

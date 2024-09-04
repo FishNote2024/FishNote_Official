@@ -73,6 +73,22 @@ class _PieChartViewState extends State<PieChartView> {
       }
     }
 
+    // payAmountList, salePriceList를 내림차순으로 정렬, payCategoryList, saleSpeciesList도 동시에 정렬, bubble sort 사용 금지, selection sort 사용 금지, insertion sort 사용 금지
+    // for (int i = 0; i < payAmountList.length - 1; i++) {
+    //   int maxIndex = i;
+    //   for (int j = i + 1; j < payAmountList.length; j++) {
+    //     if (payAmountList[j] > payAmountList[maxIndex]) {
+    //       maxIndex = j;
+    //     }
+    //   }
+    //   double temp = payAmountList[i];
+    //   payAmountList[i] = payAmountList[maxIndex];
+    //   payAmountList[maxIndex] = temp;
+    //   String temp2 = payCategoryList[i];
+    //   payCategoryList[i] = payCategoryList[maxIndex];
+    //   payCategoryList[maxIndex] = temp2;
+    // }
+
     final List<ChartData> data = widget.value == 1
         ? List.generate(payCategoryList.length, (index) {
             return ChartData(
