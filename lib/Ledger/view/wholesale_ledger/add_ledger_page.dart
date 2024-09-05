@@ -114,40 +114,47 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat.yMMMMd('ko_KR').format(widget.selectedDate);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: backgroundBlue,
-        centerTitle: true,
-        title: Text(formattedDate, style: body2(textBlack)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
-          onPressed: () {
-            _showExitConfirmationDialog(context);
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: TextButton(
-              onPressed: () {
-                // revenueEntries에 ''이 있는 경우 저장하지 않음
-                if (revenueEntries.any(
-                    (entry) => entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
-                  showSnackBar(context, '위판 정보를 모두 입력해주세요');
-                  return;
-                }
-                _saveLedger(context);
-              },
-              child: Text("저장", style: body2(primaryYellow900)),
-            ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        _showExitConfirmationDialog(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: backgroundBlue,
+          centerTitle: true,
+          title: Text(formattedDate, style: body2(textBlack)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
+            onPressed: () {
+              _showExitConfirmationDialog(context);
+            },
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [_buildRevenue(context), _buildExpense()],
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: TextButton(
+                onPressed: () {
+                  // revenueEntries에 ''이 있는 경우 저장하지 않음
+                  if (revenueEntries.any(
+                      (entry) => entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
+                    showSnackBar(context, '위판 정보를 모두 입력해주세요');
+                    return;
+                  }
+                  _saveLedger(context);
+                },
+                child: Text("저장", style: body2(primaryYellow900)),
+              ),
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [_buildRevenue(context), _buildExpense()],
+            ),
           ),
         ),
       ),

@@ -76,6 +76,7 @@ class LoginViewState extends State<LoginView> {
       } else {
         // 사용자 이름 저장
         loginModelProvider.saveName();
+        loginModelProvider.saveKakaoId();
         // 주요 조업 위치의 이름이 없는 경우 -> 회원가입이 아직 완료되지 않았다는 의미이므로 회원가입 화면으로 이동
         Navigator.pushNamedAndRemoveUntil(context, '/signUp', (route) => false);
       }
