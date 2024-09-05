@@ -303,4 +303,20 @@ class NetRecordProvider with ChangeNotifier {
     _memo = memo;
     notifyListeners();
   }
+
+  Future<void> withDrawal(String id) async {
+    _netRecords.clear();
+    final docRef = db.collection("users").doc(id).collection("journal");
+    // docRef의 하위 컬렉션 모두 가져오기
+    await docRef.get().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.collection("record").get().then((snapshot) {
+          for (DocumentSnapshot ds in snapshot.docs) {
+            ds.reference.delete();
+          }
+        });
+      }
+    });
+    notifyListeners();
+  }
 }

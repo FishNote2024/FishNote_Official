@@ -30,4 +30,12 @@ class LoginModelProvider with ChangeNotifier {
     }, SetOptions(merge: true));
     notifyListeners();
   }
+
+  void saveKakaoId() async {
+    final docRef = db.collection("users").doc(_kakaoId);
+    await docRef.set({
+      'uid': _kakaoId,
+    }, SetOptions(merge: true));
+    notifyListeners();
+  }
 }

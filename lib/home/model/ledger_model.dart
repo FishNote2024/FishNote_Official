@@ -161,4 +161,15 @@ class LedgerProvider with ChangeNotifier {
     _ledgers[index] = ledger;
     notifyListeners();
   }
+
+  Future<void> withDrawal(String id) async {
+    _ledgers.clear();
+    final docRef = db.collection("users").doc(id).collection("ledger");
+    await docRef.get().then((snapshot) {
+      for (DocumentSnapshot ds in snapshot.docs) {
+        ds.reference.delete();
+      }
+    });
+    notifyListeners();
+  }
 }
