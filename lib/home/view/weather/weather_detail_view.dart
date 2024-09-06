@@ -1,6 +1,8 @@
+import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 import '../../../theme/colors.dart';
 import '../../../theme/font.dart';
@@ -9,8 +11,7 @@ class WeatherDetailView extends StatefulWidget {
   final Map<String, dynamic> data;
   final int differenceInMinutes;
 
-  WeatherDetailView(
-      {super.key, required this.data, required this.differenceInMinutes});
+  const WeatherDetailView({super.key, required this.data, required this.differenceInMinutes});
 
   @override
   _WeatherDetailViewState createState() => _WeatherDetailViewState();
@@ -30,10 +31,8 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
 
     _scrollController.addListener(() {
       setState(() {
-        double scrollPosition =
-            _scrollController.position.pixels - widget.differenceInMinutes + 46;
-        _currentTime =
-            _initialTime.add(Duration(minutes: (scrollPosition / 1).round()));
+        double scrollPosition = _scrollController.position.pixels - widget.differenceInMinutes + 46;
+        _currentTime = _initialTime.add(Duration(minutes: (scrollPosition / 1).round()));
       });
     });
     if (!_hasJumped) {
@@ -46,6 +45,8 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
 
   @override
   Widget build(BuildContext context) {
+    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -54,12 +55,15 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
             Navigator.pop(context);
           },
         ),
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.location_on, size: 24, color: primaryBlue500),
-            Text("서해바다"),
-          ],
+        title: InkWell(
+          onTap: () => Navigator.pushNamed(context, '/favorites'),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.location_on, size: 24, color: primaryBlue500),
+              Text(userInformationProvider.location.name),
+            ],
+          ),
         ),
         centerTitle: true,
       ),
@@ -91,8 +95,7 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
           Stack(
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
@@ -113,8 +116,7 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                         scrollDirection: Axis.horizontal, // 가로 스크롤
                         controller: _scrollController,
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16.0, vertical: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
                           child: Row(
                             children: [
                               // 제목 Row 추가
@@ -138,7 +140,7 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                                 ],
                               ),
                               const SizedBox(width: 8),
-                              SizedBox(
+                              const SizedBox(
                                 width: 1,
                                 child: Divider(
                                   color: gray1,
@@ -151,8 +153,7 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                                 children: widget.data.entries.map((entry) {
                                   String time =
                                       "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
-                                  Map<String, dynamic> weatherInfo =
-                                      entry.value;
+                                  Map<String, dynamic> weatherInfo = entry.value;
                                   String rain;
                                   if (weatherInfo['PCP'] == "강수없음") {
                                     rain = "0mm";
@@ -162,12 +163,9 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                                     rain = weatherInfo['PCP'];
                                   }
 
-
-
-                                  String direction = _convertVecToDirection(
-                                      int.parse(weatherInfo['VEC']));
-                                  IconData icon = _getWeatherIcon(
-                                      int.parse(weatherInfo['SKY']));
+                                  String direction =
+                                      _convertVecToDirection(int.parse(weatherInfo['VEC']));
+                                  IconData icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
 
                                   return Padding(
                                     padding: const EdgeInsets.all(0.0),
@@ -178,7 +176,7 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                                         '${weatherInfo['POP']}%',
                                         '${weatherInfo['WSD']}m/s',
                                         direction,
-                                        '${rain}',
+                                        rain,
                                         '${weatherInfo['WAV']}m'),
                                   );
                                 }).toList(),
@@ -191,11 +189,11 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                   ),
                 ),
               ),
-              Positioned(
+              const Positioned(
                 left: 65,
                 top: 0,
                 bottom: 0,
-                child: Container(
+                child: SizedBox(
                   height: 10,
                   child: VerticalDivider(
                     indent: 70,
@@ -210,8 +208,7 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 28),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12.0, vertical: 6.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
                     decoration: BoxDecoration(
                       color: primaryBlue500,
                       borderRadius: BorderRadius.circular(20.0),
@@ -256,15 +253,8 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
     }
   }
 
-  Widget weatherColumn(
-      String time,
-      IconData icon,
-      String temp,
-      String rainPercent,
-      String windSpeed,
-      String direction,
-      String rain,
-      String waveHeight) {
+  Widget weatherColumn(String time, IconData icon, String temp, String rainPercent,
+      String windSpeed, String direction, String rain, String waveHeight) {
     return SizedBox(
       width: 60,
       child: Column(
