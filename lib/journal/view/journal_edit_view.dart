@@ -31,6 +31,7 @@ class _JournalEditViewState extends State<JournalEditView> {
   TextEditingController _dateGetTimeController = TextEditingController();
   late NetRecordProvider netRecordProvider;
   late UserInformationProvider userInformationProvider;
+  late LoginModelProvider loginModelProvider;
   late Set<String> species;
   // @override
   // void initState() {
@@ -45,16 +46,27 @@ class _JournalEditViewState extends State<JournalEditView> {
     // Provider를 사용하여 netRecordProvider 초기화
     netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
     userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
-    originalDateTime =
-        widget.events.first.throwDate; // Initialize the original date
-    selectedDateTime =
-        originalDateTime; // Initially, selected date is the original date
-    tempThrowDateTime = originalDateTime;
-    tempGetDateTime = widget.events.first.getDate;
-    _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime??DateTime.now());
-    _dateGetTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime??DateTime.now());
-    species ={...netRecordProvider.species, ...userInformationProvider.species};
-    memo = widget.events.first.memo ?? '';
+    loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+
+    if (widget.events.isEmpty) {
+      // 이벤트 데이터가 없으면 /journal 페이지로 리디렉션
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, '/journal');
+      });
+    }else{
+      originalDateTime =
+          widget.events.first.throwDate; // Initialize the original date
+      selectedDateTime =
+          originalDateTime; // Initially, selected date is the original date
+      tempThrowDateTime = originalDateTime;
+      tempGetDateTime = widget.events.first.getDate;
+      _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime??DateTime.now());
+      _dateGetTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime??DateTime.now());
+      species ={...netRecordProvider.species, ...userInformationProvider.species};
+      memo = widget.events.first.memo ?? '';
+    }
+
+
   }
 
   @override
@@ -123,7 +135,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(event),
+            _buildHeader(event, context),
             const SizedBox(height: 8),
             _buildEditableDateField(
               label: '투망시간',
@@ -188,19 +200,49 @@ class _JournalEditViewState extends State<JournalEditView> {
     );
   }
 
-
-  Widget _buildHeader(NetRecord event) {
+  Widget _buildHeader(NetRecord event, BuildContext context) {
     return Row(
       children: [
         Text(
-          DateFormat('HH:mm').format(event.throwDate) +
-              ' ${event.locationName}',
+          DateFormat('HH:mm').format(event.throwDate) + ' ${event.locationName}',
           style: header3B(gray8),
         ),
         const Spacer(),
+        TextButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('삭제 확인'),
+                  content: const Text('정말로 삭제하시겠습니까?'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('취소'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('삭제'),
+                      onPressed: () async {
+                        // 삭제 로직을 추가하세요.
+                        await netRecordProvider.deleteRecord(loginModelProvider.kakaoId, event.id);
+                        Navigator.of(context).pop();
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: const Text('삭제하기'),
+        ),
       ],
     );
   }
+
 
   Widget _buildEditableTextField({
     required String label,

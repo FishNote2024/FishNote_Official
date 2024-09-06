@@ -13,6 +13,11 @@ class JournalDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (events.isEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, '/journal'); // 또는 다른 라우트로 이동
+      });
+    }
     final DateTime date = events.first.throwDate; // NetRecord의 throwDate 사용
 
     return Scaffold(
