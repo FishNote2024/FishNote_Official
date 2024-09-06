@@ -107,8 +107,8 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
   void _showTooltip() {
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        top: MediaQuery.of(context).size.height - 620,
-        left: MediaQuery.of(context).size.width - 150,
+        top: MediaQuery.of(context).size.height - 655,
+        left: MediaQuery.of(context).size.width - 180,
         child: Material(
           color: Colors.transparent,
           child: Container(
@@ -147,181 +147,187 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(mxtrNm,
-                    style: header3B(primaryBlue500).copyWith(height: 0.6)),
-                IconButton(
-                  key: _iconKey,
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(),
-                  icon: const Icon(Icons.error_outline, color: gray5, size: 25),
-                  onPressed: _showTooltip,
-                ),
-              ],
-            ),
-            Text("오늘의 경락시세", style: header3B().copyWith(height: 0.6)),
-            const SizedBox(height: 12),
-            Text("소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
-                style: caption1(gray4)),
-            const SizedBox(height: 40),
-            Table(
-              columnWidths: const {
-                0: FlexColumnWidth(2),
-                1: FlexColumnWidth(1),
-                2: FlexColumnWidth(3),
-                3: FlexColumnWidth(1),
-                4: FlexColumnWidth(3),
-              },
-              border: const TableBorder(
-                  horizontalInside: BorderSide(color: gray1),
-                  verticalInside: BorderSide(color: Colors.transparent)),
-              children: [
-                TableRow(
-                  decoration: BoxDecoration(
-                      border:
-                          Border(bottom: BorderSide(color: gray2, width: 1))),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
-                      child: Text('주요 어종', style: body2(gray5)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
-                      child: Text('규격', style: body2(gray5)),
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
-                        child: Text('수량/단위', style: body2(gray5)),
-                      ),
-                    ),
-                    const Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
-                        child: Text(''),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
-                        child: Text('가격', style: body2(gray5)),
-                      ),
-                    ),
-                  ],
-                ),
-                ...groupedData.entries.map((entry) {
-                  final avgUntpc =
-                      (entry.value['totalUntpc'] / entry.value['count'])
-                          .toInt();
-                  final maxUntpc = entry.value['maxUntpc']?.toInt() ?? '-';
-                  final minUntpc = entry.value['minUntpc']?.toInt() ?? '-';
-                  return TableRow(
+    return GestureDetector(
+      onTap: _hideTooltip,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(mxtrNm,
+                      style: header3B(primaryBlue500).copyWith(height: 0.6)),
+                  IconButton(
+                    key: _iconKey,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    icon:
+                        const Icon(Icons.error_outline, color: gray5, size: 25),
+                    onPressed: _showTooltip,
+                  ),
+                ],
+              ),
+              Text("오늘의 경락시세", style: header3B().copyWith(height: 0.6)),
+              const SizedBox(height: 12),
+              Text("소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
+                  style: caption1(gray4)),
+              const SizedBox(height: 40),
+              Table(
+                columnWidths: const {
+                  0: FlexColumnWidth(2),
+                  1: FlexColumnWidth(1),
+                  2: FlexColumnWidth(3),
+                  3: FlexColumnWidth(1),
+                  4: FlexColumnWidth(3),
+                },
+                border: const TableBorder(
+                    horizontalInside: BorderSide(color: gray1),
+                    verticalInside: BorderSide(color: Colors.transparent)),
+                children: [
+                  TableRow(
                     decoration: BoxDecoration(
                         border:
-                            Border(bottom: BorderSide(color: gray1, width: 1))),
+                            Border(bottom: BorderSide(color: gray2, width: 1))),
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(
-                            left: 4.0, top: 30, bottom: 30),
-                        child: Text(
-                          '(${entry.value['kdfshSttusNm'][0]})${entry.value['mprcStdCodeNm']}',
-                          style: body1(textBlack),
-                        ),
+                        padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
+                        child: Text('주요 어종', style: body2(gray5)),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(
-                            left: 10.0, top: 30, bottom: 30),
-                        child: Text(entry.value['goodsStndrdNm'],
-                            style: body1(gray5)),
+                        padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
+                        child: Text('규격', style: body2(gray5)),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 16.0, top: 30, bottom: 30),
-                        child: Text(
-                          _formatGoodsUnitNm(entry.value['goodsUnitNm']),
-                          style: body1(gray5),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
+                          child: Text('수량/단위', style: body2(gray5)),
                         ),
                       ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 1.0),
-                            child: SvgPicture.asset('assets/icons/up.svg'),
-                          ),
-                          const SizedBox(height: 15),
-                          SvgPicture.asset('assets/icons/avg.svg'),
-                          const SizedBox(height: 15),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 1.0),
-                            child: SvgPicture.asset('assets/icons/down.svg'),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
+                      const Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                          child: Text(''),
+                        ),
                       ),
-                      Column(
-                        children: [
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const Spacer(),
-                              Text('$maxUntpc원', style: body1(textBlack)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Spacer(),
-                              Text('$avgUntpc원', style: body1(textBlack)),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Spacer(),
-                              Text('$minUntpc원', style: body1(textBlack)),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                        ],
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 12, 0, 12),
+                          child: Text('가격', style: body2(gray5)),
+                        ),
                       ),
                     ],
-                  );
-                }).toList(),
-              ],
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: primaryBlue500, width: 1),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
                   ),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MyPageView()));
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
-                    child: Text(
-                      "주요 어종 추가",
-                      style: header4(primaryBlue500),
+                  ...groupedData.entries.map((entry) {
+                    final avgUntpc =
+                        (entry.value['totalUntpc'] / entry.value['count'])
+                            .toInt();
+                    final maxUntpc = entry.value['maxUntpc']?.toInt() ?? '-';
+                    final minUntpc = entry.value['minUntpc']?.toInt() ?? '-';
+                    return TableRow(
+                      decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(color: gray1, width: 1))),
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 4.0, top: 30, bottom: 30),
+                          child: Text(
+                            '(${entry.value['kdfshSttusNm'][0]})${entry.value['mprcStdCodeNm']}',
+                            style: body1(textBlack),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 10.0, top: 30, bottom: 30),
+                          child: Text(entry.value['goodsStndrdNm'],
+                              style: body1(gray5)),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 30, bottom: 30),
+                          child: Text(
+                            _formatGoodsUnitNm(entry.value['goodsUnitNm']),
+                            style: body1(gray5),
+                          ),
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            const SizedBox(height: 20),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 1.0),
+                              child: SvgPicture.asset('assets/icons/up.svg'),
+                            ),
+                            const SizedBox(height: 15),
+                            SvgPicture.asset('assets/icons/avg.svg'),
+                            const SizedBox(height: 15),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 1.0),
+                              child: SvgPicture.asset('assets/icons/down.svg'),
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Spacer(),
+                                Text('$maxUntpc원', style: body1(textBlack)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Spacer(),
+                                Text('$avgUntpc원', style: body1(textBlack)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Spacer(),
+                                Text('$minUntpc원', style: body1(textBlack)),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: primaryBlue500, width: 1),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
-                  )),
-            )
-          ],
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyPageView()));
+                    },
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        "주요 어종 추가",
+                        style: header4(primaryBlue500),
+                      ),
+                    )),
+              )
+            ],
+          ),
         ),
       ),
     );
