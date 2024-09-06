@@ -1,3 +1,4 @@
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:flutter/material.dart';
@@ -198,7 +199,12 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
                                   ),
                                   onTap: () => {
                                     setState(() {
-                                      selectedList.add(top10[index]);
+                                      if (selectedList.length >= 5) {
+                                        showSnackBar(
+                                            context, '어종은 5개까지 선택 가능해요.');
+                                      } else {
+                                        selectedList.add(top10[index]);
+                                      }
                                     }),
                                   },
                                 ),
