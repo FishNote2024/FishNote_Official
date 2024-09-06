@@ -146,16 +146,7 @@ class _JournalViewState extends State<JournalView> {
             color: primaryBlue500,
           )
               : DetailButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => JournalDetailView(
-                    events: _getEventsForDay(_selectedDay!),
-                  ),
-                ),
-              );
-            },
+            onPressed: () {},
             text: "자세히 보기",
             color: gray3,
           ),
