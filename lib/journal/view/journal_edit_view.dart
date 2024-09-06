@@ -25,9 +25,13 @@ class _JournalEditViewState extends State<JournalEditView> {
   String memo = "";
   DateTime? selectedDateTime;
   DateTime? originalDateTime; // Store the original date
+  DateTime? tempThrowDateTime;
+  DateTime? tempGetDateTime;
   TextEditingController _dateTimeController = TextEditingController();
+  TextEditingController _dateGetTimeController = TextEditingController();
   late NetRecordProvider netRecordProvider;
   late UserInformationProvider userInformationProvider;
+  late LoginModelProvider loginModelProvider;
   late Set<String> species;
   // @override
   // void initState() {
@@ -42,14 +46,27 @@ class _JournalEditViewState extends State<JournalEditView> {
     // Provider를 사용하여 netRecordProvider 초기화
     netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
     userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
-    originalDateTime =
-        widget.events.first.throwDate; // Initialize the original date
-    selectedDateTime =
-        originalDateTime; // Initially, selected date is the original date
-    _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-        .format(originalDateTime!);
-    species ={...netRecordProvider.species, ...userInformationProvider.species};
-    memo = widget.events.first.memo ?? '';
+    loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+
+    if (widget.events.isEmpty) {
+      // 이벤트 데이터가 없으면 /journal 페이지로 리디렉션
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, '/journal');
+      });
+    }else{
+      originalDateTime =
+          widget.events.first.throwDate; // Initialize the original date
+      selectedDateTime =
+          originalDateTime; // Initially, selected date is the original date
+      tempThrowDateTime = originalDateTime;
+      tempGetDateTime = widget.events.first.getDate;
+      _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime??DateTime.now());
+      _dateGetTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime??DateTime.now());
+      species ={...netRecordProvider.species, ...userInformationProvider.species};
+      memo = widget.events.first.memo ?? '';
+    }
+
+
   }
 
   @override
@@ -76,10 +93,13 @@ class _JournalEditViewState extends State<JournalEditView> {
           TextButton(
             onPressed: () {
               setState(() {
-                final userId =
-                    Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
+                final userId = Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
                 Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
-                    widget.recordId, userId, memo: memo);
+                  widget.recordId, userId,
+                  throwTime: tempThrowDateTime, // 투망 시간 업데이트
+                  getTime: tempGetDateTime, // 양망 시간 업데이트
+                  memo: memo,
+                );
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -115,12 +135,10 @@ class _JournalEditViewState extends State<JournalEditView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(event),
+            _buildHeader(event, context),
             const SizedBox(height: 8),
-            _buildEditableTextField(
+            _buildEditableDateField(
               label: '투망시간',
-              initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                  .format(event.throwDate),
               icon: Icons.calendar_today,
               onIconPressed: () => _handleCalendarIconPressed(event.throwDate),
             ),
@@ -163,10 +181,8 @@ class _JournalEditViewState extends State<JournalEditView> {
               const SizedBox(height: 16),
               _buildSectionTitle('양망기록'),
               const SizedBox(height: 8),
-              _buildEditableTextField(
+              _buildEditableGetField(
                 label: '양망시간',
-                initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                    .format(event.getDate),
                 icon: Icons.calendar_today,
                 onIconPressed: () => _handleCalendarIconPressedGet(event.getDate),
               ),
@@ -184,19 +200,49 @@ class _JournalEditViewState extends State<JournalEditView> {
     );
   }
 
-
-  Widget _buildHeader(NetRecord event) {
+  Widget _buildHeader(NetRecord event, BuildContext context) {
     return Row(
       children: [
         Text(
-          DateFormat('HH:mm').format(event.throwDate) +
-              ' ${event.locationName}',
+          DateFormat('HH:mm').format(event.throwDate) + ' ${event.locationName}',
           style: header3B(gray8),
         ),
         const Spacer(),
+        TextButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('삭제 확인'),
+                  content: const Text('정말로 삭제하시겠습니까?'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('취소'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('삭제'),
+                      onPressed: () async {
+                        // 삭제 로직을 추가하세요.
+                        await netRecordProvider.deleteRecord(loginModelProvider.kakaoId, event.id);
+                        Navigator.of(context).pop();
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          child: const Text('삭제하기'),
+        ),
       ],
     );
   }
+
 
   Widget _buildEditableTextField({
     required String label,
@@ -216,6 +262,46 @@ class _JournalEditViewState extends State<JournalEditView> {
         border: OutlineInputBorder(),
       ),
       controller: TextEditingController(text: initialValue),
+    );
+  }
+
+  Widget _buildEditableDateField({
+    required String label,
+    IconData? icon,
+    VoidCallback? onIconPressed,
+  }) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        suffixIcon: icon != null
+            ? IconButton(
+          icon: Icon(icon),
+          onPressed: onIconPressed,
+        )
+            : null,
+        border: OutlineInputBorder(),
+      ),
+      controller: _dateTimeController,
+    );
+  }
+
+  Widget _buildEditableGetField({
+    required String label,
+    IconData? icon,
+    VoidCallback? onIconPressed,
+  }) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        suffixIcon: icon != null
+            ? IconButton(
+          icon: Icon(icon),
+          onPressed: onIconPressed,
+        )
+            : null,
+        border: OutlineInputBorder(),
+      ),
+      controller: _dateGetTimeController,
     );
   }
 
@@ -351,21 +437,16 @@ class _JournalEditViewState extends State<JournalEditView> {
 
       if (pickedTime != null) {
         setState(() {
-          selectedDateTime = DateTime(
+          tempThrowDateTime = DateTime(
             pickedDate.year,
             pickedDate.month,
             pickedDate.day,
             pickedTime.hour,
             pickedTime.minute,
           );
-          netRecordProvider.setThrowTime(selectedDateTime!);
+          _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempThrowDateTime!);
           // netRecordProvider.updateRecord(widget.recordId,
           //     throwTime: selectedDateTime ?? DateTime.now());
-          final userId =
-              Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-          Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
-              widget.recordId, userId,
-              throwTime: selectedDateTime ?? DateTime.now());
         });
       }
     }
@@ -393,21 +474,18 @@ class _JournalEditViewState extends State<JournalEditView> {
 
       if (pickedTime != null) {
         setState(() {
-          selectedDateTime = DateTime(
+          tempGetDateTime = DateTime(
             pickedDate.year,
             pickedDate.month,
             pickedDate.day,
             pickedTime.hour,
             pickedTime.minute,
           );
-          netRecordProvider.setThrowTime(selectedDateTime!);
+          _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime!);
+
           // netRecordProvider.updateRecord(widget.recordId,
           //     throwTime: selectedDateTime ?? DateTime.now());
-          final userId =
-              Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-          Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
-              widget.recordId, userId,
-              getTime: selectedDateTime ?? DateTime.now());
+
         });
       }
     }
