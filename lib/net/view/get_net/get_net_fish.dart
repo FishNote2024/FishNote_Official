@@ -152,11 +152,13 @@ class _GetNetFishState extends State<GetNetFish> {
                                 style: header3R(primaryBlue500)),
                             onTap: () async {
                               // GetNetAddFish로 이동해서 목록을 수정한 후 돌아오도록
+                              print("---> speciesList: $speciesList");
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      GetNetAddFish(recordId: widget.recordId),
+                                  builder: (context) => GetNetAddFish(
+                                      recordId: widget.recordId,
+                                      initialSelectedSpecies: speciesList),
                                 ),
                               );
 

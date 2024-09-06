@@ -10,8 +10,12 @@ import 'package:provider/provider.dart';
 
 class GetNetAddFish extends StatefulWidget {
   final String recordId;
-  const GetNetAddFish({super.key, required this.recordId});
-
+  final Set<String> initialSelectedSpecies;
+  const GetNetAddFish({
+    super.key,
+    required this.recordId,
+    required this.initialSelectedSpecies, // 추가
+  });
   @override
   State<GetNetAddFish> createState() => _GetNetAddFishState();
 }
@@ -28,9 +32,21 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    // 현재 선택된 어종을 초기화
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // 이전 화면에서 전달된 어종만을 사용하도록 초기화
+      selectedList = widget.initialSelectedSpecies.toSet();
+      // 선택 목록이 업데이트되면 UI가 반영되도록 상태를 업데이트합니다.
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final netRecordProvider = Provider.of<NetRecordProvider>(context);
-    selectedList = netRecordProvider.species;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: backgroundBlue,
