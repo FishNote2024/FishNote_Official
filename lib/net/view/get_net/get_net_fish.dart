@@ -21,20 +21,30 @@ class _GetNetFishState extends State<GetNetFish> {
   final TextEditingController _controller = TextEditingController();
   List<String> selectedList = [];
   Set<String> speciesList = {};
+  bool isFirstLoad = true;
 
   @override
   void initState() {
     super.initState();
-    // 최초 로딩 시에만 UserInformationProvider에서 species를 가져와 NetRecordProvider에 설정
+    // 최초 로딩 시에만 UserInformationProvider에서 species를 가져와서 NetRecordProvider에 설정
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userInformationProvider =
-          Provider.of<UserInformationProvider>(context, listen: false);
-      final netRecordProvider =
-          Provider.of<NetRecordProvider>(context, listen: false);
+      // isFirstLoad == true일 때만 실행
+      if (isFirstLoad) {
+        final userInformationProvider =
+            Provider.of<UserInformationProvider>(context, listen: false);
+        final netRecordProvider =
+            Provider.of<NetRecordProvider>(context, listen: false);
 
-      // 초기 데이터 복사
-      speciesList = userInformationProvider.species.toSet();
-      netRecordProvider.setSpecies(speciesList);
+        // 초기 데이터 복사
+        speciesList = userInformationProvider.species.toSet();
+
+        // NetRecordProvider에 species 초기값 설정
+        netRecordProvider.setSpecies(speciesList);
+        isFirstLoad = false;
+      }
+      setState(() {
+        speciesList = speciesList;
+      });
     });
   }
 
@@ -47,10 +57,6 @@ class _GetNetFishState extends State<GetNetFish> {
   @override
   Widget build(BuildContext context) {
     final netRecordProvider = Provider.of<NetRecordProvider>(context);
-
-    // NetRecordProvider에서 업데이트된 species 목록 가져옴
-    speciesList = netRecordProvider.species;
-
     return Scaffold(
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -153,6 +159,7 @@ class _GetNetFishState extends State<GetNetFish> {
                                       GetNetAddFish(recordId: widget.recordId),
                                 ),
                               );
+
                               // 돌아왔을 때 NetRecordProvider에서 최신 목록 가져오기
                               setState(() {
                                 speciesList = netRecordProvider.species;
