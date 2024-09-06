@@ -26,13 +26,18 @@ class _JournalViewState extends State<JournalView> {
   DateTime? _selectedDay;
   final PanelController _panelController = PanelController();
   DateTime? _selectedPanelDate;
+  final firstDay = DateTime.utc(2020, 12, 31);
+  final lastDay = DateTime.utc(2031, 1, 1);
 
 
   bool hasEventsOnDay(DateTime day) {
     // _netRecords가 초기화되지 않았을 경우 빈 리스트를 반환하도록 방어 코드 추가
     if (_netRecords.isEmpty) return false;
-    return _netRecords.any((event) => isSameDay(event.throwDate, day));
+
+    return _netRecords.any((event) =>
+    isSameDay(event.throwDate, day));
   }
+
 
   @override
   void initState() {
@@ -43,9 +48,22 @@ class _JournalViewState extends State<JournalView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _panelController.hide(); // 앱 시작 시 패널을 숨김
     });
+
+  }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _netRecords = Provider.of<NetRecordProvider>(context).netRecords;
+    _initPanelWithData();
+  }
+  void _initPanelWithData() {
+    List<NetRecord> initialEvents = _getEventsForDay(_selectedDay??DateTime.now());
+    if (initialEvents.isNotEmpty) {
+      _selectedEvents.value = initialEvents;
+    }
   }
 
-
+// 고쳐보기
   List<NetRecord> _getEventsForDay(DateTime day) {
     return _netRecords.where((event) => isSameDay(event.throwDate, day)).toList();
   }
@@ -88,112 +106,7 @@ class _JournalViewState extends State<JournalView> {
             children: [
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 17),
-                child: TableCalendar<NetRecord>(
-                  firstDay: DateTime.utc(2010, 10, 16),
-                  lastDay: DateTime.utc(2030, 3, 14),
-                  focusedDay: _focusedDay,
-                  selectedDayPredicate: (day) {
-                    return isSameDay(_selectedDay, day);
-                  },
-                  onDaySelected: (selectedDay, focusedDay) {
-                    if (!isSameDay(_selectedDay, selectedDay)) {
-                      setState(() {
-                        _selectedDay = selectedDay;
-                        _focusedDay = focusedDay;
-                        _selectedPanelDate = selectedDay;
-                      });
-
-                      _selectedEvents.value = _getEventsForDay(selectedDay);
-                      _panelController.show(); // 패널 열기
-                    } else {
-                      if (!_panelController.isPanelShown) {
-                        _panelController.show();
-                      } else {
-                        _panelController.hide();
-                      }
-                    }
-                  },
-                  calendarFormat: CalendarFormat.month,
-                  calendarBuilders: CalendarBuilders(
-                    markerBuilder: (context, day, netRecord) {
-                      if (netRecord.isNotEmpty) {
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: netRecord.expand((event) {
-                            // event에 대해 마커 리스트 생성
-                            List<Widget> markers = [];
-
-                            // throwDate에 대한 마커 추가
-                            if (isSameDay(event.throwDate, day)) {
-                              markers.add(
-                                Container(
-                                  margin: const EdgeInsets.only(top: 40, right: 2),
-                                  child: const Icon(
-                                    size: 5,
-                                    Icons.circle,
-                                    color: primaryBlue500,
-                                  ),
-                                ),
-                              );
-                            }
-                            // getDate에 대한 마커 추가
-                            if (event.isGet) {
-                              if (isSameDay(event.getDate, day)) {
-                                markers.add(
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 40, right: 2),
-                                    child: const Icon(
-                                      size: 5,
-                                      Icons.circle,
-                                      color: primaryYellow700,
-                                    ),
-                                  ),
-                                );
-                              }
-                            }
-                            return markers;
-                          }).toList(),
-                        );
-                      }
-                      return SizedBox.shrink(); // 조건에 맞지 않으면 빈 공간 반환
-                    },
-                  ),
-                  daysOfWeekStyle: DaysOfWeekStyle(
-                    weekdayStyle: body2(primaryBlue400),
-                    weekendStyle: body2(primaryBlue400),
-                    dowTextFormatter: (date, locale) {
-                      return ['일', '월', '화', '수', '목', '금', '토'][date.weekday % 7];
-                    },
-                  ),
-                  headerStyle: HeaderStyle(
-                    titleCentered: true,
-                    formatButtonVisible: false,
-                    titleTextFormatter: (date, locale) =>
-                        DateFormat('yyyy.MM', locale).format(date),
-                    headerPadding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
-                    leftChevronIcon: const Icon(Icons.arrow_back_ios, size: 15.0),
-                    rightChevronIcon: const Icon(Icons.arrow_forward_ios, size: 15.0),
-                  ),
-                  onPageChanged: (focusedDay) {
-                    _focusedDay = focusedDay;
-                  },
-                  daysOfWeekHeight: 25,
-                  eventLoader: _getEventsForDay,
-                  calendarStyle: CalendarStyle(
-                    outsideTextStyle: body2(gray3),
-                    defaultTextStyle: body2(gray8),
-                    todayTextStyle: body2(Colors.white),
-                    selectedTextStyle: body2(gray8),
-                    todayDecoration: const BoxDecoration(
-                      color: primaryBlue500,
-                      shape: BoxShape.circle,
-                    ),
-                    selectedDecoration: const BoxDecoration(
-                      color: primaryYellow500,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                ),
+                child: _buildTableCalendar(),
               ),
               const SizedBox(height: 8.0),
             ],
@@ -233,7 +146,16 @@ class _JournalViewState extends State<JournalView> {
             color: primaryBlue500,
           )
               : DetailButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => JournalDetailView(
+                    events: _getEventsForDay(_selectedDay!),
+                  ),
+                ),
+              );
+            },
             text: "자세히 보기",
             color: gray3,
           ),
@@ -308,4 +230,217 @@ class _JournalViewState extends State<JournalView> {
       ],
     );
   }
+  Widget _buildTableCalendar() {
+    return Column(
+      children: [
+        Stack(
+          children: [
+            TableCalendar<NetRecord>(
+              firstDay: DateTime.utc(2020, 12, 31),
+              lastDay: DateTime.utc(2030, 1, 1),
+              focusedDay: _focusedDay,
+              calendarFormat: CalendarFormat.month,
+              selectedDayPredicate: (day) {
+                return isSameDay(_selectedDay, day);
+              },
+              // 심화 : 값이 바뀔때마다 로직이 따라올 경우 stream, rxdart
+              onDaySelected: (selectedDay, focusedDay) {  //초기 진입시에 이게 되도록 설정
+                if (!isSameDay(_selectedDay, selectedDay)) { //함수로 뺀 후 // initState에서 설정해주고 난뒤 한번 돌게끔 설정
+                  setState(() {
+                    _selectedDay = selectedDay;
+                    _focusedDay = focusedDay;
+                    _selectedPanelDate = selectedDay;
+                  });
+
+                  _selectedEvents.value = _getEventsForDay(selectedDay);
+                  _panelController.show(); // 패널 열기
+                } else {
+                  if (!_panelController.isPanelShown) {
+                    _panelController.show();
+                  } else {
+                    _panelController.hide();
+                  }
+                }
+              },
+
+              locale: 'ko_KR',
+              headerStyle: HeaderStyle(
+                titleCentered: true,
+                formatButtonVisible: false,
+                titleTextStyle: body1(gray6),
+                headerPadding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
+                leftChevronIcon: const Icon(Icons.arrow_back_ios, size: 15.0),
+                rightChevronIcon: const Icon(Icons.arrow_forward_ios, size: 15.0),
+              ),
+              daysOfWeekStyle: DaysOfWeekStyle(
+                weekdayStyle: body2(primaryBlue400),
+                weekendStyle: body2(primaryBlue400),
+              ),
+              daysOfWeekHeight: 25,
+              calendarStyle: CalendarStyle(
+                outsideTextStyle: body2(gray3),
+                defaultTextStyle: body2(gray8),
+                todayTextStyle: body2(Colors.white),
+                selectedTextStyle: body2(gray8),
+                todayDecoration: const BoxDecoration(
+                  color: primaryBlue500,
+                  shape: BoxShape.circle,
+                ),
+                selectedDecoration: const BoxDecoration(
+                  color: primaryYellow500,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              calendarBuilders: CalendarBuilders(
+                markerBuilder: (context, day, netRecord) {
+                  netRecord = Provider.of<NetRecordProvider>(context).netRecords;
+                  // netRecord 리스트가 비어있지 않고, day가 _focusedDay나 _selectedDay가 아닌 경우 마커 생성
+                  if (netRecord.isNotEmpty &&
+                      !isSameDay(day, _focusedDay) &&
+                      !isSameDay(day, _selectedDay)
+                  // && !isSameDay(day, _today)
+                  ) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: netRecord.expand((event) {
+                        // event에 대해 마커 리스트 생성
+                        List<Widget> markers = [];
+
+                        // isGet이 true인 경우
+                        // throwDate에 대해 primaryBlue500 색상의 마커 추가
+                        if (isSameDay(event.throwDate, day)) {
+                          print(day);
+                          markers.add(
+                            Container(
+                              margin: const EdgeInsets.only(top: 40, right: 2),
+                              child: const Icon(
+                                size: 5,
+                                Icons.circle,
+                                color: primaryBlue500,
+                              ),
+                            ),
+                          );
+                          if (isSameDay(event.getDate, day)) {
+                            markers.add(
+                              Container(
+                                margin: const EdgeInsets.only(top: 40, right: 2),
+                                child: const Icon(
+                                  size: 5,
+                                  Icons.circle,
+                                  color: primaryYellow700,
+                                ),
+                              ),
+                            );
+                          }
+                        }
+
+                        return markers;
+                      }).toList(),
+                    );
+                  }
+                  return const SizedBox.shrink(); // 조건에 맞지 않으면 빈 공간 반환
+                },
+              ),
+            ),
+            Positioned(
+              top: 20,
+              left: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () => _showMonthWeekPicker(context),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      DateFormat.yMMMM('ko_KR').format(_focusedDay),
+                      style: body1(Colors.transparent),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void _showMonthWeekPicker(BuildContext context) {
+    DateTime tempDay = _focusedDay;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: Center(
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          if (DateTime(tempDay.year - 1, tempDay.month, 1).isAfter(firstDay)) {
+                            tempDay = DateTime(tempDay.year - 1, tempDay.month, 1);
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.arrow_back_ios, size: 14)),
+                  const Spacer(),
+                  Text(
+                      DateFormat.y('ko_KR')
+                          .format(tempDay.year == _focusedDay.year ? _focusedDay : tempDay),
+                      style: header4(black)),
+                  const Spacer(),
+                  IconButton(
+                      onPressed: () {
+                        setState(() {
+                          if (DateTime(tempDay.year + 1, tempDay.month, 1).isBefore(lastDay)) {
+                            tempDay = DateTime(tempDay.year + 1, tempDay.month, 1);
+                          }
+                        });
+                      },
+                      icon: const Icon(Icons.arrow_forward_ios, size: 14)),
+                ],
+              ),
+            ),
+            content: SizedBox(
+              height: 220,
+              width: 283,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: GridView.builder(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 3,
+                        childAspectRatio: 1.5,
+                      ),
+                      itemCount: 12,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          onTap: () {
+                            Navigator.pop(context, [tempDay.year, index + 1]);
+                          },
+                          child: Center(child: Text('${index + 1}월', style: body1(gray6))),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+      },
+    ).then((selectedValue) {
+      if (selectedValue != null) {
+        setState(() {
+          _focusedDay = DateTime(selectedValue[0], selectedValue[1], 1);
+        });
+      }
+    });
+  }
+
+
+
 }
+
