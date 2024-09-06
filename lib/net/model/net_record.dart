@@ -306,6 +306,7 @@ class NetRecordProvider with ChangeNotifier {
       print('Failed to delete record from Firestore: $e');
     }
   }
+  // 삭제 코드 사용 법 : await provider.deleteRecord(userId, recordId);
 
   NetRecord? getRecordById(String id) {
     try {
