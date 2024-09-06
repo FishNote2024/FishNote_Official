@@ -136,11 +136,33 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
               padding: const EdgeInsets.only(right: 8.0),
               child: TextButton(
                 onPressed: () {
-                  // revenueEntries에 ''이 있는 경우 저장하지 않음
-                  if (revenueEntries.any(
-                      (entry) => entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
+                  if (revenueEntries.length == 1 &&
+                      expenseEntries.length == 1 &&
+                      revenueEntries[0]['어종'] == '' &&
+                      revenueEntries[0]['위판량'] == '' &&
+                      revenueEntries[0]['위판 수익'] == '' &&
+                      expenseEntries[0]['구분'] == '' &&
+                      expenseEntries[0]['비용'] == '') {
+                    showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
+                    return;
+                  } else if (revenueEntries.length > 1 &&
+                      revenueEntries.any((entry) =>
+                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
                     showSnackBar(context, '위판 정보를 모두 입력해주세요');
                     return;
+                  } else if (expenseEntries.length > 1 &&
+                      expenseEntries.any((entry) => entry['구분'] == '' || entry['비용'] == '')) {
+                    showSnackBar(context, '지출 정보를 모두 입력해주세요');
+                    return;
+                  } else if (revenueEntries.length == 1 &&
+                      revenueEntries[0]['어종'] == '' &&
+                      revenueEntries[0]['위판량'] == '' &&
+                      revenueEntries[0]['위판 수익'] == '') {
+                    revenueEntries.removeAt(0);
+                  } else if (expenseEntries.length == 1 &&
+                      expenseEntries[0]['구분'] == '' &&
+                      expenseEntries[0]['비용'] == '') {
+                    expenseEntries.removeAt(0);
                   }
                   _saveLedger(context);
                 },
@@ -153,7 +175,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
-              children: [_buildRevenue(context), _buildExpense()],
+              children: [_buildRevenue(), _buildExpense()],
             ),
           ),
         ),
@@ -191,7 +213,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
     );
   }
 
-  Widget _buildRevenue(BuildContext context) {
+  Widget _buildRevenue() {
     int totalRevenue = getTotalRevenue(); // 합계 계산
     String formattedTotalRevenue = formatNumber(totalRevenue); // 합계 형식화
 

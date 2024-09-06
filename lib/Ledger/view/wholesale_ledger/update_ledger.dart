@@ -1,4 +1,5 @@
 import 'package:fish_note/favorites/components/alert_dialog.dart';
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
@@ -27,6 +28,9 @@ class UpdateLedgerPage extends StatefulWidget {
 class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
   late List<Map<String, dynamic>> revenueEntries;
   late List<Map<String, dynamic>> expenseEntries;
+  late List<TextEditingController> revenueWeightControllers;
+  late List<TextEditingController> revenuePriceControllers;
+  late List<TextEditingController> expenseControllers;
 
   @override
   void initState() {
@@ -47,6 +51,46 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
         '비용': pay.amount.toString(),
       };
     }).toList();
+
+    // Initialize controllers
+    revenueWeightControllers = List.generate(
+      revenueEntries.length,
+      (index) => TextEditingController(text: revenueEntries[index]['위판량']),
+    );
+    revenuePriceControllers = List.generate(
+      revenueEntries.length,
+      (index) => TextEditingController(text: revenueEntries[index]['위판 수익']),
+    );
+    expenseControllers = List.generate(
+      expenseEntries.length,
+      (index) => TextEditingController(text: expenseEntries[index]['비용']),
+    );
+
+    if (revenueEntries.isEmpty) {
+      revenueEntries.add({'어종': '', '위판량': '', '위판 수익': ''} as Map<String, dynamic>);
+      revenueWeightControllers.add(TextEditingController());
+      revenuePriceControllers.add(TextEditingController());
+    }
+
+    if (expenseEntries.isEmpty) {
+      expenseEntries.add({'구분': '', '비용': ''} as Map<String, dynamic>);
+      expenseControllers.add(TextEditingController());
+    }
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers when no longer needed
+    for (var controller in revenueWeightControllers) {
+      controller.dispose();
+    }
+    for (var controller in revenuePriceControllers) {
+      controller.dispose();
+    }
+    for (var controller in expenseControllers) {
+      controller.dispose();
+    }
+    super.dispose();
   }
 
   void _updateLedger(BuildContext context) {
@@ -134,6 +178,34 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
               padding: const EdgeInsets.only(right: 8.0),
               child: TextButton(
                 onPressed: () {
+                  if (revenueEntries.length == 1 &&
+                      expenseEntries.length == 1 &&
+                      revenueEntries[0]['어종'] == '' &&
+                      revenueEntries[0]['위판량'] == '' &&
+                      revenueEntries[0]['위판 수익'] == '' &&
+                      expenseEntries[0]['구분'] == '' &&
+                      expenseEntries[0]['비용'] == '') {
+                    showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
+                    return;
+                  } else if (revenueEntries.length > 1 &&
+                      revenueEntries.any((entry) =>
+                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
+                    showSnackBar(context, '위판 정보를 모두 입력해주세요');
+                    return;
+                  } else if (expenseEntries.length > 1 &&
+                      expenseEntries.any((entry) => entry['구분'] == '' || entry['비용'] == '')) {
+                    showSnackBar(context, '지출 정보를 모두 입력해주세요');
+                    return;
+                  } else if (revenueEntries.length == 1 &&
+                      revenueEntries[0]['어종'] == '' &&
+                      revenueEntries[0]['위판량'] == '' &&
+                      revenueEntries[0]['위판 수익'] == '') {
+                    revenueEntries.removeAt(0);
+                  } else if (expenseEntries.length == 1 &&
+                      expenseEntries[0]['구분'] == '' &&
+                      expenseEntries[0]['비용'] == '') {
+                    expenseEntries.removeAt(0);
+                  }
                   _updateLedger(context);
                 },
                 child: Text("저장", style: body2(primaryYellow900)),
@@ -145,7 +217,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
-              children: [_buildRevenue(context), _buildExpense()],
+              children: [_buildRevenue(), _buildExpense()],
             ),
           ),
         ),
@@ -153,7 +225,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
     );
   }
 
-  Widget _buildRevenue(BuildContext context) {
+  Widget _buildRevenue() {
     int totalRevenue = getTotalRevenue();
 
     return Column(
@@ -293,9 +365,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
-                  controller: TextEditingController(
-                    text: revenueEntries[index]['위판량'],
-                  ),
+                  controller: revenueWeightControllers[index],
                 ),
               ),
               const SizedBox(width: 8),
@@ -321,9 +391,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
-                  controller: TextEditingController(
-                    text: revenueEntries[index]['위판 수익'],
-                  ),
+                  controller: revenuePriceControllers[index],
                 ),
               ),
               const SizedBox(width: 8),
@@ -526,9 +594,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
-                  controller: TextEditingController(
-                    text: expenseEntries[index]['비용'],
-                  ),
+                  controller: expenseControllers[index],
                 ),
               ),
               const SizedBox(width: 8),
@@ -619,7 +685,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
         '어종': '',
         '위판량': '',
         '위판 수익': '',
-      });
+      } as Map<String, dynamic>);
     });
   }
 
@@ -634,7 +700,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       expenseEntries.add({
         '구분': '',
         '비용': '',
-      });
+      } as Map<String, dynamic>);
     });
   }
 
