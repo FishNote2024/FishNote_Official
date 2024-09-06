@@ -25,7 +25,10 @@ class _JournalEditViewState extends State<JournalEditView> {
   String memo = "";
   DateTime? selectedDateTime;
   DateTime? originalDateTime; // Store the original date
+  DateTime? tempThrowDateTime;
+  DateTime? tempGetDateTime;
   TextEditingController _dateTimeController = TextEditingController();
+  TextEditingController _dateGetTimeController = TextEditingController();
   late NetRecordProvider netRecordProvider;
   late UserInformationProvider userInformationProvider;
   late Set<String> species;
@@ -46,8 +49,10 @@ class _JournalEditViewState extends State<JournalEditView> {
         widget.events.first.throwDate; // Initialize the original date
     selectedDateTime =
         originalDateTime; // Initially, selected date is the original date
-    _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-        .format(originalDateTime!);
+    tempThrowDateTime = originalDateTime;
+    tempGetDateTime = widget.events.first.getDate;
+    _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime??DateTime.now());
+    _dateGetTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime??DateTime.now());
     species ={...netRecordProvider.species, ...userInformationProvider.species};
     memo = widget.events.first.memo ?? '';
   }
@@ -76,10 +81,13 @@ class _JournalEditViewState extends State<JournalEditView> {
           TextButton(
             onPressed: () {
               setState(() {
-                final userId =
-                    Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
+                final userId = Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
                 Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
-                    widget.recordId, userId, memo: memo);
+                  widget.recordId, userId,
+                  throwTime: tempThrowDateTime, // 투망 시간 업데이트
+                  getTime: tempGetDateTime, // 양망 시간 업데이트
+                  memo: memo,
+                );
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -117,10 +125,8 @@ class _JournalEditViewState extends State<JournalEditView> {
           children: [
             _buildHeader(event),
             const SizedBox(height: 8),
-            _buildEditableTextField(
+            _buildEditableDateField(
               label: '투망시간',
-              initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                  .format(event.throwDate),
               icon: Icons.calendar_today,
               onIconPressed: () => _handleCalendarIconPressed(event.throwDate),
             ),
@@ -163,10 +169,8 @@ class _JournalEditViewState extends State<JournalEditView> {
               const SizedBox(height: 16),
               _buildSectionTitle('양망기록'),
               const SizedBox(height: 8),
-              _buildEditableTextField(
+              _buildEditableGetField(
                 label: '양망시간',
-                initialValue: DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-                    .format(event.getDate),
                 icon: Icons.calendar_today,
                 onIconPressed: () => _handleCalendarIconPressedGet(event.getDate),
               ),
@@ -216,6 +220,46 @@ class _JournalEditViewState extends State<JournalEditView> {
         border: OutlineInputBorder(),
       ),
       controller: TextEditingController(text: initialValue),
+    );
+  }
+
+  Widget _buildEditableDateField({
+    required String label,
+    IconData? icon,
+    VoidCallback? onIconPressed,
+  }) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        suffixIcon: icon != null
+            ? IconButton(
+          icon: Icon(icon),
+          onPressed: onIconPressed,
+        )
+            : null,
+        border: OutlineInputBorder(),
+      ),
+      controller: _dateTimeController,
+    );
+  }
+
+  Widget _buildEditableGetField({
+    required String label,
+    IconData? icon,
+    VoidCallback? onIconPressed,
+  }) {
+    return TextField(
+      decoration: InputDecoration(
+        labelText: label,
+        suffixIcon: icon != null
+            ? IconButton(
+          icon: Icon(icon),
+          onPressed: onIconPressed,
+        )
+            : null,
+        border: OutlineInputBorder(),
+      ),
+      controller: _dateGetTimeController,
     );
   }
 
@@ -351,21 +395,16 @@ class _JournalEditViewState extends State<JournalEditView> {
 
       if (pickedTime != null) {
         setState(() {
-          selectedDateTime = DateTime(
+          tempThrowDateTime = DateTime(
             pickedDate.year,
             pickedDate.month,
             pickedDate.day,
             pickedTime.hour,
             pickedTime.minute,
           );
-          netRecordProvider.setThrowTime(selectedDateTime!);
+          _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempThrowDateTime!);
           // netRecordProvider.updateRecord(widget.recordId,
           //     throwTime: selectedDateTime ?? DateTime.now());
-          final userId =
-              Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-          Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
-              widget.recordId, userId,
-              throwTime: selectedDateTime ?? DateTime.now());
         });
       }
     }
@@ -393,21 +432,18 @@ class _JournalEditViewState extends State<JournalEditView> {
 
       if (pickedTime != null) {
         setState(() {
-          selectedDateTime = DateTime(
+          tempGetDateTime = DateTime(
             pickedDate.year,
             pickedDate.month,
             pickedDate.day,
             pickedTime.hour,
             pickedTime.minute,
           );
-          netRecordProvider.setThrowTime(selectedDateTime!);
+          _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime!);
+
           // netRecordProvider.updateRecord(widget.recordId,
           //     throwTime: selectedDateTime ?? DateTime.now());
-          final userId =
-              Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-          Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
-              widget.recordId, userId,
-              getTime: selectedDateTime ?? DateTime.now());
+
         });
       }
     }
