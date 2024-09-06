@@ -72,7 +72,11 @@ class NetRecordProvider with ChangeNotifier {
 
     try {
       // "journal" 컬렉션의 "record" 문서에 접근
-      final journalRef = db.collection("users").doc(userId).collection("journal").doc("record");
+      final journalRef = db
+          .collection("users")
+          .doc(userId)
+          .collection("journal")
+          .doc("record");
       // 각 날짜별로 하위 컬렉션 접근
       final datesSnapshot = await journalRef.collection("2024-09-02").get();
 
@@ -84,8 +88,10 @@ class NetRecordProvider with ChangeNotifier {
           _netRecords.add(
             NetRecord(
               id: data['id'] ?? 0,
-              throwDate: (data['throwDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
-              getDate: (data['getDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              throwDate:
+                  (data['throwDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+              getDate:
+                  (data['getDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
               locationName: data['locationName'] ?? '',
               daysSince: data['daysSince'] ?? 0,
               isGet: data['isGet'] ?? false,
@@ -94,7 +100,8 @@ class NetRecordProvider with ChangeNotifier {
               amount: List<double>.from(data['amount'] ?? <double>[]),
               memo: data['memo'] ?? '',
               wave: data["wave"] ?? '',
-              fishData: Map<String, double>.from(data['fishData'] ?? <String, double>{}),
+              fishData: Map<String, double>.from(
+                  data['fishData'] ?? <String, double>{}),
             ),
           );
         }
@@ -107,8 +114,10 @@ class NetRecordProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _addRecordToFirestore(NetRecord record, String userId, String recordId) async {
-    String throwDateFormatted = DateFormat('yyyy-MM-dd').format(record.throwDate);
+  Future<void> _addRecordToFirestore(
+      NetRecord record, String userId, String recordId) async {
+    String throwDateFormatted =
+        DateFormat('yyyy-MM-dd').format(record.throwDate);
     final docRef = db
         .collection("users")
         .doc(userId)
@@ -189,6 +198,7 @@ class NetRecordProvider with ChangeNotifier {
     _addRecordToFirestore(newRecord, userId, newId);
   }
 
+  // 기록 업데이트
   Future<void> updateRecord(String id, String userId,
       {Set<String>? species,
       List<double>? amount,
@@ -219,7 +229,8 @@ class NetRecordProvider with ChangeNotifier {
       print("-> id = $id");
       print("-> userId = $userId");
       try {
-        String throwDateFormatted = DateFormat('yyyy-MM-dd').format(existingRecord.throwDate);
+        String throwDateFormatted =
+            DateFormat('yyyy-MM-dd').format(existingRecord.throwDate);
         final docRef = db
             .collection("users")
             .doc(userId)
@@ -230,7 +241,8 @@ class NetRecordProvider with ChangeNotifier {
 
         await docRef.update({
           if (isGet != null) 'isGet': isGet,
-          if (species != null && species.isNotEmpty) 'species': species.toList(),
+          if (species != null && species.isNotEmpty)
+            'species': species.toList(),
           if (amount != null && amount.isNotEmpty) 'amount': amount,
           if (memo != null) 'memo': memo,
           if (throwTime != null) 'throwDate': throwTime,
@@ -248,6 +260,50 @@ class NetRecordProvider with ChangeNotifier {
       } catch (e) {
         print('Failed to update record in Firestore: $e');
       }
+    }
+  }
+
+  // 기록 삭제
+  Future<void> deleteRecord(String userId, String recordId) async {
+    // 로컬 상태에서 레코드 제거
+    removeRecord(recordId);
+
+    // Firestore에서 레코드 제거
+    await deleteRecordFromFirestore(userId, recordId);
+  }
+
+  void removeRecord(String id) {
+    final recordIndex = _netRecords.indexWhere((record) => record.id == id);
+    if (recordIndex != -1) {
+      _netRecords.removeAt(recordIndex);
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteRecordFromFirestore(String userId, String recordId) async {
+    try {
+      final record = getRecordById(recordId);
+      if (record == null) {
+        print('Record not found locally.');
+        return;
+      }
+
+      // 로컬에서 찾은 throwDate를 사용하여 날짜를 포맷
+      String throwDateFormatted =
+          DateFormat('yyyy-MM-dd').format(record.throwDate);
+
+      final docRef = db
+          .collection("users")
+          .doc(userId)
+          .collection("journal")
+          .doc("record")
+          .collection(throwDateFormatted)
+          .doc(recordId);
+
+      await docRef.delete();
+      print('Record deleted from Firestore successfully!');
+    } catch (e) {
+      print('Failed to delete record from Firestore: $e');
     }
   }
 
