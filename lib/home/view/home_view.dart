@@ -96,6 +96,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: backgroundBlue,
+          surfaceTintColor: backgroundBlue,
           toolbarHeight: 80,
           leadingWidth: 80,
           leading: Padding(
