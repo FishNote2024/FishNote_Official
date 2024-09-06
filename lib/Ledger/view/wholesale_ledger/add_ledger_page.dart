@@ -114,40 +114,69 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   Widget build(BuildContext context) {
     String formattedDate = DateFormat.yMMMMd('ko_KR').format(widget.selectedDate);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: backgroundBlue,
-        centerTitle: true,
-        title: Text(formattedDate, style: body2(textBlack)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
-          onPressed: () {
-            _showExitConfirmationDialog(context);
-          },
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: TextButton(
-              onPressed: () {
-                // revenueEntries에 ''이 있는 경우 저장하지 않음
-                if (revenueEntries.any(
-                    (entry) => entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
-                  showSnackBar(context, '위판 정보를 모두 입력해주세요');
-                  return;
-                }
-                _saveLedger(context);
-              },
-              child: Text("저장", style: body2(primaryYellow900)),
-            ),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        _showExitConfirmationDialog(context);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: backgroundBlue,
+          centerTitle: true,
+          title: Text(formattedDate, style: body2(textBlack)),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
+            onPressed: () {
+              _showExitConfirmationDialog(context);
+            },
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: [_buildRevenue(context), _buildExpense()],
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: TextButton(
+                onPressed: () {
+                  if (revenueEntries.length == 1 &&
+                      expenseEntries.length == 1 &&
+                      revenueEntries[0]['어종'] == '' &&
+                      revenueEntries[0]['위판량'] == '' &&
+                      revenueEntries[0]['위판 수익'] == '' &&
+                      expenseEntries[0]['구분'] == '' &&
+                      expenseEntries[0]['비용'] == '') {
+                    showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
+                    return;
+                  } else if (revenueEntries.length > 1 &&
+                      revenueEntries.any((entry) =>
+                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
+                    showSnackBar(context, '위판 정보를 모두 입력해주세요');
+                    return;
+                  } else if (expenseEntries.length > 1 &&
+                      expenseEntries.any((entry) => entry['구분'] == '' || entry['비용'] == '')) {
+                    showSnackBar(context, '지출 정보를 모두 입력해주세요');
+                    return;
+                  } else if (revenueEntries.length == 1 &&
+                      revenueEntries[0]['어종'] == '' &&
+                      revenueEntries[0]['위판량'] == '' &&
+                      revenueEntries[0]['위판 수익'] == '') {
+                    revenueEntries.removeAt(0);
+                  } else if (expenseEntries.length == 1 &&
+                      expenseEntries[0]['구분'] == '' &&
+                      expenseEntries[0]['비용'] == '') {
+                    expenseEntries.removeAt(0);
+                  }
+                  _saveLedger(context);
+                },
+                child: Text("저장", style: body2(primaryYellow900)),
+              ),
+            ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              children: [_buildRevenue(), _buildExpense()],
+            ),
           ),
         ),
       ),
@@ -184,7 +213,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
     );
   }
 
-  Widget _buildRevenue(BuildContext context) {
+  Widget _buildRevenue() {
     int totalRevenue = getTotalRevenue(); // 합계 계산
     String formattedTotalRevenue = formatNumber(totalRevenue); // 합계 형식화
 

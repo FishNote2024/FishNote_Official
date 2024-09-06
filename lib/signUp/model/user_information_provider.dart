@@ -154,7 +154,7 @@ class UserInformationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void withDrawal(String id) async {
+  Future<void> withDrawal(String id) async {
     _ageRange = '';
     _yearExperience = '';
     _affiliation = '';

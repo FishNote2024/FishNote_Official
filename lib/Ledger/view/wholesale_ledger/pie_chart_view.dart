@@ -107,6 +107,7 @@ class _PieChartViewState extends State<PieChartView> {
 
     return data.map((ChartData data) {
       return PieChartSectionData(
+        titlePositionPercentageOffset: 0.8,
         color: data.color,
         value: data.value,
         title: widget.value == 0

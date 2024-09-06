@@ -1,6 +1,8 @@
+import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/view/kakao_login.dart';
 import 'package:fish_note/login/view/main_view_model.dart';
 import 'package:fish_note/myPage/components/bottom_button.dart';
+import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -21,10 +23,14 @@ class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
 
   Future<void> _withdrawal() async {
     final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    final ledgerProvider = Provider.of<LedgerProvider>(context, listen: false);
+    final netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String id = prefs.getString('uid')!;
     await viewModel.logout();
-    userInformationProvider.withDrawal(id);
+    await ledgerProvider.withDrawal(id);
+    await netRecordProvider.withDrawal(id);
+    await userInformationProvider.withDrawal(id);
     await prefs.clear();
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
