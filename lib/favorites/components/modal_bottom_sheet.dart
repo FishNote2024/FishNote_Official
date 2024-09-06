@@ -69,13 +69,29 @@ void showFavoriteBottomSheet(
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16.0),
-            Expanded(
-              child: ListView.separated(
-                itemCount: favoriteList.length,
-                itemBuilder: (context, index) => favoriteList[index],
-                separatorBuilder: (context, index) => const Divider(color: gray2),
-              ),
-            ),
+            favoriteList.isEmpty
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 52),
+                      Center(
+                        child: Column(children: [
+                          Image.asset('assets/icons/ledgerIcon.png', width: 130),
+                          Text("즐겨찾는 위치가 아직 없습니다.\n위치를 선택하여 즐겨찾기로 등록해주세요",
+                              style: header4(), textAlign: TextAlign.center),
+                        ]),
+                      ),
+                      const SizedBox(height: 70),
+                    ],
+                  )
+                : Expanded(
+                    child: ListView.separated(
+                      itemCount: favoriteList.length,
+                      itemBuilder: (context, index) => favoriteList[index],
+                      separatorBuilder: (context, index) => const Divider(color: gray2),
+                    ),
+                  ),
           ],
         ),
       );

@@ -94,14 +94,6 @@ class _LineChartViewState extends State<LineChartView> {
                   strokeWidth: 1,
                 );
               }),
-
-              // [
-              //   VerticalLine(x: 0, color: gray1, strokeWidth: 1),
-              //   VerticalLine(x: 1, color: gray1, strokeWidth: 1),
-              //   VerticalLine(x: 2, color: gray1, strokeWidth: 1),
-              //   VerticalLine(x: 3, color: gray1, strokeWidth: 1),
-              //   VerticalLine(x: 4, color: gray1, strokeWidth: 1),
-              // ],
             ),
             borderData: FlBorderData(show: false),
             lineBarsData: [
@@ -109,14 +101,6 @@ class _LineChartViewState extends State<LineChartView> {
                 spots: List.generate(values.length, (index) {
                   return FlSpot(index.toDouble(), values[index]);
                 }),
-
-                // [
-                //   const FlSpot(0, 0),
-                //   const FlSpot(1, 2.4),
-                //   const FlSpot(2, 1),
-                //   const FlSpot(3, 3),
-                //   const FlSpot(4, 2),
-                // ],
                 color: primaryBlue500,
                 barWidth: 1,
                 isStrokeCapRound: true,
