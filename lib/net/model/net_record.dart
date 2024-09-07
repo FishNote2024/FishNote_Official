@@ -120,7 +120,7 @@ class NetRecordProvider with ChangeNotifier {
 
     try {
       await docRef.set({
-        'id': recordId,
+        'id': docRef.id,
         'throwDate': record.throwDate,
         'getDate': record.getDate,
         'locationName': record.locationName,
@@ -167,10 +167,15 @@ class NetRecordProvider with ChangeNotifier {
     DateTime? getNetTime,
     List<double>? amount,
     required String userId,
-  }) {
-    final newId = uuid.v4();
+  }) async {
+    final db = FirebaseFirestore.instance;
+
+    // 새로운 문서 참조를 생성하여 자동 생성된 ID를 사용
+    final docRef =
+        db.collection("users").doc(userId).collection("journal").doc();
+
     final newRecord = NetRecord(
-      id: newId,
+      id: docRef.id, // 자동 생성된 문서 ID 사용
       throwDate: throwTime,
       location: location,
       getDate: getNetTime ?? DateTime.now(),
@@ -183,12 +188,31 @@ class NetRecordProvider with ChangeNotifier {
       wave: wave ?? '',
     );
 
-    // 로컬 상태에 추가
-    _netRecords.add(newRecord);
-    notifyListeners();
+    try {
+      // Firestore에 새로운 문서 추가
+      await docRef.set({
+        'id': docRef.id, // 자동 생성된 문서 ID를 저장
+        'throwDate': newRecord.throwDate,
+        'getDate': newRecord.getDate,
+        'locationName': newRecord.locationName,
+        'daysSince': newRecord.daysSince,
+        'isGet': newRecord.isGet,
+        'location': newRecord.location,
+        'species': newRecord.species.toList(),
+        'amount': newRecord.amount,
+        'memo': newRecord.memo,
+        'wave': newRecord.wave,
+        'fishData': newRecord.fishData,
+      });
 
-    // Firestore에 추가
-    _addRecordToFirestore(newRecord, userId, newId);
+      // 로컬 상태에 추가
+      _netRecords.add(newRecord);
+      notifyListeners();
+
+      print('Record added to Firestore with ID: ${docRef.id}');
+    } catch (e) {
+      print('Failed to add record to Firestore: $e');
+    }
   }
 
   // 기록 업데이트
@@ -263,6 +287,7 @@ class NetRecordProvider with ChangeNotifier {
 
   // 기록 삭제
   Future<void> deleteRecord(String userId, String recordId) async {
+    print("받아온 recordId : $recordId");
     // 로컬 상태에서 레코드 제거
     removeRecord(recordId);
 
@@ -278,35 +303,35 @@ class NetRecordProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteRecordFromFirestore(String id, String userId) async {
-    // Firestore 인스턴스 초기화
+  Future<void> deleteRecordFromFirestore(
+      String userId, String targetDocumentId) async {
     final db = FirebaseFirestore.instance;
 
-    // 로컬 리스트에서 해당 레코드의 인덱스를 찾음
-    final recordIndex = _netRecords.indexWhere((record) => record.id == id);
+    try {
+      // 'journal' 컬렉션의 모든 문서를 가져옴
+      final journalCollection =
+          db.collection("users").doc(userId).collection("journal");
+      final journalSnapshot = await journalCollection.get();
 
-    if (recordIndex != -1) {
-      try {
-        // Firestore 문서 참조
-        final docRef = db
-            .collection("users")
-            .doc(userId)
-            .collection("journal")
-            .doc(id); // 자동 생성된 ID 사용
+      // 각 문서의 ID를 순회
+      for (var journalDoc in journalSnapshot.docs) {
+        final documentId = journalDoc.id;
 
-        // Firestore에서 문서 삭제
-        await docRef.delete();
+        // 문서 ID를 로그에 출력
+        print("Found document ID: $documentId");
 
-        // 로컬 리스트에서 레코드 삭제
-        _netRecords.removeAt(recordIndex);
-        notifyListeners();
-
-        print("Document with ID $id deleted successfully from Firestore.");
-      } catch (e) {
-        print('Failed to delete record from Firestore: $e');
+        // 특정 문서 ID와 일치하는 문서를 찾고 삭제
+        if (documentId == targetDocumentId) {
+          await journalDoc.reference.delete();
+          print("Document with ID $targetDocumentId deleted successfully.");
+          return; // 삭제 후 함수 종료
+        }
       }
-    } else {
-      print('Record with ID $id not found in local records.');
+
+      print(
+          'Document with ID $targetDocumentId not found in "journal" collection.');
+    } catch (e) {
+      print('Failed to delete document from Firestore: $e');
     }
   }
 
