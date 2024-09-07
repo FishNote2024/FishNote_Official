@@ -71,23 +71,22 @@ class NetRecordProvider with ChangeNotifier {
     final db = FirebaseFirestore.instance;
 
     try {
-      // "journal" 컬렉션의 "record" 문서에 접근
-      final journalRef = db
-          .collection("users")
-          .doc(userId)
-          .collection("journal")
-          .doc("record");
-      // 각 날짜별로 하위 컬렉션 접근
-      final datesSnapshot = await journalRef.collection("2024-09-02").get();
+      // "journal" 컬렉션의 모든 문서를 가져옴
+      final journalRef =
+          db.collection("users").doc(userId).collection("journal");
 
-      if (datesSnapshot.docs.isNotEmpty) {
-        for (var dateDoc in datesSnapshot.docs) {
-          final data = dateDoc.data();
+      // Firestore에서 "journal" 컬렉션의 모든 문서 가져오기
+      final querySnapshot = await journalRef.get();
+
+      // 문서가 존재할 경우 처리
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var docSnapshot in querySnapshot.docs) {
+          final data = docSnapshot.data();
 
           // 각 필드에 대해 null 체크 추가하기 (null이면 기본값으로 설정)
           _netRecords.add(
             NetRecord(
-              id: data['id'] ?? 0,
+              id: docSnapshot.id, // 문서의 ID를 사용
               throwDate:
                   (data['throwDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
               getDate:
@@ -116,15 +115,8 @@ class NetRecordProvider with ChangeNotifier {
 
   Future<void> _addRecordToFirestore(
       NetRecord record, String userId, String recordId) async {
-    String throwDateFormatted =
-        DateFormat('yyyy-MM-dd').format(record.throwDate);
-    final docRef = db
-        .collection("users")
-        .doc(userId)
-        .collection("journal")
-        .doc("record")
-        .collection(throwDateFormatted)
-        .doc(recordId); // Firestore에 UUID로 생성한 ID를 사용
+    final docRef =
+        db.collection("users").doc(userId).collection("journal").doc();
 
     try {
       await docRef.set({
@@ -142,6 +134,7 @@ class NetRecordProvider with ChangeNotifier {
         'fishData': record.fishData,
       });
 
+      // 로컬 상태 업데이트
       _netRecords[_netRecords.indexOf(record)] = NetRecord(
         id: recordId,
         throwDate: record.throwDate,
@@ -208,14 +201,16 @@ class NetRecordProvider with ChangeNotifier {
       List<double>? location,
       DateTime? throwTime,
       DateTime? getTime}) async {
+    // 로컬 리스트에서 해당 레코드의 인덱스를 찾음
     final recordIndex = _netRecords.indexWhere((record) => record.id == id);
     if (recordIndex != -1) {
       final existingRecord = _netRecords[recordIndex];
 
+      // 로컬 레코드 업데이트
       _netRecords[recordIndex] = NetRecord(
         id: existingRecord.id,
-        locationName: existingRecord.locationName,
-        location: existingRecord.location,
+        locationName: locationName ?? existingRecord.locationName,
+        location: location ?? existingRecord.location,
         throwDate: throwTime ?? existingRecord.throwDate,
         getDate: getTime ?? existingRecord.getDate,
         daysSince: existingRecord.daysSince,
@@ -226,19 +221,20 @@ class NetRecordProvider with ChangeNotifier {
         fishData: existingRecord.fishData,
       );
       notifyListeners();
+
       print("-> id = $id");
       print("-> userId = $userId");
+
       try {
-        String throwDateFormatted =
-            DateFormat('yyyy-MM-dd').format(existingRecord.throwDate);
+        // Firestore 문서 참조
+        final db = FirebaseFirestore.instance;
         final docRef = db
             .collection("users")
             .doc(userId)
             .collection("journal")
-            .doc("record")
-            .collection(throwDateFormatted)
-            .doc(id);
+            .doc(id); // 자동 생성된 ID 사용
 
+        // Firestore에서 문서 업데이트
         await docRef.update({
           if (isGet != null) 'isGet': isGet,
           if (species != null && species.isNotEmpty)
@@ -247,19 +243,21 @@ class NetRecordProvider with ChangeNotifier {
           if (memo != null) 'memo': memo,
           if (throwTime != null) 'throwDate': throwTime,
           if (getTime != null) 'getDate': getTime,
+          if (locationName != null) 'locationName': locationName,
+          if (location != null) 'location': location,
         });
-        print("Document path: ${docRef.path}");
 
-        print("--> isget = $isGet");
-        // update에서 잘 되는지 확인 중
+        print("Document path: ${docRef.path}");
+        print("--> isGet = $isGet");
         print(
             "throwTime= $throwTime, getTime= $getTime, locationName= $locationName, location= $location");
-        // 바뀐 것 확인한 것들
-        print("species=  $species, amount= $amount, memo= $memo, ");
+        print("species=  $species, amount= $amount, memo= $memo");
         print('Record updated in Firestore successfully!');
       } catch (e) {
         print('Failed to update record in Firestore: $e');
       }
+    } else {
+      print('Record with ID $id not found in local records.');
     }
   }
 
@@ -280,32 +278,38 @@ class NetRecordProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteRecordFromFirestore(String userId, String recordId) async {
-    try {
-      final record = getRecordById(recordId);
-      if (record == null) {
-        print('Record not found locally.');
-        return;
+  Future<void> deleteRecordFromFirestore(String id, String userId) async {
+    // Firestore 인스턴스 초기화
+    final db = FirebaseFirestore.instance;
+
+    // 로컬 리스트에서 해당 레코드의 인덱스를 찾음
+    final recordIndex = _netRecords.indexWhere((record) => record.id == id);
+
+    if (recordIndex != -1) {
+      try {
+        // Firestore 문서 참조
+        final docRef = db
+            .collection("users")
+            .doc(userId)
+            .collection("journal")
+            .doc(id); // 자동 생성된 ID 사용
+
+        // Firestore에서 문서 삭제
+        await docRef.delete();
+
+        // 로컬 리스트에서 레코드 삭제
+        _netRecords.removeAt(recordIndex);
+        notifyListeners();
+
+        print("Document with ID $id deleted successfully from Firestore.");
+      } catch (e) {
+        print('Failed to delete record from Firestore: $e');
       }
-
-      // 로컬에서 찾은 throwDate를 사용하여 날짜를 포맷
-      String throwDateFormatted =
-          DateFormat('yyyy-MM-dd').format(record.throwDate);
-
-      final docRef = db
-          .collection("users")
-          .doc(userId)
-          .collection("journal")
-          .doc("record")
-          .collection(throwDateFormatted)
-          .doc(recordId);
-
-      await docRef.delete();
-      print('Record deleted from Firestore successfully!');
-    } catch (e) {
-      print('Failed to delete record from Firestore: $e');
+    } else {
+      print('Record with ID $id not found in local records.');
     }
   }
+
   // 삭제 코드 사용 법 : await provider.deleteRecord(userId, recordId);
 
   NetRecord? getRecordById(String id) {
