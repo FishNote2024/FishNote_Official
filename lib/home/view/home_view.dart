@@ -11,6 +11,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fish_note/home/model/weatherAPITimeSync.dart';
 import 'package:provider/provider.dart';
 import '../model/weather_api.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -152,9 +153,19 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       SvgPicture.asset('assets/icons/noti.svg'),
                       const SizedBox(width: 8.0),
                       Expanded(
-                        child: Text(
-                          '기상특보 6.28 18:00 서해 앞바다 풍랑주의보',
-                          style: body3(Colors.white),
+                        child: GestureDetector(
+                          onTap: () async {
+                            const url = 'https://www.weatheri.co.kr/special/special01.php'; // 이동할 링크
+                            if (await canLaunch(url)) {
+                              await launch(url);
+                            } else {
+                              throw 'Could not launch $url';
+                            }
+                          },
+                          child: Text(
+                            '기상특보 확인하기',
+                            style: body3(Colors.white),
+                          ),
                         ),
                       ),
                     ],
