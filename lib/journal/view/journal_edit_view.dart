@@ -45,33 +45,42 @@ class _JournalEditViewState extends State<JournalEditView> {
     super.initState();
     // Provider를 사용하여 netRecordProvider 초기화
     netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
-    userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
-    loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
+    userInformationProvider =
+        Provider.of<UserInformationProvider>(context, listen: false);
+    loginModelProvider =
+        Provider.of<LoginModelProvider>(context, listen: false);
 
     if (widget.events.isEmpty) {
       // 이벤트 데이터가 없으면 /journal 페이지로 리디렉션
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushNamed(context, '/journal');
       });
-    }else{
+    } else {
       originalDateTime =
           widget.events.first.throwDate; // Initialize the original date
       selectedDateTime =
           originalDateTime; // Initially, selected date is the original date
       tempThrowDateTime = originalDateTime;
       tempGetDateTime = widget.events.first.getDate;
-      _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime??DateTime.now());
-      _dateGetTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime??DateTime.now());
-      species ={...netRecordProvider.species, ...userInformationProvider.species};
+      _dateTimeController.text =
+          DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+              .format(originalDateTime ?? DateTime.now());
+      _dateGetTimeController.text =
+          DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+              .format(tempGetDateTime ?? DateTime.now());
+      species = {
+        ...netRecordProvider.species,
+        ...userInformationProvider.species
+      };
       memo = widget.events.first.memo ?? '';
     }
-
-
   }
 
   @override
   Widget build(BuildContext context) {
-    List<NetRecord> filteredEvents = netRecordProvider.netRecords.where((event) => isSameDay(event.throwDate, selectedDateTime!)).toList();
+    List<NetRecord> filteredEvents = netRecordProvider.netRecords
+        .where((event) => isSameDay(event.throwDate, selectedDateTime!))
+        .toList();
     netRecordProvider.netRecords;
     return Scaffold(
       appBar: AppBar(
@@ -86,15 +95,18 @@ class _JournalEditViewState extends State<JournalEditView> {
         ),
         title: Text(
           DateFormat('MM월 dd일 (E)', 'ko_KR').format(selectedDateTime!),
-          style: TextStyle(color:black),
+          style: TextStyle(color: black),
         ),
         centerTitle: true,
         actions: [
           TextButton(
             onPressed: () {
               setState(() {
-                final userId = Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
-                Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
+                final userId =
+                    Provider.of<LoginModelProvider>(context, listen: false)
+                        .kakaoId;
+                Provider.of<NetRecordProvider>(context, listen: false)
+                    .updateRecord(
                   widget.recordId, userId,
                   throwTime: tempThrowDateTime, // 투망 시간 업데이트
                   getTime: tempGetDateTime, // 양망 시간 업데이트
@@ -103,9 +115,10 @@ class _JournalEditViewState extends State<JournalEditView> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => JournalDetailView(events: filteredEvents),
+                    builder: (context) =>
+                        JournalDetailView(events: filteredEvents),
                   ),
-                );// Go back to the previous screen
+                ); // Go back to the previous screen
               });
             },
             child: Text(
@@ -184,7 +197,8 @@ class _JournalEditViewState extends State<JournalEditView> {
               _buildEditableGetField(
                 label: '양망시간',
                 icon: Icons.calendar_today,
-                onIconPressed: () => _handleCalendarIconPressedGet(event.getDate),
+                onIconPressed: () =>
+                    _handleCalendarIconPressedGet(event.getDate),
               ),
               const SizedBox(height: 16),
               _buildAddSpeciesButton(index),
@@ -204,7 +218,8 @@ class _JournalEditViewState extends State<JournalEditView> {
     return Row(
       children: [
         Text(
-          DateFormat('HH:mm').format(event.throwDate) + ' ${event.locationName}',
+          DateFormat('HH:mm').format(event.throwDate) +
+              ' ${event.locationName}',
           style: header3B(gray8),
         ),
         const Spacer(),
@@ -227,7 +242,9 @@ class _JournalEditViewState extends State<JournalEditView> {
                       child: const Text('삭제'),
                       onPressed: () async {
                         // 삭제 로직을 추가하세요.
-                        await netRecordProvider.deleteRecord(loginModelProvider.kakaoId, event.id);
+                        print("event.id: ${event.id}");
+                        await netRecordProvider.deleteRecord(
+                            loginModelProvider.kakaoId, event.id);
                         Navigator.of(context).pop();
                         setState(() {});
                       },
@@ -243,7 +260,6 @@ class _JournalEditViewState extends State<JournalEditView> {
     );
   }
 
-
   Widget _buildEditableTextField({
     required String label,
     required String initialValue,
@@ -255,9 +271,9 @@ class _JournalEditViewState extends State<JournalEditView> {
         labelText: label,
         suffixIcon: icon != null
             ? IconButton(
-          icon: Icon(icon),
-          onPressed: onIconPressed,
-        )
+                icon: Icon(icon),
+                onPressed: onIconPressed,
+              )
             : null,
         border: OutlineInputBorder(),
       ),
@@ -275,9 +291,9 @@ class _JournalEditViewState extends State<JournalEditView> {
         labelText: label,
         suffixIcon: icon != null
             ? IconButton(
-          icon: Icon(icon),
-          onPressed: onIconPressed,
-        )
+                icon: Icon(icon),
+                onPressed: onIconPressed,
+              )
             : null,
         border: OutlineInputBorder(),
       ),
@@ -295,9 +311,9 @@ class _JournalEditViewState extends State<JournalEditView> {
         labelText: label,
         suffixIcon: icon != null
             ? IconButton(
-          icon: Icon(icon),
-          onPressed: onIconPressed,
-        )
+                icon: Icon(icon),
+                onPressed: onIconPressed,
+              )
             : null,
         border: OutlineInputBorder(),
       ),
@@ -444,7 +460,9 @@ class _JournalEditViewState extends State<JournalEditView> {
             pickedTime.hour,
             pickedTime.minute,
           );
-          _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempThrowDateTime!);
+          _dateTimeController.text =
+              DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+                  .format(tempThrowDateTime!);
           // netRecordProvider.updateRecord(widget.recordId,
           //     throwTime: selectedDateTime ?? DateTime.now());
         });
@@ -481,11 +499,12 @@ class _JournalEditViewState extends State<JournalEditView> {
             pickedTime.hour,
             pickedTime.minute,
           );
-          _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime!);
+          _dateTimeController.text =
+              DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
+                  .format(tempGetDateTime!);
 
           // netRecordProvider.updateRecord(widget.recordId,
           //     throwTime: selectedDateTime ?? DateTime.now());
-
         });
       }
     }
@@ -519,7 +538,7 @@ class _JournalEditViewState extends State<JournalEditView> {
     required Function(String) onChanged,
   }) {
     TextEditingController controller =
-    TextEditingController(text: initialValue);
+        TextEditingController(text: initialValue);
 
     return TextField(
       controller: controller,
