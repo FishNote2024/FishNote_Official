@@ -6,6 +6,7 @@ import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -29,13 +30,14 @@ class _MyPageLocationState extends State<MyPageLocation> {
   @override
   void initState() {
     super.initState();
+    String? mapUrl = dotenv.env['MAP_URL'];
     userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
     latlon = userInformationProvider.location.latlon;
     _latController.text = userInformationProvider.location.latlon.latitude.toString();
     _lngController.text = userInformationProvider.location.latlon.longitude.toString();
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse("https://fish-note-7d48e.web.app/"))
+      ..loadRequest(Uri.parse(mapUrl!))
       ..setNavigationDelegate(
         NavigationDelegate(
           onPageFinished: (String url) {

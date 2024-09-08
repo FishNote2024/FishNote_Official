@@ -1,3 +1,4 @@
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:fish_note/login/view/kakao_login.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
@@ -8,7 +9,9 @@ import '../../login/view/main_view_model.dart';
 
 Future<void> _clear() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
+  EncryptedSharedPreferences encryptedPrefs = EncryptedSharedPreferences.getInstance();
   await prefs.clear(); // 모든 저장된 데이터를 삭제
+  await encryptedPrefs.clear(); // 모든 암호화된 데이터를 삭제
 }
 
 Widget buildLogoutDialog(BuildContext context) {
