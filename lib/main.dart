@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:fish_note/favorites/view/favorites_view.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
@@ -15,8 +17,10 @@ import 'package:fish_note/onBoarding/on_boarding.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/home/view/home_view.dart';
 import 'package:fish_note/signUp/view/sign_up_view.dart';
+import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
@@ -76,9 +80,10 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: backgroundBlue,
         useMaterial3: true,
       ),
-      initialRoute: '/login',
+      initialRoute: '/',
       routes: {
         // When navigating to the "/" route, build the FirstScreen widget.
+        '/': (context) => const SplashView(),
         '/login': (context) => const LoginView(),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/signUp': (context) => const SignUpView(),
@@ -93,6 +98,62 @@ class MyApp extends StatelessWidget {
         '/getNetAddFishWeight': (context) => const AddThrowNetPage(),
         '/favorites': (context) => const FavoritesView(),
       },
+    );
+  }
+}
+
+class SplashView extends StatefulWidget {
+  const SplashView({super.key});
+
+  @override
+  State<SplashView> createState() => _SplashViewState();
+}
+
+class _SplashViewState extends State<SplashView> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(const Duration(seconds: 3), () {
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, animation1, animation2) => const LoginView(),
+          transitionDuration: Duration.zero,
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text('이제 어업도 감이 아닌 데이터로!', style: body2(gray4)),
+              const SizedBox(height: 3),
+              Text('무료 조업일지, 피시노트', style: header3R()),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/logo.svg',
+                    height: 150,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SvgPicture.asset(
+              'assets/icons/splash_back.svg',
+              fit: BoxFit.fitWidth,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
