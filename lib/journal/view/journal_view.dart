@@ -182,7 +182,7 @@ class _JournalViewState extends State<JournalView> {
                         ),
                         SizedBox(height: 4),
                         Text(
-                          '투망 위치 : 위도 ${event.location[0]} 경도 ${event.location[1]}',
+                          '투망 위치 : 위도 ${event.location.latitude} 경도 ${event.location.longitude}',
                           style: TextStyle(fontSize: 14),
                         ),
                         SizedBox(height: 16.5),

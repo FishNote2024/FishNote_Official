@@ -14,7 +14,7 @@ class NetRecord {
   final List<double> amount;
   final bool isGet;
   final String? memo;
-  final List<double> location; // location을 위도, 경도로 저장
+  final GeoPoint location; // location을 위도, 경도로 저장
   Map<String, double> fishData;
   final String? wave;
 
@@ -94,7 +94,7 @@ class NetRecordProvider with ChangeNotifier {
               locationName: data['locationName'] ?? '',
               daysSince: data['daysSince'] ?? 0,
               isGet: data['isGet'] ?? false,
-              location: List<double>.from(data['location'] ?? [0.0, 0.0]),
+              location: data['location'] ?? const GeoPoint(0, 0),
               species: Set<String>.from(data['species'] ?? <String>{}),
               amount: List<double>.from(data['amount'] ?? <double>[]),
               memo: data['memo'] ?? '',
@@ -158,7 +158,7 @@ class NetRecordProvider with ChangeNotifier {
 
   void addNewRecord(
     String name,
-    List<double> location,
+    GeoPoint location,
     DateTime throwTime,
     bool isGet, {
     String? memo,
@@ -222,7 +222,7 @@ class NetRecordProvider with ChangeNotifier {
       String? memo,
       bool? isGet,
       String? locationName,
-      List<double>? location,
+      GeoPoint? location,
       DateTime? throwTime,
       DateTime? getTime}) async {
     // 로컬 리스트에서 해당 레코드의 인덱스를 찾음
@@ -392,15 +392,10 @@ class NetRecordProvider with ChangeNotifier {
 
   Future<void> withDrawal(String id) async {
     _netRecords.clear();
-    final docRef = db.collection("users").doc(id).collection("journal");
-    // docRef의 하위 컬렉션 모두 가져오기
-    await docRef.get().then((snapshot) {
+    final colRef = db.collection("users").doc(id).collection("journal");
+    await colRef.get().then((snapshot) {
       for (DocumentSnapshot ds in snapshot.docs) {
-        ds.reference.collection("record").get().then((snapshot) {
-          for (DocumentSnapshot ds in snapshot.docs) {
-            ds.reference.delete();
-          }
-        });
+        ds.reference.delete();
       }
     });
     notifyListeners();
