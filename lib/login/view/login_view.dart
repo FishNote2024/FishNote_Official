@@ -95,6 +95,9 @@ class LoginViewState extends State<LoginView> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text('이제 어업도 감이 아닌 데이터로!', style: body2(gray4)),
+              const SizedBox(height: 3),
+              Text('무료 조업일지, 피시노트', style: header3R()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -104,14 +107,20 @@ class LoginViewState extends State<LoginView> {
                   ),
                 ],
               ),
-              const SizedBox(height: 51),
             ],
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SvgPicture.asset(
+              'assets/icons/splash_back.svg',
+              fit: BoxFit.fitWidth,
+            ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 115),
-              child: Text('오늘도 만선하기 위해', style: header3R()),
+              child: Text('오늘도 만선하기 위해', style: header3R(backgroundWhite)),
             ),
           ),
           Align(
