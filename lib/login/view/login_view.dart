@@ -1,3 +1,4 @@
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/view/kakao_login.dart';
 import 'package:fish_note/login/view/main_view_model.dart';
@@ -69,9 +70,10 @@ class LoginViewState extends State<LoginView> {
       // 주요 조업 위치의 이름이 있는 경우 -> 회원가입이 완료되었다는 의미이므로 홈 화면으로 이동
       if (userInformationProvider.location.name != '') {
         SharedPreferences prefs = await SharedPreferences.getInstance();
+        EncryptedSharedPreferences encryptedPrefs = EncryptedSharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true); // 로그인 상태 저장
-        await prefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
-        await prefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
+        await encryptedPrefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
+        await encryptedPrefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       } else {
         // 사용자 이름 저장

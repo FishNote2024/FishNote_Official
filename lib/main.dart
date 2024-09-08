@@ -1,3 +1,4 @@
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:fish_note/favorites/view/favorites_view.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/home/view/weather/wave_provider.dart';
@@ -24,6 +25,7 @@ import 'signUp/model/user_information_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EncryptedSharedPreferences.initialize('');
   await dotenv.load(fileName: ".env");
   String kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY']!;
   KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);

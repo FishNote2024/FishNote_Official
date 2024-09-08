@@ -5,6 +5,7 @@ import 'package:fish_note/signUp/model/location.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -30,6 +31,7 @@ class _FavoritesViewState extends State<FavoritesView> {
   @override
   void initState() {
     super.initState();
+    String? mapUrl = dotenv.env['MAP_URL'];
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..addJavaScriptChannel("toApp", onMessageReceived: (JavaScriptMessage message) {
@@ -37,7 +39,7 @@ class _FavoritesViewState extends State<FavoritesView> {
             ? showLocationBottomSheet(context, location, _nameController)
             : null;
       })
-      ..loadRequest(Uri.parse("https://fish-note-7d48e.web.app/"));
+      ..loadRequest(Uri.parse(mapUrl!));
   }
 
   @override
