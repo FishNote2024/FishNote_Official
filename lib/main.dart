@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:fish_note/favorites/view/favorites_view.dart';
@@ -27,9 +28,16 @@ import 'package:provider/provider.dart';
 import 'Ledger/view/tab_bar_view.dart';
 import 'signUp/model/user_information_provider.dart';
 
+String generateRandomKey(int length) {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  Random random = Random.secure();
+  return String.fromCharCodes(
+      Iterable.generate(length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EncryptedSharedPreferences.initialize('');
+  await EncryptedSharedPreferences.initialize(generateRandomKey(16));
   await dotenv.load(fileName: ".env");
   String kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY']!;
   KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);

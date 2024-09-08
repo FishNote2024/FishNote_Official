@@ -36,9 +36,10 @@ class LoginViewState extends State<LoginView> {
 
     if (isLoggedIn) {
       // 로그인 상태가 참이면 홈 화면으로 이동
-      String id = prefs.getString('uid') ?? '';
-      String name = prefs.getString('name') ?? 'guest';
-      if (!mounted) return; // 비동기 작업 중 상태가 언마운트된 경우 종료
+      EncryptedSharedPreferences encryptedPrefs = EncryptedSharedPreferences.getInstance();
+      String id = encryptedPrefs.getString('uid') ?? '';
+      String name = encryptedPrefs.getString('name') ?? 'guest';
+      if (!mounted || id == '') return; // 비동기 작업 중 상태가 언마운트된 경우 종료
       final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
       final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
       final netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
@@ -61,7 +62,7 @@ class LoginViewState extends State<LoginView> {
     if (viewModel.user != null) {
       // 카카오 로그인 성공
       loginModelProvider.setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
-      loginModelProvider.setKakaoId(viewModel.user!.id.toString());
+      loginModelProvider.setKakaoId(viewModel.user?.id.toString() ?? '');
       // 사용자 정보를 가져온다.
       await userInformationProvider.init(loginModelProvider.kakaoId);
 
