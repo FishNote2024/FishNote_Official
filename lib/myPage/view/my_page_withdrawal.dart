@@ -1,3 +1,4 @@
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/view/kakao_login.dart';
 import 'package:fish_note/login/view/main_view_model.dart';
@@ -8,7 +9,6 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPageWithdrawal extends StatefulWidget {
   const MyPageWithdrawal({super.key});
@@ -25,7 +25,7 @@ class _MyPageWithdrawalState extends State<MyPageWithdrawal> {
     final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
     final ledgerProvider = Provider.of<LedgerProvider>(context, listen: false);
     final netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    EncryptedSharedPreferences prefs = EncryptedSharedPreferences.getInstance();
     String id = prefs.getString('uid')!;
     await viewModel.logout();
     await ledgerProvider.withDrawal(id);

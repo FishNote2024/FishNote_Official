@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/signUp/components/bottom_button.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
@@ -17,22 +20,24 @@ class AddThrowNetPage extends StatefulWidget {
 }
 
 class _AddThrowNetPageState extends State<AddThrowNetPage> {
-  List<double>? latlon;
+  GeoPoint? latlon;
   final TextEditingController _latController = TextEditingController();
   final TextEditingController _lngController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   late WebViewController _controller;
   late NetRecordProvider netRecordProvider;
+  bool _isLoading = false;
 
   String todayDate = DateFormat('M월 d일 (E)', 'ko_KR').format(DateTime.now());
 
   @override
   void initState() {
     super.initState();
+    String? mapUrl = dotenv.env['MAP_URL'];
     netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse("https://fish-note-7d48e.web.app/"));
+      ..loadRequest(Uri.parse(mapUrl!));
   }
 
   @override
@@ -43,14 +48,23 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
   }
 
   Future<void> _getLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      _isLoading = true;
+    });
+
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
     setState(() {
       _latController.text = '${position.latitude}';
       _lngController.text = '${position.longitude}';
-      _controller.runJavaScript(
-          'fromAppToWeb("${position.latitude}", "${position.longitude}");');
-      latlon = [position.latitude, position.longitude];
+      if ((position.latitude > 31 && position.latitude < 40) &&
+          (position.longitude > 120 && position.longitude < 132)) {
+        _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
+        latlon = GeoPoint(position.latitude, position.longitude);
+      } else {
+        showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+      }
+      _isLoading = false;
     });
   }
 
@@ -83,8 +97,7 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
               ),
               const SizedBox(height: 18),
               TextField(
-                onTapOutside: (event) =>
-                    FocusManager.instance.primaryFocus?.unfocus(),
+                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                 controller: _nameController,
                 cursorColor: primaryBlue500,
                 style: const TextStyle(color: Colors.black),
@@ -129,15 +142,14 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
 
                         Navigator.pop(context, {
                           'name': _nameController.text,
-                          'location': latlon ?? [0.0, 0.0],
+                          'location': latlon ?? const GeoPoint(0, 0),
                           'throwTime': DateTime.now(),
                         });
                       },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   elevation: 0,
-                  backgroundColor:
-                      _nameController.text.isEmpty ? gray2 : primaryBlue500,
+                  backgroundColor: _nameController.text.isEmpty ? gray2 : primaryBlue500,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -174,8 +186,7 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
               children: [
                 Text('투망 위치를 확인해주세요', style: header1B()),
                 const SizedBox(height: 8),
-                Text('지도에서 위치를 직접 선택하거나\n위도 경도를 직접 입력해서 위치를 조정할 수 있습니다.',
-                    style: body1(gray6)),
+                Text('지도에서 위치를 직접 선택하거나\n위도 경도를 직접 입력해서 위치를 조정할 수 있습니다.', style: body1(gray6)),
                 const SizedBox(height: 17),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -184,22 +195,25 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
-                        onTapOutside: (event) =>
-                            FocusManager.instance.primaryFocus?.unfocus(),
+                        onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                         controller: _latController,
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
-                        onChanged: (value) => setState(() {
-                          if (_latController.text.isNotEmpty &&
-                              _lngController.text.isNotEmpty) {
-                            _controller.runJavaScript(
-                              'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
-                            );
-                            latlon = [
-                              double.parse(_latController.text),
-                              double.parse(_lngController.text)
-                            ];
+                        onSubmitted: (value) => setState(() {
+                          if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
+                            if ((double.parse(_latController.text) > 31 &&
+                                    double.parse(_latController.text) < 40) &&
+                                (double.parse(_lngController.text) > 120 &&
+                                    double.parse(_lngController.text) < 132)) {
+                              _controller.runJavaScript(
+                                'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
+                              );
+                              latlon = GeoPoint(double.parse(_latController.text),
+                                  double.parse(_lngController.text));
+                            } else {
+                              showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                            }
                           }
                         }),
                         decoration: InputDecoration(
@@ -208,12 +222,9 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: _latController.text.isEmpty
-                                  ? gray2
-                                  : primaryBlue500,
+                              color: _latController.text.isEmpty ? gray2 : primaryBlue500,
                             ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(5)),
+                            borderRadius: const BorderRadius.all(Radius.circular(5)),
                           ),
                           disabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
@@ -225,12 +236,9 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: _latController.text.isEmpty
-                                  ? gray2
-                                  : primaryBlue500,
+                              color: _latController.text.isEmpty ? gray2 : primaryBlue500,
                             ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(5)),
+                            borderRadius: const BorderRadius.all(Radius.circular(5)),
                           ),
                           contentPadding: const EdgeInsets.all(16),
                         ),
@@ -241,22 +249,25 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
-                        onTapOutside: (event) =>
-                            FocusManager.instance.primaryFocus?.unfocus(),
+                        onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                         controller: _lngController,
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
-                        onChanged: (value) => setState(() {
-                          if (_latController.text.isNotEmpty &&
-                              _lngController.text.isNotEmpty) {
-                            _controller.runJavaScript(
-                              'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
-                            );
-                            latlon = [
-                              double.parse(_latController.text),
-                              double.parse(_lngController.text)
-                            ];
+                        onSubmitted: (value) => setState(() {
+                          if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
+                            if ((double.parse(_latController.text) > 31 &&
+                                    double.parse(_latController.text) < 40) &&
+                                (double.parse(_lngController.text) > 120 &&
+                                    double.parse(_lngController.text) < 132)) {
+                              _controller.runJavaScript(
+                                'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
+                              );
+                              latlon = GeoPoint(double.parse(_latController.text),
+                                  double.parse(_lngController.text));
+                            } else {
+                              showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                            }
                           }
                         }),
                         decoration: InputDecoration(
@@ -265,12 +276,9 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: _lngController.text.isEmpty
-                                  ? gray2
-                                  : primaryBlue500,
+                              color: _lngController.text.isEmpty ? gray2 : primaryBlue500,
                             ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(5)),
+                            borderRadius: const BorderRadius.all(Radius.circular(5)),
                           ),
                           disabledBorder: const OutlineInputBorder(
                             borderSide: BorderSide(
@@ -282,12 +290,9 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: _lngController.text.isEmpty
-                                  ? gray2
-                                  : primaryBlue500,
+                              color: _lngController.text.isEmpty ? gray2 : primaryBlue500,
                             ),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(5)),
+                            borderRadius: const BorderRadius.all(Radius.circular(5)),
                           ),
                           contentPadding: const EdgeInsets.all(16),
                         ),
@@ -315,8 +320,7 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                             onPressed: _getLocation,
                             icon: SvgPicture.asset(
                               'assets/icons/current_location.svg',
-                              colorFilter: const ColorFilter.mode(
-                                  primaryBlue500, BlendMode.srcIn),
+                              colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
                             ),
                             color: primaryBlue500,
                             iconSize: 18.5,
@@ -333,12 +337,19 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      BottomButton(
-                          text: "다음",
-                          onPressed: () => _showLocationModal(context)),
+                      BottomButton(text: "다음", onPressed: () => _showLocationModal(context)),
                     ],
                   ),
                 ),
+                _isLoading
+                    ? Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: backgroundWhite.withOpacity(0.8),
+                        child:
+                            const Center(child: CircularProgressIndicator(color: primaryBlue500)),
+                      )
+                    : const SizedBox.shrink(),
               ],
             ),
           ),

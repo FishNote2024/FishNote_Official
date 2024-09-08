@@ -1,3 +1,4 @@
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/view/kakao_login.dart';
 import 'package:fish_note/login/view/main_view_model.dart';
@@ -35,9 +36,10 @@ class LoginViewState extends State<LoginView> {
 
     if (isLoggedIn) {
       // 로그인 상태가 참이면 홈 화면으로 이동
-      String id = prefs.getString('uid') ?? '';
-      String name = prefs.getString('name') ?? 'guest';
-      if (!mounted) return; // 비동기 작업 중 상태가 언마운트된 경우 종료
+      EncryptedSharedPreferences encryptedPrefs = EncryptedSharedPreferences.getInstance();
+      String id = encryptedPrefs.getString('uid') ?? '';
+      String name = encryptedPrefs.getString('name') ?? 'guest';
+      if (!mounted || id == '') return; // 비동기 작업 중 상태가 언마운트된 경우 종료
       final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
       final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
       final netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
@@ -60,7 +62,7 @@ class LoginViewState extends State<LoginView> {
     if (viewModel.user != null) {
       // 카카오 로그인 성공
       loginModelProvider.setName(viewModel.user?.kakaoAccount?.profile?.nickname ?? "guest");
-      loginModelProvider.setKakaoId(viewModel.user!.id.toString());
+      loginModelProvider.setKakaoId(viewModel.user?.id.toString() ?? '');
       // 사용자 정보를 가져온다.
       await userInformationProvider.init(loginModelProvider.kakaoId);
 
@@ -69,9 +71,10 @@ class LoginViewState extends State<LoginView> {
       // 주요 조업 위치의 이름이 있는 경우 -> 회원가입이 완료되었다는 의미이므로 홈 화면으로 이동
       if (userInformationProvider.location.name != '') {
         SharedPreferences prefs = await SharedPreferences.getInstance();
+        EncryptedSharedPreferences encryptedPrefs = EncryptedSharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true); // 로그인 상태 저장
-        await prefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
-        await prefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
+        await encryptedPrefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
+        await encryptedPrefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
         Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
       } else {
         // 사용자 이름 저장
@@ -93,6 +96,9 @@ class LoginViewState extends State<LoginView> {
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text('이제 어업도 감이 아닌 데이터로!', style: body2(gray4)),
+              const SizedBox(height: 3),
+              Text('무료 조업일지, 피시노트', style: header3R()),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -102,14 +108,20 @@ class LoginViewState extends State<LoginView> {
                   ),
                 ],
               ),
-              const SizedBox(height: 51),
             ],
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SvgPicture.asset(
+              'assets/icons/splash_back.svg',
+              fit: BoxFit.fitWidth,
+            ),
           ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
               padding: const EdgeInsets.only(bottom: 115),
-              child: Text('오늘도 만선하기 위해', style: header3R()),
+              child: Text('오늘도 만선하기 위해', style: header3R(backgroundWhite)),
             ),
           ),
           Align(

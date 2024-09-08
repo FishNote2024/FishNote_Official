@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:encrypt_shared_preferences/provider.dart';
 import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/components/next_button.dart';
@@ -6,6 +7,7 @@ import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -31,9 +33,10 @@ class _SignUpLocationState extends State<SignUpLocation> {
   @override
   void initState() {
     super.initState();
+    String? mapUrl = dotenv.env['MAP_URL'];
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..loadRequest(Uri.parse("https://fish-note-7d48e.web.app/"));
+      ..loadRequest(Uri.parse(mapUrl!));
   }
 
   @override
@@ -268,9 +271,10 @@ void _showLocationModal(BuildContext context, GeoPoint latlon, String id) {
     // 위치 정보 등록 로직 추가
     userInformationProvider.setLocation(latlon, controller.text, id);
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    EncryptedSharedPreferences encryptedPrefs = EncryptedSharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', true); // 로그인 상태 저장
-    await prefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
-    await prefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
+    await encryptedPrefs.setString('name', loginModelProvider.name); // 사용자 이름 저장
+    await encryptedPrefs.setString('uid', loginModelProvider.kakaoId); // 사용자 이름 저장
     Navigator.pushNamedAndRemoveUntil(context, '/onBoarding', (route) => false);
   }
 
