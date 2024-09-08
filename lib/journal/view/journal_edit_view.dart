@@ -161,14 +161,14 @@ class _JournalEditViewState extends State<JournalEditView> {
                 Expanded(
                   child: _buildEditableTextField(
                     label: '위도',
-                    initialValue: event.location[0].toString(),
+                    initialValue: event.location.latitude.toString(),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildEditableTextField(
                     label: '경도',
-                    initialValue: event.location[1].toString(),
+                    initialValue: event.location.longitude.toString(),
                   ),
                 ),
               ],

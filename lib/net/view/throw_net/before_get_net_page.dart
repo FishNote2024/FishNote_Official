@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fish_note/home/view/weather/wave_provider.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/net/model/net_record.dart';
@@ -30,7 +31,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
 
     if (result != null) {
       final String name = result['name'];
-      final List<double> location = result['location'];
+      final GeoPoint location = result['location'];
       final DateTime throwTime = result['throwTime'];
       final String wave = waveProvider.wave;
 

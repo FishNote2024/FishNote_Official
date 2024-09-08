@@ -105,7 +105,7 @@ class JournalDetailView extends StatelessWidget {
                         ),
                         TextSpan(
                           text:
-                          '위도 ${event.location[0]} 경도 ${event.location[1]}',
+                          '위도 ${event.location.latitude} 경도 ${event.location.longitude}',
                           style: body2(black),
                         ),
                       ],
