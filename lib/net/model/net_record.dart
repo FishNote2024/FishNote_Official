@@ -78,12 +78,28 @@ class NetRecordProvider with ChangeNotifier {
       // Firestore에서 "journal" 컬렉션의 모든 문서 가져오기
       final querySnapshot = await journalRef.get();
 
+      // 디버깅용 출력: 가져온 문서 개수 확인
+      print(
+          "Fetched ${querySnapshot.docs.length} documents for userId: $userId");
+
       // 문서가 존재할 경우 처리
       if (querySnapshot.docs.isNotEmpty) {
         for (var docSnapshot in querySnapshot.docs) {
           final data = docSnapshot.data();
 
-          // 각 필드에 대해 null 체크 추가하기 (null이면 기본값으로 설정)
+          // location 필드를 GeoPoint 타입으로 변환하거나, 기본값 사용
+          GeoPoint location;
+          if (data['location'] is GeoPoint) {
+            location = data['location'] as GeoPoint;
+          } else if (data['location'] is List) {
+            // List 타입으로 저장된 데이터를 GeoPoint로 변환
+            final List<dynamic> loc = data['location'];
+            location = GeoPoint(loc[0] as double, loc[1] as double);
+          } else {
+            // 기본값 설정
+            location = const GeoPoint(0, 0);
+          }
+
           _netRecords.add(
             NetRecord(
               id: docSnapshot.id, // 문서의 ID를 사용
@@ -94,7 +110,7 @@ class NetRecordProvider with ChangeNotifier {
               locationName: data['locationName'] ?? '',
               daysSince: data['daysSince'] ?? 0,
               isGet: data['isGet'] ?? false,
-              location: data['location'] ?? const GeoPoint(0, 0),
+              location: location, // 변환된 GeoPoint 사용
               species: Set<String>.from(data['species'] ?? <String>{}),
               amount: List<double>.from(data['amount'] ?? <double>[]),
               memo: data['memo'] ?? '',
@@ -110,6 +126,12 @@ class NetRecordProvider with ChangeNotifier {
       }
     } catch (e) {
       print("Error getting records: $e");
+
+      if (e is FirebaseException) {
+        print("FirebaseException: ${e.message}");
+      } else {
+        print("Unexpected error: $e");
+      }
     }
   }
 
@@ -313,7 +335,7 @@ class NetRecordProvider with ChangeNotifier {
           db.collection("users").doc(userId).collection("journal");
       final journalSnapshot = await journalCollection.get();
 
-      // 각 문서의 ID를 순회
+      // 각 문서의 ID를 돌기
       for (var journalDoc in journalSnapshot.docs) {
         final documentId = journalDoc.id;
 
