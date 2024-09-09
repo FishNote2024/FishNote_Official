@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+import 'package:fish_note/Ledger/view/auction_price/calculate.dart';
 import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
@@ -6,6 +8,7 @@ import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -19,8 +22,18 @@ class AddLedgerPage extends StatefulWidget {
 }
 
 class _AddLedgerPageState extends State<AddLedgerPage> {
+  final Dio dio = Dio();
+  String apiKey = dotenv.env['MARKET_PRICE_API_KEY']!;
+
+  final String apiUrl = 'http://apis.data.go.kr/1192000/select0030List/getselect0030List';
+  String baseDt = DateFormat('yyyyMMdd').format(DateTime.now());
+  Set<String> registeredSpecies = {};
+  String mxtrNm = '';
+  Map<String, Map<String, dynamic>> groupedData = {};
+  Map<String, List<double>> speciesPrices = {};
+  bool isLoading = true; // 로딩 상태 추가
   List<Map<String, dynamic>> revenueEntries = [
-    {'어종': '', '위판량': '', '위판 수익': ''}
+    {'어종': '', '위판량': '', '위판단가': ''}
   ];
   List<Map<String, dynamic>> expenseEntries = [
     {'구분': '', '비용': ''}
@@ -31,7 +44,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       revenueEntries.add({
         '어종': '',
         '위판량': '',
-        '위판 수익': '',
+        '위판단가': '',
       });
     });
   }
@@ -64,7 +77,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       return SaleModel(
         species: entry['어종'],
         weight: double.tryParse(entry['위판량']) ?? 0.0,
-        price: int.tryParse(entry['위판 수익']) ?? 0,
+        price: int.tryParse(entry['위판단가']) ?? 0,
       );
     }).toList();
 
@@ -92,7 +105,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
 
   int getTotalRevenue() {
     return revenueEntries.fold(0, (sum, entry) {
-      int price = int.tryParse(entry['위판 수익']) ?? 0;
+      int price = int.tryParse(entry['위판단가']) ?? 0;
       double weight = double.tryParse(entry['위판량']) ?? 0.0;
       return sum + (price * weight).round();
     });
@@ -108,6 +121,40 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
   String formatNumber(int number) {
     final formatter = NumberFormat('#,###');
     return formatter.format(number);
+  }
+
+  Future<void> fetchData() async {
+    try {
+      groupedData.clear(); // 이전 데이터 clear
+
+      for (var species in registeredSpecies) {
+        String requestUrl =
+            '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&mxtrNm=$mxtrNm&fromDt=$baseDt&toDt=$baseDt&type=xml&mprcStdCodeNm=${Uri.encodeComponent(species)}';
+
+        var response = await dio.get(requestUrl);
+
+        if (response.statusCode == 200) {
+          parseApiResponse(response.data, species);
+        } else {
+          print('Error fetching data for species $species: ${response.statusCode}');
+        }
+      }
+    } catch (e) {
+      print('Error fetching data: $e');
+    } finally {
+      setState(() {
+        isLoading = false; // 로딩 완료
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    registeredSpecies = userInformationProvider.species;
+    mxtrNm = userInformationProvider.affiliation;
+    fetchData();
   }
 
   @override
@@ -140,14 +187,14 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                       expenseEntries.length == 1 &&
                       revenueEntries[0]['어종'] == '' &&
                       revenueEntries[0]['위판량'] == '' &&
-                      revenueEntries[0]['위판 수익'] == '' &&
+                      revenueEntries[0]['위판단가'] == '' &&
                       expenseEntries[0]['구분'] == '' &&
                       expenseEntries[0]['비용'] == '') {
                     showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
                     return;
                   } else if (revenueEntries.length > 1 &&
                       revenueEntries.any((entry) =>
-                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
+                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판단가'] == '')) {
                     showSnackBar(context, '위판 정보를 모두 입력해주세요');
                     return;
                   } else if (expenseEntries.length > 1 &&
@@ -157,7 +204,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   } else if (revenueEntries.length == 1 &&
                       revenueEntries[0]['어종'] == '' &&
                       revenueEntries[0]['위판량'] == '' &&
-                      revenueEntries[0]['위판 수익'] == '') {
+                      revenueEntries[0]['위판단가'] == '') {
                     revenueEntries.removeAt(0);
                   } else if (expenseEntries.length == 1 &&
                       expenseEntries[0]['구분'] == '' &&
@@ -469,27 +516,27 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   },
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "무게를 입력해주세요",
+                    hintText: "무게/개수를 입력해주세요",
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
                 ),
               ),
               const SizedBox(width: 8),
-              Text("kg", style: body2(gray4)),
+              Text("kg/cs", style: body2(gray4)),
             ],
           ),
         ),
         _buildRevenueFormRow(
           index: index,
-          label: "위판 수익",
+          label: "위판단가",
           child: Row(
             children: [
               Expanded(
                 child: TextField(
                   onChanged: (value) {
                     setState(() {
-                      revenueEntries[index]['위판 수익'] = value;
+                      revenueEntries[index]['위판단가'] = value;
                     });
                   },
                   decoration: InputDecoration(

@@ -149,7 +149,7 @@ class _LedgerDetailPageState extends State<LedgerDetailPage> {
           child: Text("${sale.weight}kg"),
         ),
         _buildRevenueFormRow(
-          label: "위판 수익",
+          label: "위판단가",
           child: Text("${NumberFormat("#,###").format(sale.price)}원"),
         ),
       ],

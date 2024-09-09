@@ -314,7 +314,11 @@ class _LedgerPageState extends State<LedgerPage> {
     ).then((selectedValue) {
       if (selectedValue != null) {
         setState(() {
-          _focusedDay = DateTime(selectedValue[0], selectedValue[1], 1);
+          _focusedDay =
+              DateTime(selectedValue[0], selectedValue[1] + 1, 1).subtract(const Duration(days: 1));
+          if (_focusedDay.isBefore(DateTime.now())) {
+            _onDaySelected(_focusedDay, _focusedDay);
+          }
         });
       }
     });
@@ -431,9 +435,9 @@ class _LedgerPageState extends State<LedgerPage> {
                             Row(
                               children: [
                                 Text("어획량", style: caption1(gray4)),
-                                const SizedBox(width: 70),
-                                Text("단가 (1kg)", style: caption1(gray4)),
-                                const SizedBox(width: 35),
+                                const SizedBox(width: 80),
+                                Text("단가", style: caption1(gray4)),
+                                const SizedBox(width: 60),
                                 Text("총합", style: caption1(gray4))
                               ],
                             ),
@@ -477,24 +481,11 @@ class _LedgerPageState extends State<LedgerPage> {
       rows.add(
         TableRow(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Text('${sales[i].species} ${sales[i].weight}kg', style: body2(black)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Text('X ${NumberFormat('#,###').format(sales[i].price)}', style: body2(black)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Text('=', style: body2(black)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Text(
-                  '${NumberFormat('#,###').format((sales[i].price * sales[i].weight).round())}원',
-                  style: body2(black)),
-            ),
+            Text('${sales[i].species} ${sales[i].weight}kg', style: body2(black)),
+            Text('X ${NumberFormat('#,###').format(sales[i].price)}', style: body2(black)),
+            Text('=', style: body2(black)),
+            Text('${NumberFormat('#,###').format((sales[i].price * sales[i].weight).round())}원',
+                style: body2(black)),
           ],
         ),
       );

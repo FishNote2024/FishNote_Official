@@ -41,7 +41,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       return {
         '어종': sale.species,
         '위판량': sale.weight.toString(),
-        '위판 수익': sale.price.toString(),
+        '위판단가': sale.price.toString(),
       };
     }).toList();
 
@@ -59,7 +59,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
     );
     revenuePriceControllers = List.generate(
       revenueEntries.length,
-      (index) => TextEditingController(text: revenueEntries[index]['위판 수익']),
+      (index) => TextEditingController(text: revenueEntries[index]['위판단가']),
     );
     expenseControllers = List.generate(
       expenseEntries.length,
@@ -67,7 +67,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
     );
 
     if (revenueEntries.isEmpty) {
-      revenueEntries.add({'어종': '', '위판량': '', '위판 수익': ''} as Map<String, dynamic>);
+      revenueEntries.add({'어종': '', '위판량': '', '위판단가': ''} as Map<String, dynamic>);
       revenueWeightControllers.add(TextEditingController());
       revenuePriceControllers.add(TextEditingController());
     }
@@ -101,7 +101,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       return SaleModel(
         species: entry['어종'],
         weight: double.tryParse(entry['위판량']) ?? 0.0,
-        price: int.tryParse(entry['위판 수익']) ?? 0,
+        price: int.tryParse(entry['위판단가']) ?? 0,
       );
     }).toList();
 
@@ -135,7 +135,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
 
   int getTotalRevenue() {
     return revenueEntries.fold(0, (sum, entry) {
-      int price = int.tryParse(entry['위판 수익']) ?? 0;
+      int price = int.tryParse(entry['위판단가']) ?? 0;
       double weight = double.tryParse(entry['위판량']) ?? 0.0;
       return sum + (price * weight).round();
     });
@@ -182,14 +182,14 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                       expenseEntries.length == 1 &&
                       revenueEntries[0]['어종'] == '' &&
                       revenueEntries[0]['위판량'] == '' &&
-                      revenueEntries[0]['위판 수익'] == '' &&
+                      revenueEntries[0]['위판단가'] == '' &&
                       expenseEntries[0]['구분'] == '' &&
                       expenseEntries[0]['비용'] == '') {
                     showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
                     return;
                   } else if (revenueEntries.length > 1 &&
                       revenueEntries.any((entry) =>
-                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
+                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판단가'] == '')) {
                     showSnackBar(context, '위판 정보를 모두 입력해주세요');
                     return;
                   } else if (expenseEntries.length > 1 &&
@@ -199,7 +199,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                   } else if (revenueEntries.length == 1 &&
                       revenueEntries[0]['어종'] == '' &&
                       revenueEntries[0]['위판량'] == '' &&
-                      revenueEntries[0]['위판 수익'] == '') {
+                      revenueEntries[0]['위판단가'] == '') {
                     revenueEntries.removeAt(0);
                   } else if (expenseEntries.length == 1 &&
                       expenseEntries[0]['구분'] == '' &&
@@ -361,7 +361,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                   },
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "무게를 입력해주세요",
+                    hintText: "무게/개수를 입력해주세요",
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
@@ -369,13 +369,13 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                 ),
               ),
               const SizedBox(width: 8),
-              Text("kg", style: body2(gray4)),
+              Text("kg/cs", style: body2(gray4)),
             ],
           ),
         ),
         _buildRevenueFormRow(
           index: index,
-          label: "위판 수익",
+          label: "위판단가",
           child: Row(
             children: [
               Expanded(
@@ -387,7 +387,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                   },
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "수입 금액을 입력해주세요",
+                    hintText: "단가 금액을 입력해주세요",
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
@@ -684,7 +684,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       revenueEntries.add({
         '어종': '',
         '위판량': '',
-        '위판 수익': '',
+        '위판단가': '',
       } as Map<String, dynamic>);
     });
   }
