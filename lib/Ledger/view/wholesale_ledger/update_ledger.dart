@@ -41,6 +41,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       return {
         '어종': sale.species,
         '위판량': sale.weight.toString(),
+        '단위': sale.unit,
         '위판단가': sale.price.toString(),
       };
     }).toList();
@@ -67,7 +68,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
     );
 
     if (revenueEntries.isEmpty) {
-      revenueEntries.add({'어종': '', '위판량': '', '위판단가': ''} as Map<String, dynamic>);
+      revenueEntries.add({'어종': '', '위판량': '', '단위': 'KG', '위판단가': ''} as Map<String, dynamic>);
       revenueWeightControllers.add(TextEditingController());
       revenuePriceControllers.add(TextEditingController());
     }
@@ -75,6 +76,56 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
     if (expenseEntries.isEmpty) {
       expenseEntries.add({'구분': '', '비용': ''} as Map<String, dynamic>);
       expenseControllers.add(TextEditingController());
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant UpdateLedgerPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Update the revenue and expense entries when the ledger changes
+    if (widget.ledger != oldWidget.ledger) {
+      setState(() {
+        revenueEntries = widget.ledger.sales.map((sale) {
+          return {
+            '어종': sale.species,
+            '위판량': sale.weight.toString(),
+            '단위': sale.unit,
+            '위판단가': sale.price.toString(),
+          };
+        }).toList();
+
+        expenseEntries = widget.ledger.pays.map((pay) {
+          return {
+            '구분': pay.category,
+            '비용': pay.amount.toString(),
+          };
+        }).toList();
+
+        revenueWeightControllers = List.generate(
+          revenueEntries.length,
+          (index) => TextEditingController(text: revenueEntries[index]['위판량']),
+        );
+        revenuePriceControllers = List.generate(
+          revenueEntries.length,
+          (index) => TextEditingController(text: revenueEntries[index]['위판단가']),
+        );
+        expenseControllers = List.generate(
+          expenseEntries.length,
+          (index) => TextEditingController(text: expenseEntries[index]['비용']),
+        );
+
+        if (revenueEntries.isEmpty) {
+          revenueEntries.add({'어종': '', '위판량': '', '단위': 'KG', '위판단가': ''} as Map<String, dynamic>);
+          revenueWeightControllers.add(TextEditingController());
+          revenuePriceControllers.add(TextEditingController());
+        }
+
+        if (expenseEntries.isEmpty) {
+          expenseEntries.add({'구분': '', '비용': ''} as Map<String, dynamic>);
+          expenseControllers.add(TextEditingController());
+        }
+      });
     }
   }
 
@@ -101,6 +152,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       return SaleModel(
         species: entry['어종'],
         weight: double.tryParse(entry['위판량']) ?? 0.0,
+        unit: entry['단위'],
         price: int.tryParse(entry['위판단가']) ?? 0,
       );
     }).toList();
@@ -368,9 +420,33 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                   controller: revenueWeightControllers[index],
                 ),
               ),
-              const SizedBox(width: 8),
-              Text("kg/cs", style: body2(gray4)),
             ],
+          ),
+        ),
+        _buildRevenueFormRow(
+          index: index,
+          label: "단위",
+          child: DropdownButton<String>(
+            isExpanded: true,
+            value:
+                revenueEntries[index]['단위']?.isEmpty ?? true ? null : revenueEntries[index]['단위'],
+            hint: Text("단위를 선택해주세요", style: body2(gray4)),
+            onChanged: (value) {
+              setState(() {
+                revenueEntries[index]['단위'] = value;
+              });
+            },
+            items: [
+              DropdownMenuItem<String>(
+                value: 'KG',
+                child: Text('KG', style: body2(textBlack)), // 비활성화 설정
+              ),
+              DropdownMenuItem<String>(
+                value: '상자(C/S)',
+                child: Text('상자(C/S)', style: body2(textBlack)), // 비활성화 설정
+              )
+            ],
+            underline: const SizedBox.shrink(),
           ),
         ),
         _buildRevenueFormRow(
@@ -684,14 +760,23 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       revenueEntries.add({
         '어종': '',
         '위판량': '',
+        '단위': 'KG',
         '위판단가': '',
       } as Map<String, dynamic>);
+
+      revenueWeightControllers.add(TextEditingController());
+      revenuePriceControllers.add(TextEditingController());
     });
   }
 
   void _deleteRevenueEntry(int index) {
+    revenueWeightControllers[index].dispose();
+    revenuePriceControllers[index].dispose();
+
     setState(() {
       revenueEntries.removeAt(index);
+      revenueWeightControllers.removeAt(index);
+      revenuePriceControllers.removeAt(index);
     });
   }
 
@@ -702,11 +787,16 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
         '비용': '',
       } as Map<String, dynamic>);
     });
+
+    expenseControllers.add(TextEditingController());
   }
 
   void _deleteExpenseEntry(int index) {
+    expenseControllers[index].dispose();
+
     setState(() {
       expenseEntries.removeAt(index);
+      expenseControllers[index].dispose();
     });
   }
 }
