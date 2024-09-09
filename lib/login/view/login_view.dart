@@ -38,8 +38,8 @@ class LoginViewState extends State<LoginView> {
       // 로그인 상태가 참이면 홈 화면으로 이동
       EncryptedSharedPreferences encryptedPrefs = EncryptedSharedPreferences.getInstance();
       String id = encryptedPrefs.getString('uid') ?? '';
-      String name = encryptedPrefs.getString('name') ?? 'guest';
-      if (!mounted || id == '') return; // 비동기 작업 중 상태가 언마운트된 경우 종료
+      String name = encryptedPrefs.getString('name') ?? '';
+      if (!mounted || id == '' || name == '') return; // 비동기 작업 중 상태가 언마운트된 경우 종료
       final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
       final loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
       final netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
