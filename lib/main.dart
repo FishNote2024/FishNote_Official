@@ -21,12 +21,15 @@ import 'package:fish_note/signUp/view/sign_up_view.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:provider/provider.dart';
 import 'Ledger/view/tab_bar_view.dart';
 import 'signUp/model/user_information_provider.dart';
+
+const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
 String generateRandomKey(int length) {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -35,9 +38,27 @@ String generateRandomKey(int length) {
       Iterable.generate(length, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
 }
 
+// 암호화 키를 생성하거나 저장된 키를 불러오는 함수
+Future<String> getEncryptionKey() async {
+  // 이미 저장된 키가 있는지 확인
+  String? encryptionKey = await secureStorage.read(key: 'encryption_key');
+
+  // 저장된 키가 없으면 새로 생성
+  if (encryptionKey == null) {
+    // 새로운 암호화 키를 생성 (16바이트)
+    encryptionKey = generateRandomKey(16);
+
+    // 새로 생성한 키를 안전하게 저장
+    await secureStorage.write(key: 'encryption_key', value: encryptionKey);
+  }
+
+  return encryptionKey;
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EncryptedSharedPreferences.initialize(generateRandomKey(16));
+  String encryptionKey = await getEncryptionKey();
+  await EncryptedSharedPreferences.initialize(encryptionKey);
   await dotenv.load(fileName: ".env");
   String kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY']!;
   KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);
