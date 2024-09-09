@@ -151,7 +151,8 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           speciesPrices[species] = prices;
           units[species] = unit;
         } else {
-          print('Error fetching data for species $species: ${response.statusCode}');
+          if (!mounted) return;
+          showSnackBar(context, '경락시세를 불러오지 못했습니다.');
         }
       }
 
@@ -185,7 +186,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      showSnackBar(context, '데이터를 불러오지 못했습니다.');
+      showSnackBar(context, '경락시세를 불러오지 못했습니다.');
     } finally {
       setState(() {
         _isLoading = false; // 로딩 완료
