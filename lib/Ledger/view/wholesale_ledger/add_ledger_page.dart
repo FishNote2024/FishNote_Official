@@ -519,7 +519,6 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
               Set<String> speciesList = netRecordProvider.netRecords
                   .where((record) => record.isGet && isSameDay(record.getDate, widget.selectedDate))
                   .expand((record) => record.species)
-                  .toSet()
                   .toSet();
 
               // 어종이 없을 때 userInfoProvider에서 species 가져오기
