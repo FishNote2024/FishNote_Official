@@ -1,14 +1,15 @@
+import 'package:dio/dio.dart';
+import 'package:xml/xml.dart' as xml;
 import 'package:fish_note/favorites/components/snack_bar.dart';
 import 'package:fish_note/home/model/ledger_model.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
-import 'package:fish_note/net/model/net_record.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:table_calendar/table_calendar.dart';
 
 class AddLedgerPage extends StatefulWidget {
   final DateTime selectedDate;
@@ -19,9 +20,17 @@ class AddLedgerPage extends StatefulWidget {
 }
 
 class _AddLedgerPageState extends State<AddLedgerPage> {
-  List<Map<String, dynamic>> revenueEntries = [
-    {'어종': '', '위판량': '', '위판 수익': ''}
-  ];
+  final Dio dio = Dio();
+  String apiKey = dotenv.env['MARKET_PRICE_API_KEY']!;
+  late List<TextEditingController> revenuePriceControllers;
+
+  final String apiUrl = 'http://apis.data.go.kr/1192000/select0030List/getselect0030List';
+  Set<String> registeredSpecies = {};
+  String mxtrNm = '';
+  Map<String, List<double>> speciesPrices = {};
+  Map<String, String> units = {};
+  bool _isLoading = true; // 로딩 상태 추가
+  List<Map<String, dynamic>> revenueEntries = [];
   List<Map<String, dynamic>> expenseEntries = [
     {'구분': '', '비용': ''}
   ];
@@ -31,14 +40,20 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       revenueEntries.add({
         '어종': '',
         '위판량': '',
-        '위판 수익': '',
-      });
+        '단위': 'KG',
+        '위판단가': '',
+      } as Map<String, dynamic>);
+
+      revenuePriceControllers.add(TextEditingController());
     });
   }
 
   void _deleteRevenueEntry(int index) {
+    revenuePriceControllers[index].dispose();
+
     setState(() {
       revenueEntries.removeAt(index);
+      revenuePriceControllers.removeAt(index);
     });
   }
 
@@ -47,7 +62,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       expenseEntries.add({
         '구분': '',
         '비용': '',
-      });
+      } as Map<String, dynamic>);
     });
   }
 
@@ -64,7 +79,8 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
       return SaleModel(
         species: entry['어종'],
         weight: double.tryParse(entry['위판량']) ?? 0.0,
-        price: int.tryParse(entry['위판 수익']) ?? 0,
+        unit: entry['단위'],
+        price: int.tryParse(entry['위판단가']) ?? 0,
       );
     }).toList();
 
@@ -92,7 +108,7 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
 
   int getTotalRevenue() {
     return revenueEntries.fold(0, (sum, entry) {
-      int price = int.tryParse(entry['위판 수익']) ?? 0;
+      int price = int.tryParse(entry['위판단가']) ?? 0;
       double weight = double.tryParse(entry['위판량']) ?? 0.0;
       return sum + (price * weight).round();
     });
@@ -110,6 +126,84 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
     return formatter.format(number);
   }
 
+  Future<void> fetchData(String baseDt) async {
+    try {
+      for (var species in registeredSpecies) {
+        String requestUrl =
+            '$apiUrl?serviceKey=$apiKey&pageNo=1&numOfRows=50&baseDt=$baseDt&mxtrNm=$mxtrNm&fromDt=$baseDt&toDt=$baseDt&type=xml&mprcStdCodeNm=${Uri.encodeComponent(species)}';
+
+        var response = await dio.get(requestUrl);
+
+        if (response.statusCode == 200) {
+          final document = xml.XmlDocument.parse(response.data);
+          final items = document.findAllElements('item');
+          final unit =
+              items.any((item) => item.findElements('goodsUnitNm').single.text == '상자(C/S)')
+                  ? '상자(C/S)'
+                  : 'KG';
+
+          List<double> prices = [];
+          for (var item in items) {
+            final priceText = item.findElements('csmtAmount').single.text;
+            final price = double.tryParse(priceText) ?? 0.0;
+            prices.add(price);
+          }
+          speciesPrices[species] = prices;
+          units[species] = unit;
+        } else {
+          if (!mounted) return;
+          showSnackBar(context, '경락시세를 불러오지 못했습니다.');
+        }
+      }
+
+      if (speciesPrices.isEmpty) {
+        revenueEntries.add({
+          '어종': '',
+          '위판량': '',
+          '단위': 'KG',
+          '위판단가': '',
+        });
+        revenuePriceControllers = List.generate(1, (index) => TextEditingController());
+        return;
+      }
+      // speciesPrices에 저장된 key, value 값을 revenueEntries에 _addRevenueEntry() 하며 추가
+      speciesPrices.forEach((species, prices) {
+        if (prices.isEmpty) return;
+
+        final average = prices.reduce((a, b) => a + b) / prices.length;
+
+        revenueEntries.add({
+          '어종': species,
+          '위판량': '',
+          '단위': units[species],
+          '위판단가': average.toStringAsFixed(0),
+        });
+      });
+
+      revenuePriceControllers = List.generate(
+        revenueEntries.length,
+        (index) => TextEditingController(text: revenueEntries[index]['위판단가']),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      showSnackBar(context, '경락시세를 불러오지 못했습니다.');
+    } finally {
+      setState(() {
+        _isLoading = false; // 로딩 완료
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    registeredSpecies = userInformationProvider.species;
+    mxtrNm = userInformationProvider.affiliation;
+    String baseDt = DateFormat('yyyyMMdd').format(widget.selectedDate);
+    fetchData(baseDt);
+  }
+
   @override
   Widget build(BuildContext context) {
     String formattedDate = DateFormat.yMMMMd('ko_KR').format(widget.selectedDate);
@@ -120,65 +214,77 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         if (didPop) return;
         _showExitConfirmationDialog(context);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: backgroundBlue,
-          centerTitle: true,
-          title: Text(formattedDate, style: body2(textBlack)),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
-            onPressed: () {
-              _showExitConfirmationDialog(context);
-            },
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: TextButton(
+      child: Stack(
+        children: [
+          Scaffold(
+            appBar: AppBar(
+              backgroundColor: backgroundBlue,
+              centerTitle: true,
+              title: Text(formattedDate, style: body2(textBlack)),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, size: 14, color: gray7),
                 onPressed: () {
-                  if (revenueEntries.length == 1 &&
-                      expenseEntries.length == 1 &&
-                      revenueEntries[0]['어종'] == '' &&
-                      revenueEntries[0]['위판량'] == '' &&
-                      revenueEntries[0]['위판 수익'] == '' &&
-                      expenseEntries[0]['구분'] == '' &&
-                      expenseEntries[0]['비용'] == '') {
-                    showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
-                    return;
-                  } else if (revenueEntries.length > 1 &&
-                      revenueEntries.any((entry) =>
-                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
-                    showSnackBar(context, '위판 정보를 모두 입력해주세요');
-                    return;
-                  } else if (expenseEntries.length > 1 &&
-                      expenseEntries.any((entry) => entry['구분'] == '' || entry['비용'] == '')) {
-                    showSnackBar(context, '지출 정보를 모두 입력해주세요');
-                    return;
-                  } else if (revenueEntries.length == 1 &&
-                      revenueEntries[0]['어종'] == '' &&
-                      revenueEntries[0]['위판량'] == '' &&
-                      revenueEntries[0]['위판 수익'] == '') {
-                    revenueEntries.removeAt(0);
-                  } else if (expenseEntries.length == 1 &&
-                      expenseEntries[0]['구분'] == '' &&
-                      expenseEntries[0]['비용'] == '') {
-                    expenseEntries.removeAt(0);
-                  }
-                  _saveLedger(context);
+                  _showExitConfirmationDialog(context);
                 },
-                child: Text("저장", style: body2(primaryYellow900)),
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: TextButton(
+                    onPressed: () {
+                      if (revenueEntries.length == 1 &&
+                          expenseEntries.length == 1 &&
+                          revenueEntries[0]['어종'] == '' &&
+                          revenueEntries[0]['위판량'] == '' &&
+                          revenueEntries[0]['위판단가'] == '' &&
+                          expenseEntries[0]['구분'] == '' &&
+                          expenseEntries[0]['비용'] == '') {
+                        showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
+                        return;
+                      } else if (revenueEntries.length > 1 &&
+                          revenueEntries.any((entry) =>
+                              entry['어종'] == '' || entry['위판량'] == '' || entry['위판단가'] == '')) {
+                        showSnackBar(context, '위판 정보를 모두 입력해주세요');
+                        return;
+                      } else if (expenseEntries.length > 1 &&
+                          expenseEntries.any((entry) => entry['구분'] == '' || entry['비용'] == '')) {
+                        showSnackBar(context, '지출 정보를 모두 입력해주세요');
+                        return;
+                      } else if (revenueEntries.length == 1 &&
+                          revenueEntries[0]['어종'] == '' &&
+                          revenueEntries[0]['위판량'] == '' &&
+                          revenueEntries[0]['위판단가'] == '') {
+                        revenueEntries.removeAt(0);
+                      } else if (expenseEntries.length == 1 &&
+                          expenseEntries[0]['구분'] == '' &&
+                          expenseEntries[0]['비용'] == '') {
+                        expenseEntries.removeAt(0);
+                      }
+                      _saveLedger(context);
+                    },
+                    child: Text("저장", style: body2(primaryYellow900)),
+                  ),
+                ),
+              ],
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [_buildRevenue(), _buildExpense()],
+                ),
               ),
             ),
-          ],
-        ),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Column(
-              children: [_buildRevenue(), _buildExpense()],
-            ),
           ),
-        ),
+          _isLoading
+              ? Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: backgroundWhite.withOpacity(0.8),
+                  child: const Center(child: CircularProgressIndicator(color: primaryBlue500)),
+                )
+              : const SizedBox.shrink(),
+        ],
       ),
     );
   }
@@ -412,47 +518,22 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         _buildRevenueFormRow(
           index: index,
           label: "어종",
-          child: Consumer<NetRecordProvider>(
-            builder: (context, netRecordProvider, child) {
-              // 선택된 날짜에 해당하는 어종을 가져옴
-              List<String> speciesList = netRecordProvider.netRecords
-                  .where((record) => record.isGet && isSameDay(record.getDate, widget.selectedDate))
-                  .expand((record) => record.species)
-                  .toSet()
-                  .toList();
-
-              // 어종이 없을 때 userInfoProvider에서 species 가져오기
-              if (speciesList.isEmpty) {
-                final userInfoProvider =
-                    Provider.of<UserInformationProvider>(context, listen: false);
-                speciesList = userInfoProvider.species.toList();
-              }
-
-              return DropdownButton<String>(
-                isExpanded: true,
-                value: revenueEntries[index]['어종']?.isEmpty ?? true
-                    ? null
-                    : revenueEntries[index]['어종'],
-                hint: Text("어종을 선택해주세요", style: body2(gray4)),
-                onChanged: (value) {
-                  if (speciesList.length == 1 && speciesList[0] == '해당 날짜에 양망한 어종이 없어요') {
-                    // 어종이 없을 때는 선택하지 않음
-                    return;
-                  }
-                  setState(() {
-                    revenueEntries[index]['어종'] = value;
-                  });
-                },
-                items: speciesList.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    enabled: !(speciesList.length == 1 && speciesList[0] == '해당 날짜에 양망한 어종이 없어요'),
-                    child: Text(value, style: body2(textBlack)), // 비활성화 설정
-                  );
-                }).toList(),
-                underline: const SizedBox.shrink(),
-              );
+          child: DropdownButton<String>(
+            isExpanded: true,
+            value: revenueEntries[index]['어종'].isEmpty ? null : revenueEntries[index]['어종'],
+            hint: Text("어종을 선택해주세요", style: body2(gray4)),
+            onChanged: (value) {
+              setState(() {
+                revenueEntries[index]['어종'] = value;
+              });
             },
+            items: registeredSpecies.map<DropdownMenuItem<String>>((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: body2(textBlack)),
+              );
+            }).toList(),
+            underline: const SizedBox.shrink(),
           ),
         ),
         _buildRevenueFormRow(
@@ -469,27 +550,51 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                   },
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "무게를 입력해주세요",
+                    hintText: "무게/개수를 입력해주세요",
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
                 ),
               ),
-              const SizedBox(width: 8),
-              Text("kg", style: body2(gray4)),
             ],
           ),
         ),
         _buildRevenueFormRow(
           index: index,
-          label: "위판 수익",
+          label: "단위",
+          child: DropdownButton<String>(
+            isExpanded: true,
+            value: revenueEntries[index]['단위'] ?? 'KG',
+            hint: Text("단위를 선택해주세요", style: body2(gray4)),
+            onChanged: (value) {
+              setState(() {
+                revenueEntries[index]['단위'] = value;
+              });
+            },
+            items: [
+              DropdownMenuItem<String>(
+                value: 'KG',
+                child: Text('KG', style: body2(textBlack)),
+              ),
+              DropdownMenuItem<String>(
+                value: '상자(C/S)',
+                child: Text('상자(C/S)', style: body2(textBlack)),
+              )
+            ],
+            underline: const SizedBox.shrink(),
+          ),
+        ),
+        _buildRevenueFormRow(
+          index: index,
+          label: "위판단가",
           child: Row(
             children: [
               Expanded(
                 child: TextField(
+                  controller: revenuePriceControllers[index],
                   onChanged: (value) {
                     setState(() {
-                      revenueEntries[index]['위판 수익'] = value;
+                      revenueEntries[index]['위판단가'] = value;
                     });
                   },
                   decoration: InputDecoration(
@@ -539,22 +644,19 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           label: "구분",
           child: DropdownButton<String>(
             isExpanded: true,
-            value:
-                expenseEntries[index]['구분']?.isEmpty ?? true ? null : expenseEntries[index]['구분'],
+            value: expenseEntries[index]['구분'].isEmpty ? null : expenseEntries[index]['구분'],
             hint: Text("지출 구분을 선택해주세요", style: body2(gray4)),
             onChanged: (value) {
               setState(() {
                 expenseEntries[index]['구분'] = value;
               });
             },
-            items: <String>['유류비', '인건비', '어구', '기타'].map<DropdownMenuItem<String>>(
-              (String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value, style: body2(textBlack)),
-                );
-              },
-            ).toList(),
+            items: <String>['유류비', '인건비', '어구', '기타'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: body2(textBlack)),
+              );
+            }).toList(),
             underline: const SizedBox.shrink(),
           ),
         ),

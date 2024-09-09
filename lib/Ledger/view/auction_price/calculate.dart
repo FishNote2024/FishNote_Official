@@ -12,7 +12,6 @@ void parseApiResponse(String response, String species) {
     final price = double.tryParse(priceText) ?? 0.0;
     prices.add(price);
   }
-
   speciesPrices[species] = prices;
 }
 
