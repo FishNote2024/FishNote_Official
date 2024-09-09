@@ -4,6 +4,8 @@ import 'package:fish_note/signUp/model/location.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class FavoritesInformation extends StatefulWidget {
   const FavoritesInformation({super.key, required this.location});
@@ -86,6 +88,37 @@ class _FavoritesInformationState extends State<FavoritesInformation> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Container(
+            height: 40,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: alertRedDefault,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Row(
+              children: [
+                SvgPicture.asset('assets/icons/noti.svg'),
+                const SizedBox(width: 8.0),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () async {
+                      const url = 'https://www.weatheri.co.kr/special/special01.php'; // 이동할 링크
+                      if (await canLaunchUrl(Uri.parse(url))) {
+                        await launchUrl(Uri.parse(url));
+                      } else {
+                        throw 'Could not launch $url';
+                      }
+                    },
+                    child: Text(
+                      '기상특보 확인하기',
+                      style: body3(Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Stack(
             children: [
               Container(

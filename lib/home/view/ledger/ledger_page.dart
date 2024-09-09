@@ -314,7 +314,11 @@ class _LedgerPageState extends State<LedgerPage> {
     ).then((selectedValue) {
       if (selectedValue != null) {
         setState(() {
-          _focusedDay = DateTime(selectedValue[0], selectedValue[1], 1);
+          _focusedDay =
+              DateTime(selectedValue[0], selectedValue[1] + 1, 1).subtract(const Duration(days: 1));
+          if (_focusedDay.isBefore(DateTime.now())) {
+            _onDaySelected(_focusedDay, _focusedDay);
+          }
         });
       }
     });
@@ -431,9 +435,9 @@ class _LedgerPageState extends State<LedgerPage> {
                             Row(
                               children: [
                                 Text("어획량", style: caption1(gray4)),
-                                const SizedBox(width: 70),
-                                Text("단가 (1kg)", style: caption1(gray4)),
-                                const SizedBox(width: 35),
+                                const SizedBox(width: 90),
+                                Text("단가", style: caption1(gray4)),
+                                const SizedBox(width: 50),
                                 Text("총합", style: caption1(gray4))
                               ],
                             ),
@@ -473,33 +477,20 @@ class _LedgerPageState extends State<LedgerPage> {
   Table _buildRevenueTable(List<SaleModel> sales) {
     List<TableRow> rows = [];
 
-    for (int i = 0; i < sales.length; i++) {
+    for (final sale in sales) {
       rows.add(
         TableRow(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Text('${sales[i].species} ${sales[i].weight}kg', style: body2(black)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Text('X ${NumberFormat('#,###').format(sales[i].price)}', style: body2(black)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Text('=', style: body2(black)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(0.0),
-              child: Text(
-                  '${NumberFormat('#,###').format((sales[i].price * sales[i].weight).round())}원',
-                  style: body2(black)),
-            ),
+            Text(sale.species, style: body2(black)),
+            Text('${sale.weight}${sale.unit == 'KG' ? 'kg' : 'cs'}', style: body2(black)),
+            Text('X ${NumberFormat('#,###').format(sale.price)}', style: body2(black)),
+            Text('= ${NumberFormat('#,###').format((sale.price * sale.weight).round())}원',
+                style: body2(black)),
           ],
         ),
       );
 
-      if (i < sales.length - 1) {
+      if (sales.last != sale) {
         rows.add(
           const TableRow(
             children: [
@@ -527,9 +518,9 @@ class _LedgerPageState extends State<LedgerPage> {
 
     return Table(
       columnWidths: const {
-        0: FlexColumnWidth(3),
+        0: FlexColumnWidth(1.5),
         1: FlexColumnWidth(2),
-        2: FlexColumnWidth(1),
+        2: FlexColumnWidth(2),
         3: FlexColumnWidth(3),
       },
       children: rows,
@@ -539,22 +530,22 @@ class _LedgerPageState extends State<LedgerPage> {
   Table _buildExpenseTable(List<PayModel> pays) {
     List<TableRow> rows = [];
 
-    for (int i = 0; i < pays.length; i++) {
+    for (final pay in pays) {
       rows.add(
         TableRow(
           children: [
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Text(pays[i].category, style: body2(black)),
+              child: Text(pay.category, style: body2(black)),
             ),
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Text('${NumberFormat('#,###').format(pays[i].amount)}원', style: body2(black)),
+              child: Text('${NumberFormat('#,###').format(pay.amount)}원', style: body2(black)),
             ),
           ],
         ),
       );
-      if (i < pays.length - 1) {
+      if (pays.last != pay) {
         rows.add(
           const TableRow(
             children: [

@@ -31,17 +31,20 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
   late List<TextEditingController> revenueWeightControllers;
   late List<TextEditingController> revenuePriceControllers;
   late List<TextEditingController> expenseControllers;
+  Set<String> registeredSpecies = {};
 
   @override
   void initState() {
     super.initState();
-
+    final userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    registeredSpecies = userInformationProvider.species;
     // Initialize the revenue and expense entries based on the ledger passed
     revenueEntries = widget.ledger.sales.map((sale) {
       return {
         '어종': sale.species,
         '위판량': sale.weight.toString(),
-        '위판 수익': sale.price.toString(),
+        '단위': sale.unit,
+        '위판단가': sale.price.toString(),
       };
     }).toList();
 
@@ -59,7 +62,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
     );
     revenuePriceControllers = List.generate(
       revenueEntries.length,
-      (index) => TextEditingController(text: revenueEntries[index]['위판 수익']),
+      (index) => TextEditingController(text: revenueEntries[index]['위판단가']),
     );
     expenseControllers = List.generate(
       expenseEntries.length,
@@ -67,7 +70,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
     );
 
     if (revenueEntries.isEmpty) {
-      revenueEntries.add({'어종': '', '위판량': '', '위판 수익': ''} as Map<String, dynamic>);
+      revenueEntries.add({'어종': '', '위판량': '', '단위': 'KG', '위판단가': ''} as Map<String, dynamic>);
       revenueWeightControllers.add(TextEditingController());
       revenuePriceControllers.add(TextEditingController());
     }
@@ -101,7 +104,8 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       return SaleModel(
         species: entry['어종'],
         weight: double.tryParse(entry['위판량']) ?? 0.0,
-        price: int.tryParse(entry['위판 수익']) ?? 0,
+        unit: entry['단위'],
+        price: int.tryParse(entry['위판단가']) ?? 0,
       );
     }).toList();
 
@@ -135,7 +139,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
 
   int getTotalRevenue() {
     return revenueEntries.fold(0, (sum, entry) {
-      int price = int.tryParse(entry['위판 수익']) ?? 0;
+      int price = int.tryParse(entry['위판단가']) ?? 0;
       double weight = double.tryParse(entry['위판량']) ?? 0.0;
       return sum + (price * weight).round();
     });
@@ -182,14 +186,14 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                       expenseEntries.length == 1 &&
                       revenueEntries[0]['어종'] == '' &&
                       revenueEntries[0]['위판량'] == '' &&
-                      revenueEntries[0]['위판 수익'] == '' &&
+                      revenueEntries[0]['위판단가'] == '' &&
                       expenseEntries[0]['구분'] == '' &&
                       expenseEntries[0]['비용'] == '') {
                     showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
                     return;
                   } else if (revenueEntries.length > 1 &&
                       revenueEntries.any((entry) =>
-                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판 수익'] == '')) {
+                          entry['어종'] == '' || entry['위판량'] == '' || entry['위판단가'] == '')) {
                     showSnackBar(context, '위판 정보를 모두 입력해주세요');
                     return;
                   } else if (expenseEntries.length > 1 &&
@@ -199,7 +203,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                   } else if (revenueEntries.length == 1 &&
                       revenueEntries[0]['어종'] == '' &&
                       revenueEntries[0]['위판량'] == '' &&
-                      revenueEntries[0]['위판 수익'] == '') {
+                      revenueEntries[0]['위판단가'] == '') {
                     revenueEntries.removeAt(0);
                   } else if (expenseEntries.length == 1 &&
                       expenseEntries[0]['구분'] == '' &&
@@ -300,51 +304,22 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
         _buildRevenueFormRow(
           index: index,
           label: "어종",
-          child: Consumer<NetRecordProvider>(
-            builder: (context, netRecordProvider, child) {
-              // 선택된 날짜에 해당하는 어종을 가져옴
-              List<String> speciesList = netRecordProvider.netRecords
-                  .where((record) => record.isGet && isSameDay(record.getDate, widget.selectedDate))
-                  .expand((record) => record.species)
-                  .toSet()
-                  .toList();
-
-              // 어종이 없을 때 userInfoProvider에서 species 가져오기
-              if (speciesList.isEmpty) {
-                final userInfoProvider =
-                    Provider.of<UserInformationProvider>(context, listen: false);
-                speciesList = userInfoProvider.species.toList();
-              }
-
-              // DropdownButton의 value가 items에 포함되지 않은 경우 null로 설정
-              String? currentValue = revenueEntries[index]['어종'];
-              if (!speciesList.contains(currentValue)) {
-                currentValue = null;
-              }
-
-              return DropdownButton<String>(
-                isExpanded: true,
-                value: currentValue,
-                hint: Text("어종을 선택해주세요", style: body2(gray4)),
-                onChanged: (value) {
-                  if (speciesList.length == 1 && speciesList[0] == '해당 날짜에 양망한 어종이 없어요') {
-                    // 어종이 없을 때는 선택하지 않음
-                    return;
-                  }
-                  setState(() {
-                    revenueEntries[index]['어종'] = value;
-                  });
-                },
-                items: speciesList.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    enabled: !(speciesList.length == 1 && speciesList[0] == '해당 날짜에 양망한 어종이 없어요'),
-                    child: Text(value, style: body2(textBlack)), // 비활성화 설정
-                  );
-                }).toList(),
-                underline: const SizedBox.shrink(),
-              );
+          child: DropdownButton<String>(
+            isExpanded: true,
+            value: revenueEntries[index]['어종'].isEmpty ? null : revenueEntries[index]['어종'],
+            hint: Text("어종을 선택해주세요", style: body2(gray4)),
+            onChanged: (value) {
+              setState(() {
+                revenueEntries[index]['어종'] = value;
+              });
             },
+            items: registeredSpecies.map<DropdownMenuItem<String>>((value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value, style: body2(textBlack)), // 비활성화 설정
+              );
+            }).toList(),
+            underline: const SizedBox.shrink(),
           ),
         ),
         _buildRevenueFormRow(
@@ -361,21 +336,45 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                   },
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "무게를 입력해주세요",
+                    hintText: "무게/개수를 입력해주세요",
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
                   controller: revenueWeightControllers[index],
                 ),
               ),
-              const SizedBox(width: 8),
-              Text("kg", style: body2(gray4)),
             ],
           ),
         ),
         _buildRevenueFormRow(
           index: index,
-          label: "위판 수익",
+          label: "단위",
+          child: DropdownButton<String>(
+            isExpanded: true,
+            value:
+                revenueEntries[index]['단위']?.isEmpty ?? true ? null : revenueEntries[index]['단위'],
+            hint: Text("단위를 선택해주세요", style: body2(gray4)),
+            onChanged: (value) {
+              setState(() {
+                revenueEntries[index]['단위'] = value;
+              });
+            },
+            items: [
+              DropdownMenuItem<String>(
+                value: 'KG',
+                child: Text('KG', style: body2(textBlack)), // 비활성화 설정
+              ),
+              DropdownMenuItem<String>(
+                value: '상자(C/S)',
+                child: Text('상자(C/S)', style: body2(textBlack)), // 비활성화 설정
+              )
+            ],
+            underline: const SizedBox.shrink(),
+          ),
+        ),
+        _buildRevenueFormRow(
+          index: index,
+          label: "위판단가",
           child: Row(
             children: [
               Expanded(
@@ -387,7 +386,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
                   },
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: "수입 금액을 입력해주세요",
+                    hintText: "단가 금액을 입력해주세요",
                     hintStyle: body2(gray4),
                   ),
                   keyboardType: TextInputType.number,
@@ -684,14 +683,23 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
       revenueEntries.add({
         '어종': '',
         '위판량': '',
-        '위판 수익': '',
+        '단위': 'KG',
+        '위판단가': '',
       } as Map<String, dynamic>);
+
+      revenueWeightControllers.add(TextEditingController());
+      revenuePriceControllers.add(TextEditingController());
     });
   }
 
   void _deleteRevenueEntry(int index) {
+    revenueWeightControllers[index].dispose();
+    revenuePriceControllers[index].dispose();
+
     setState(() {
       revenueEntries.removeAt(index);
+      revenueWeightControllers.removeAt(index);
+      revenuePriceControllers.removeAt(index);
     });
   }
 
@@ -702,11 +710,16 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
         '비용': '',
       } as Map<String, dynamic>);
     });
+
+    expenseControllers.add(TextEditingController());
   }
 
   void _deleteExpenseEntry(int index) {
+    expenseControllers[index].dispose();
+
     setState(() {
       expenseEntries.removeAt(index);
+      expenseControllers[index].dispose();
     });
   }
 }

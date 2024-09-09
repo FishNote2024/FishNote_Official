@@ -22,9 +22,10 @@ class LedgerModel {
 class SaleModel {
   final String species;
   final double weight;
+  final String unit;
   final int price;
 
-  SaleModel({required this.species, required this.weight, required this.price});
+  SaleModel({required this.species, required this.weight, required this.unit, required this.price});
 }
 
 class PayModel {
@@ -62,6 +63,7 @@ class LedgerProvider with ChangeNotifier {
                 return SaleModel(
                   species: item['species'] as String,
                   weight: (item['weight'] as num).toDouble(), // double로 변환
+                  unit: item['unit'] as String,
                   price: item['price'] as int,
                 );
               }).toList(),
@@ -96,6 +98,7 @@ class LedgerProvider with ChangeNotifier {
             .map((sale) => {
                   'species': sale.species,
                   'weight': sale.weight,
+                  'unit': sale.unit,
                   'price': sale.price,
                 })
             .toList(),
@@ -144,6 +147,7 @@ class LedgerProvider with ChangeNotifier {
             .map((sale) => {
                   'species': sale.species,
                   'weight': sale.weight,
+                  'unit': sale.unit,
                   'price': sale.price,
                 })
             .toList(),
