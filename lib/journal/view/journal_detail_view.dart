@@ -6,22 +6,32 @@ import 'package:flutter/material.dart';
 import 'package:fish_note/net/model/net_record.dart'; // NetRecord를 가져옴
 import 'package:intl/intl.dart';
 
-class JournalDetailView extends StatelessWidget {
+class JournalDetailView extends StatefulWidget {
   final List<NetRecord> events;
 
   const JournalDetailView({Key? key, required this.events}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // 데이터가 비어 있을 때 자동으로 돌아가기
-    if (events.isEmpty) {
+  _JournalDetailViewState createState() => _JournalDetailViewState();
+}
+
+class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
+  List<NetRecord> _events = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _events = widget.events;
+    if (_events.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.popUntil(context, ModalRoute.withName('/journal'));
       });
     }
+  }
 
-    final DateTime date = events.isNotEmpty ? events.first.throwDate : DateTime
-        .now();
+  @override
+  Widget build(BuildContext context) {
+    final DateTime date = _events.isNotEmpty ? _events.first.throwDate : DateTime.now();
 
     return Scaffold(
       appBar: AppBar(
@@ -37,7 +47,7 @@ class JournalDetailView extends StatelessWidget {
         title: Text(DateFormat('MM.dd (E)', 'ko_KR').format(date)),
         centerTitle: true,
         actions: [
-          if (events.isNotEmpty)
+          if (_events.isNotEmpty)
             TextButton(
               onPressed: () {
                 Navigator.push(
@@ -45,9 +55,13 @@ class JournalDetailView extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) =>
                         JournalEditView(
-                            recordId: events.first.id, events: events),
+                            recordId: _events.first.id, events: _events),
                   ),
-                );
+                ).then((value) {
+                  setState(() {
+                    _events = value;
+                  });
+                });
               },
               child: Text(
                 '수정하기',
@@ -56,13 +70,13 @@ class JournalDetailView extends StatelessWidget {
             ),
         ],
       ),
-      body: events.isEmpty
+      body: _events.isEmpty
           ? Center(child: Text('No data available'))
           : ListView.builder(
         padding: EdgeInsets.all(16.0),
-        itemCount: events.length,
+        itemCount: _events.length,
         itemBuilder: (context, index) {
-          final event = events[index];
+          final event = _events[index];
           final action = "투망";
           final locationName = event.locationName;
 

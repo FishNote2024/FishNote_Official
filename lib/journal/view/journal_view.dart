@@ -48,10 +48,12 @@ class _JournalViewState extends State<JournalView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _panelController.hide(); // 앱 시작 시 패널을 숨김
     });
-
   }
+
+
+
   @override
-  void didChangeDependencies() {
+  Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
     _netRecords = Provider.of<NetRecordProvider>(context).netRecords;
     _initPanelWithData();
@@ -70,7 +72,6 @@ class _JournalViewState extends State<JournalView> {
 
   @override
   Widget build(BuildContext context) {
-    _netRecords = Provider.of<NetRecordProvider>(context).netRecords;
 
     return Scaffold(
       backgroundColor: backgroundBlue,
@@ -300,7 +301,6 @@ class _JournalViewState extends State<JournalView> {
                         // isGet이 true인 경우
                         // throwDate에 대해 primaryBlue500 색상의 마커 추가
                         if (isSameDay(event.throwDate, day)) {
-                          print(day);
                           markers.add(
                             Container(
                               margin: const EdgeInsets.only(top: 40, right: 2),
@@ -311,17 +311,19 @@ class _JournalViewState extends State<JournalView> {
                               ),
                             ),
                           );
-                          if (isSameDay(event.getDate, day)) {
-                            markers.add(
-                              Container(
-                                margin: const EdgeInsets.only(top: 40, right: 2),
-                                child: const Icon(
-                                  size: 5,
-                                  Icons.circle,
-                                  color: primaryYellow700,
+                          if(event.isGet){
+                            if (isSameDay(event.getDate, day)) {
+                              markers.add(
+                                Container(
+                                  margin: const EdgeInsets.only(top: 40, right: 2),
+                                  child: const Icon(
+                                    size: 5,
+                                    Icons.circle,
+                                    color: primaryYellow700,
+                                  ),
                                 ),
-                              ),
-                            );
+                              );
+                            }
                           }
                         }
 
