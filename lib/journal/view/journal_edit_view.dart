@@ -13,9 +13,7 @@ class JournalEditView extends StatefulWidget {
   final List<NetRecord> events;
   final String recordId;
 
-  const JournalEditView(
-      {Key? key, required this.events, required this.recordId})
-      : super(key: key);
+  const JournalEditView({Key? key, required this.events, required this.recordId}) : super(key: key);
 
   @override
   _JournalEditViewState createState() => _JournalEditViewState();
@@ -43,45 +41,28 @@ class _JournalEditViewState extends State<JournalEditView> {
   @override
   void initState() {
     super.initState();
-    // Provider를 사용하여 netRecordProvider 초기화
     netRecordProvider = Provider.of<NetRecordProvider>(context, listen: false);
-    userInformationProvider =
-        Provider.of<UserInformationProvider>(context, listen: false);
-    loginModelProvider =
-        Provider.of<LoginModelProvider>(context, listen: false);
+    userInformationProvider = Provider.of<UserInformationProvider>(context, listen: false);
+    loginModelProvider = Provider.of<LoginModelProvider>(context, listen: false);
 
     if (widget.events.isEmpty) {
-      // 이벤트 데이터가 없으면 /journal 페이지로 리디렉션
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.pushNamed(context, '/journal');
       });
     } else {
-      originalDateTime =
-          widget.events.first.throwDate; // Initialize the original date
-      selectedDateTime =
-          originalDateTime; // Initially, selected date is the original date
+      originalDateTime = widget.events.first.throwDate; // Initialize the original date
+      selectedDateTime = originalDateTime; // Initially, selected date is the original date
       tempThrowDateTime = originalDateTime;
       tempGetDateTime = widget.events.first.getDate;
-      _dateTimeController.text =
-          DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-              .format(originalDateTime ?? DateTime.now());
-      _dateGetTimeController.text =
-          DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
-              .format(tempGetDateTime ?? DateTime.now());
-      species = {
-        ...netRecordProvider.species,
-        ...userInformationProvider.species
-      };
+      _dateTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(originalDateTime ?? DateTime.now());
+      _dateGetTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime ?? DateTime.now());
+      species = {...netRecordProvider.species, ...userInformationProvider.species};
       memo = widget.events.first.memo ?? '';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<NetRecord> filteredEvents = netRecordProvider.netRecords
-        .where((event) => isSameDay(event.throwDate, selectedDateTime!))
-        .toList();
-    netRecordProvider.netRecords;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: backgroundBlue,
@@ -90,7 +71,8 @@ class _JournalEditViewState extends State<JournalEditView> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            List<NetRecord> updatedList = updateEventList(); // Gather all updated records
+            Navigator.pop(context, updatedList); // Pass the updated list back
           },
         ),
         title: Text(
@@ -101,25 +83,17 @@ class _JournalEditViewState extends State<JournalEditView> {
         actions: [
           TextButton(
             onPressed: () {
-              setState(() {
-                final userId =
-                    Provider.of<LoginModelProvider>(context, listen: false)
-                        .kakaoId;
-                Provider.of<NetRecordProvider>(context, listen: false)
-                    .updateRecord(
-                  widget.recordId, userId,
-                  throwTime: tempThrowDateTime, // 투망 시간 업데이트
-                  getTime: tempGetDateTime, // 양망 시간 업데이트
-                  memo: memo,
-                );
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        JournalDetailView(events: filteredEvents),
-                  ),
-                ); // Go back to the previous screen
-              });
+              final userId = Provider.of<LoginModelProvider>(context, listen: false).kakaoId;
+              Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
+                widget.recordId,
+                userId,
+                throwTime: tempThrowDateTime,
+                getTime: tempGetDateTime,
+                memo: memo,
+              );
+              List<NetRecord> updatedList = updateEventList(); // Gather all updated records
+              print("dkssud" + updatedList[0].throwDate.toString());
+              Navigator.pop(context, updatedList); // Pass the updated list back
             },
             child: Text(
               '수정완료',
@@ -148,7 +122,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(event, context),
+            _buildHeader(event, context, index),
             const SizedBox(height: 8),
             _buildEditableDateField(
               label: '투망시간',
@@ -214,7 +188,16 @@ class _JournalEditViewState extends State<JournalEditView> {
     );
   }
 
-  Widget _buildHeader(NetRecord event, BuildContext context) {
+  List<NetRecord> updateEventList() {
+    List<NetRecord> updatedEvents = [];
+    for (NetRecord event in widget.events) {
+      NetRecord? updatedEvent = netRecordProvider.getRecordById(event.id);
+      updatedEvents.add(updatedEvent!);
+    }
+    return updatedEvents;
+  }
+
+  Widget _buildHeader(NetRecord event, BuildContext context, int index) {
     return Row(
       children: [
         Text(
@@ -241,12 +224,14 @@ class _JournalEditViewState extends State<JournalEditView> {
                     TextButton(
                       child: const Text('삭제'),
                       onPressed: () async {
+
                         // 삭제 로직을 추가하세요.
-                        print("event.id: ${event.id}");
                         await netRecordProvider.deleteRecord(
                             loginModelProvider.kakaoId, event.id);
                         Navigator.of(context).pop();
-                        setState(() {});
+                        setState(() {
+                          widget.events.removeAt(index);
+                        });
                       },
                     ),
                   ],
@@ -499,7 +484,7 @@ class _JournalEditViewState extends State<JournalEditView> {
             pickedTime.hour,
             pickedTime.minute,
           );
-          _dateTimeController.text =
+          _dateGetTimeController.text =
               DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR')
                   .format(tempGetDateTime!);
 
