@@ -8,7 +8,7 @@ import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -61,13 +61,34 @@ class _MyPageLocationState extends State<MyPageLocation> {
       _isLoading = true;
     });
 
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Location location = Location();
+    location.enableBackgroundMode(enable: false);
+    if (await location.serviceEnabled()) {
+      if (await location.hasPermission() == PermissionStatus.granted) {
+        LocationData position = await location.getLocation();
+
+        setState(() {
+          _latController.text = '${position.latitude}';
+          _lngController.text = '${position.longitude}';
+          if ((position.latitude! > 31 && position.latitude! < 40) &&
+              (position.longitude! > 120 && position.longitude! < 132)) {
+            _controller
+                .runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
+            latlon = GeoPoint(position.latitude!, position.longitude!);
+          } else {
+            showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+          }
+        });
+      }else {
+        if (!mounted) return;
+        showSnackBar(context, '위치 권한이 없습니다.');
+      }
+    } else {
+      if (!mounted) return;
+      showSnackBar(context, '위치 서비스가 비활성화되어 있습니다.');
+    }
 
     setState(() {
-      _latController.text = '${position.latitude}';
-      _lngController.text = '${position.longitude}';
-      _controller.runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
-      latlon = GeoPoint(position.latitude, position.longitude);
       _isLoading = false;
     });
   }

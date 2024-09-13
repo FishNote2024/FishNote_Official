@@ -17,7 +17,7 @@ class GetNetFishWeight extends StatefulWidget {
 }
 
 class _GetNetFishWeightState extends State<GetNetFishWeight> {
-  Map<String, TextEditingController> _controllers = {};
+  final Map<String, TextEditingController> _controllers = {};
   bool allFieldsFilled = false;
   List<String> speciesList = [];
 
@@ -132,7 +132,7 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                               species,
                               style: header3R(textBlack),
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Container(
                               width: 180,
                               height: 33,
@@ -147,7 +147,7 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                               child: TextField(
                                 controller: _controllers[species],
                                 keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   border: InputBorder.none,
                                   hintText: '- ',
                                   isDense: false,

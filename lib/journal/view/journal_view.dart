@@ -79,7 +79,7 @@ class _JournalViewState extends State<JournalView> {
         backgroundColor: backgroundBlue,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
@@ -160,7 +160,7 @@ class _JournalViewState extends State<JournalView> {
           builder: (context, value, _) {
             return ListView.builder(
               shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: value.length,
               itemBuilder: (context, index) {
                 final event = value[index];
@@ -173,25 +173,25 @@ class _JournalViewState extends State<JournalView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat('HH:mm').format(event.throwDate) + ' ${event.locationName}',
+                          '${DateFormat('HH:mm').format(event.throwDate)} ${event.locationName}',
                           style: header3B(primaryBlue500),
                         ),
-                        SizedBox(height: 16),
-                        Text('투망 시간 : ' + DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.throwDate),
+                        const SizedBox(height: 16),
+                        Text('투망 시간 : ${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.throwDate)}',
 
                             style: body2(gray8)
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           '투망 위치 : 위도 ${event.location.latitude} 경도 ${event.location.longitude}',
-                          style: TextStyle(fontSize: 14),
+                          style: const TextStyle(fontSize: 14),
                         ),
-                        SizedBox(height: 16.5),
+                        const SizedBox(height: 16.5),
                         Text(
                           '해상 기록',
                           style: header4(gray8),
                         ),
-                        SizedBox(height: 16.5),
+                        const SizedBox(height: 16.5),
                         Text(
                           '파고: ${event.wave}m', //파고
                           style: body1(gray8),
@@ -208,7 +208,7 @@ class _JournalViewState extends State<JournalView> {
           alignment: Alignment.topCenter, // 세로로 맨 위에, 가로로 중앙에 배치
           child: Column(
             children: [
-              SizedBox(height: 65),
+              const SizedBox(height: 65),
               Image.asset(
                 'assets/icons/no_journal.png',
               ),

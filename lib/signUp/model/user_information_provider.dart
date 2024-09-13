@@ -8,8 +8,8 @@ class UserInformationProvider with ChangeNotifier {
   String _affiliation = '';
   Set<String> _species = {};
   Set<String> _technique = {};
-  final Location _location = Location('', const GeoPoint(0, 0));
-  final List<Location> _favorites = [];
+  final LocationInfo _location = LocationInfo('', const GeoPoint(0, 0));
+  final List<LocationInfo> _favorites = [];
 
   // Getters
   String get ageRange => _ageRange;
@@ -17,8 +17,8 @@ class UserInformationProvider with ChangeNotifier {
   String get affiliation => _affiliation;
   Set<String> get species => _species;
   Set<String> get technique => _technique;
-  Location get location => _location;
-  List<Location> get favorites => _favorites;
+  LocationInfo get location => _location;
+  List<LocationInfo> get favorites => _favorites;
 
   final db = FirebaseFirestore.instance;
 
@@ -37,7 +37,7 @@ class UserInformationProvider with ChangeNotifier {
         _location.setLatlon(data['location']['latlon'] as GeoPoint);
         _favorites.clear();
         for (var favorite in data['favorites'] as List<dynamic>) {
-          _favorites.add(Location(favorite['name'], (favorite['latlon'])));
+          _favorites.add(LocationInfo(favorite['name'], (favorite['latlon'])));
         }
         notifyListeners();
       } else {
@@ -108,7 +108,7 @@ class UserInformationProvider with ChangeNotifier {
   }
 
   void addFavorite(GeoPoint latlon, String name, String id) async {
-    Location newFavorite = Location(name, latlon);
+    LocationInfo newFavorite = LocationInfo(name, latlon);
     _favorites.add(newFavorite);
     final docRef = db.collection("users").doc(id);
     await docRef.set({
@@ -122,7 +122,7 @@ class UserInformationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void removeFavorite(Location location, String id) async {
+  void removeFavorite(LocationInfo location, String id) async {
     _favorites.remove(location);
     final docRef = db.collection("users").doc(id);
     await docRef.update({

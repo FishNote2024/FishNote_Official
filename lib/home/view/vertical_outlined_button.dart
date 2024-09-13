@@ -8,7 +8,7 @@ class VerticalOutlinedButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
 
-  VerticalOutlinedButton({
+  const VerticalOutlinedButton({super.key, 
     required this.iconPath,
     required this.text,
     required this.onPressed,
@@ -21,12 +21,12 @@ class VerticalOutlinedButton extends StatelessWidget {
       width: (screenWidth) / 5,
       child: OutlinedButton(
         style: OutlinedButton.styleFrom(
-          padding: EdgeInsets.only(top: 8, bottom: 9),
+          padding: const EdgeInsets.only(top: 8, bottom: 9),
           backgroundColor: Colors.white,
           shadowColor: Colors.black,
           overlayColor: Colors.black,
           elevation: 1,
-          side: BorderSide(color: gray1, width: 1.0),
+          side: const BorderSide(color: gray1, width: 1.0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),
           ),
@@ -35,7 +35,7 @@ class VerticalOutlinedButton extends StatelessWidget {
         child: Column(
           children: [
             SvgPicture.asset(iconPath),
-            SizedBox(height: 6),
+            const SizedBox(height: 6),
             Text(text, style: body2(gray6)),
           ],
         ),
