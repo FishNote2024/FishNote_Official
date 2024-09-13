@@ -87,7 +87,7 @@ android {
             throw new Exception("KAKAO_NATIVE_APP_KEY not found in .env file")
         }
         manifestPlaceholders += [KAKAO_NATIVE_APP_KEY: kakaoKey]
-        setProperty("archivesBaseName", "$applicationId-v$versionName")
+        // setProperty("archivesBaseName", "$applicationId-v$versionName")
     }
 
     signingConfigs {
