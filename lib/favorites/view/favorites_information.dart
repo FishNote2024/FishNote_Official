@@ -10,7 +10,7 @@ import 'package:url_launcher/url_launcher.dart';
 class FavoritesInformation extends StatefulWidget {
   const FavoritesInformation({super.key, required this.location});
 
-  final Location location;
+  final LocationInfo location;
 
   @override
   State<FavoritesInformation> createState() => _FavoritesInformationState();

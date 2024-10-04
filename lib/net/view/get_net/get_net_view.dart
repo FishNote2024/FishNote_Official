@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish.dart';
 import 'package:fish_note/net/view/get_net/get_net_fish_weight.dart';
 import 'package:fish_note/net/view/get_net/get_net_note.dart';
-import 'package:fish_note/net/view/net_tab_view.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -15,8 +14,7 @@ class GetNetView extends StatefulWidget {
   final String recordId;
 
   const GetNetView(
-      {Key? key, this.record, this.fishList, required this.recordId})
-      : super(key: key);
+      {super.key, this.record, this.fishList, required this.recordId});
 
   @override
   State<GetNetView> createState() => _GetNetViewState();

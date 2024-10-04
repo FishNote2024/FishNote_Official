@@ -80,11 +80,11 @@ class _GetNetNoteState extends State<GetNetNote> {
                     hintStyle: body1(gray6),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: gray2),
+                      borderSide: const BorderSide(color: gray2),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: primaryBlue500),
+                      borderSide: const BorderSide(color: primaryBlue500),
                     ),
                   ),
                 ),

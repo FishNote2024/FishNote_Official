@@ -18,7 +18,7 @@ void showFavoriteBottomSheet(
     TextEditingController latController,
     TextEditingController lngController,
     TextEditingController nameController,
-    Location location) {
+    LocationInfo location) {
   showModalBottomSheet(
     constraints: BoxConstraints(
       maxHeight: MediaQuery.of(context).size.height * 0.6,
@@ -100,13 +100,13 @@ void showFavoriteBottomSheet(
 }
 
 Widget _buildFavoriteItem(
-    Location favorite,
+    LocationInfo favorite,
     BuildContext context,
     WebViewController controller,
     TextEditingController latController,
     TextEditingController lngController,
     TextEditingController nameController,
-    Location location) {
+    LocationInfo location) {
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -145,7 +145,7 @@ Widget _buildFavoriteItem(
 }
 
 void showLocationBottomSheet(
-    BuildContext context, Location location, TextEditingController controller) {
+    BuildContext context, LocationInfo location, TextEditingController controller) {
   showModalBottomSheet(
     context: context,
     shape: const RoundedRectangleBorder(

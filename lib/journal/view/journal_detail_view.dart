@@ -1,5 +1,4 @@
 import 'package:fish_note/journal/view/journal_edit_view.dart';
-import 'package:fish_note/journal/view/journal_view.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,7 @@ import 'package:intl/intl.dart';
 class JournalDetailView extends StatefulWidget {
   final List<NetRecord> events;
 
-  const JournalDetailView({Key? key, required this.events}) : super(key: key);
+  const JournalDetailView({super.key, required this.events});
 
   @override
   _JournalDetailViewState createState() => _JournalDetailViewState();
@@ -39,7 +38,7 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -71,13 +70,13 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
         ],
       ),
       body: _events.isEmpty
-          ? Center(child: Text('No data available'))
+          ? const Center(child: Text('No data available'))
           : ListView.builder(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         itemCount: _events.length,
         itemBuilder: (context, index) {
           final event = _events[index];
-          final action = "투망";
+          const action = "투망";
           final locationName = event.locationName;
 
           return Card(
@@ -89,16 +88,15 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    DateFormat('HH:mm').format(event.throwDate) +
-                        ' ${locationName}',
+                    '${DateFormat('HH:mm').format(event.throwDate)} $locationName',
                     style: header3B(gray8),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text.rich(
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: '${action}시간: ',
+                          text: '$action시간: ',
                           style: body2(gray5),
                         ),
                         TextSpan(
@@ -109,12 +107,12 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                       ],
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text.rich(
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: '${action}위치: ',
+                          text: '$action위치: ',
                           style: body2(gray5),
                         ),
                         TextSpan(
@@ -125,12 +123,12 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                       ],
                     ),
                   ),
-                  SizedBox(height: 16.5),
+                  const SizedBox(height: 16.5),
                   Text(
                     '해상 기록',
                     style: header3B(gray8),
                   ),
-                  SizedBox(height: 16.5),
+                  const SizedBox(height: 16.5),
                   Text.rich(
                     TextSpan(
                       children: [
@@ -146,12 +144,12 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                     ),
                   ),
                   if (event.isGet) ...[
-                    SizedBox(height: 16.5),
+                    const SizedBox(height: 16.5),
                     Text(
                       '양망기록',
                       style: header3B(gray8),
                     ),
-                    SizedBox(height: 16.5),
+                    const SizedBox(height: 16.5),
                     Text.rich(
                       TextSpan(
                         children: [
@@ -167,12 +165,12 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                         ],
                       ),
                     ),
-                    SizedBox(height: 16.5),
+                    const SizedBox(height: 16.5),
                     Text(
                       '어획',
                       style: header3B(gray8),
                     ),
-                    SizedBox(height: 16.5),
+                    const SizedBox(height: 16.5),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: List.generate(event.species.length, (index) {
@@ -206,23 +204,23 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                                   ],
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 16,
                               ),
-                              Divider(),
+                              const Divider(),
                             ],
                           ),
                         );
                       }).toList(),
                     ),
-                    SizedBox(height: 16.5),
+                    const SizedBox(height: 16.5),
                     Text(
                       '메모',
                       style: header3B(gray8),
                     ),
-                    SizedBox(height: 16.5),
+                    const SizedBox(height: 16.5),
                     Container(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.grey),
                         borderRadius: BorderRadius.circular(8.0),

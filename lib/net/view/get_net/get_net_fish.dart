@@ -146,7 +146,7 @@ class _GetNetFishState extends State<GetNetFish> {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: ListTile(
-                            leading: Icon(Icons.add_circle_outline,
+                            leading: const Icon(Icons.add_circle_outline,
                                 color: primaryBlue500),
                             title: Text("어종 추가하기",
                                 style: header3R(primaryBlue500)),
@@ -169,7 +169,7 @@ class _GetNetFishState extends State<GetNetFish> {
                             },
                           ),
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                       ],
                     );
                   }

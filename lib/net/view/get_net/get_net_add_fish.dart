@@ -56,7 +56,7 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => NetTabBarView(initialTabIndex: 0)));
+                    builder: (context) => const NetTabBarView(initialTabIndex: 0)));
           },
         ),
         centerTitle: true,

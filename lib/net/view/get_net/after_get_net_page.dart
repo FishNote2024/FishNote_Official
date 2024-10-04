@@ -47,9 +47,9 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                           Row(
                             children: [
                               Text('양망시간', style: body3(gray5)),
-                              SizedBox(width: 16),
+                              const SizedBox(width: 16),
                               Text(
-                                '${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.getDate)}',
+                                DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(record.getDate),
                                 style: body1(textBlack),
                               ),
                             ],
@@ -58,16 +58,16 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                           Row(
                             children: [
                               Text('위치별명', style: body3(gray5)),
-                              SizedBox(width: 16),
+                              const SizedBox(width: 16),
                               Text(record.locationName,
                                   style: body1(textBlack)),
                             ],
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
                               Text('어종', style: body3(gray5)),
-                              SizedBox(width: 40),
+                              const SizedBox(width: 40),
                               Expanded(
                                 child: Text(
                                   record.species.isNotEmpty
@@ -79,11 +79,11 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
                               Text('어획량', style: body3(gray5)),
-                              SizedBox(width: 27),
+                              const SizedBox(width: 27),
                               Expanded(
                                 child: Text(
                                   record.amount.isNotEmpty
@@ -98,11 +98,11 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Row(
                             children: [
                               Text('메모', style: body3(gray5)),
-                              SizedBox(width: 40),
+                              const SizedBox(width: 40),
                               Expanded(
                                 child: Text(
                                   record.memo?.isNotEmpty == true
@@ -120,15 +120,15 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                             height: 51,
                             child: ElevatedButton(
                               onPressed: () {},
-                              child: Text('양망완료', style: header3B(textBlack)),
                               style: ElevatedButton.styleFrom(
                                 elevation: 0,
                                 backgroundColor: gray2,
                                 shape: RoundedRectangleBorder(
-                                  side: BorderSide(color: gray2),
+                                  side: const BorderSide(color: gray2),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
+                              child: Text('양망완료', style: header3B(textBlack)),
                             ),
                           ),
                         ],
@@ -144,7 +144,7 @@ class _AfterGetNetPageState extends State<AfterGetNetPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset('assets/icons/ledgerIcon.png', width: 130),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text("오늘도 만선하세요!", style: header3R(textBlack))
                 ],
               ),
