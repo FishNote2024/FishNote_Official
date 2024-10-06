@@ -152,22 +152,13 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           units[species] = unit;
         } else {
           if (!mounted) return;
-          showSnackBar(context, '경락시세를 불러오지 못했습니다.');
+          showSnackBar(context, '경락시세가 없습니다1');
         }
       }
 
       // speciesPrices에 저장된 key, value 값을 revenueEntries에 _addRevenueEntry() 하며 추가
       speciesPrices.forEach((species, prices) {
-        if (prices.isEmpty) {
-          revenueEntries.add({
-            '어종': '',
-            '위판량': '',
-            '단위': 'KG',
-            '위판단가': '',
-          });
-          revenuePriceControllers = List.generate(1, (index) => TextEditingController());
-          return;
-        }
+        if (prices.isEmpty) return;
 
         final average = prices.reduce((a, b) => a + b) / prices.length;
 
@@ -183,9 +174,19 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         revenueEntries.length,
         (index) => TextEditingController(text: revenueEntries[index]['위판단가']),
       );
+
+      if (revenueEntries.isEmpty) {
+        revenueEntries.add({
+          '어종': '',
+          '위판량': '',
+          '단위': 'KG',
+          '위판단가': '',
+        });
+        revenuePriceControllers = List.generate(1, (index) => TextEditingController());
+      }
     } catch (e) {
       if (!mounted) return;
-      showSnackBar(context, '경락시세를 불러오지 못했습니다.');
+      showSnackBar(context, '경락시세가 없습니다2');
     } finally {
       setState(() {
         _isLoading = false; // 로딩 완료
