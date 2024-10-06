@@ -31,9 +31,14 @@ class _LedgerPageState extends State<LedgerPage> {
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    setState(() {
+      _selectedDay = now;
+      _focusedDay = now;
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_panelController.isAttached) {
-        _panelController.hide();
+        _panelController.show();
       }
     });
   }
@@ -116,9 +121,10 @@ class _LedgerPageState extends State<LedgerPage> {
               calendarFormat: CalendarFormat.month,
               onDaySelected: (selectedDay, focusedDay) {
                 final today = DateTime.now();
-                final normalizedSelectedDay =
-                    DateTime(selectedDay.year, selectedDay.month, selectedDay.day);
-                final normalizedToday = DateTime(today.year, today.month, today.day);
+                final normalizedSelectedDay = DateTime(
+                    selectedDay.year, selectedDay.month, selectedDay.day);
+                final normalizedToday =
+                    DateTime(today.year, today.month, today.day);
 
                 if (normalizedSelectedDay.isAfter(normalizedToday)) {
                   return;
@@ -147,9 +153,11 @@ class _LedgerPageState extends State<LedgerPage> {
                 titleCentered: true,
                 formatButtonVisible: false,
                 titleTextStyle: body1(gray6),
-                headerPadding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
+                headerPadding:
+                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
                 leftChevronIcon: const Icon(Icons.arrow_back_ios, size: 15.0),
-                rightChevronIcon: const Icon(Icons.arrow_forward_ios, size: 15.0),
+                rightChevronIcon:
+                    const Icon(Icons.arrow_forward_ios, size: 15.0),
               ),
               daysOfWeekStyle: DaysOfWeekStyle(
                 weekdayStyle: body2(primaryBlue400),
@@ -191,7 +199,8 @@ class _LedgerPageState extends State<LedgerPage> {
                           if (event.totalSales > 0) {
                             markers.add(
                               Container(
-                                margin: const EdgeInsets.only(top: 40, right: 2),
+                                margin:
+                                    const EdgeInsets.only(top: 40, right: 2),
                                 child: const Icon(
                                   size: 5,
                                   Icons.circle,
@@ -203,7 +212,8 @@ class _LedgerPageState extends State<LedgerPage> {
                           if (event.totalPays > 0) {
                             markers.add(
                               Container(
-                                margin: const EdgeInsets.only(top: 40, right: 2),
+                                margin:
+                                    const EdgeInsets.only(top: 40, right: 2),
                                 child: const Icon(
                                   size: 5,
                                   Icons.circle,
@@ -258,23 +268,29 @@ class _LedgerPageState extends State<LedgerPage> {
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          if (DateTime(tempDay.year - 1, tempDay.month, 1).isAfter(firstDay)) {
-                            tempDay = DateTime(tempDay.year - 1, tempDay.month, 1);
+                          if (DateTime(tempDay.year - 1, tempDay.month, 1)
+                              .isAfter(firstDay)) {
+                            tempDay =
+                                DateTime(tempDay.year - 1, tempDay.month, 1);
                           }
                         });
                       },
                       icon: const Icon(Icons.arrow_back_ios, size: 14)),
                   const Spacer(),
                   Text(
-                      DateFormat.y('ko_KR')
-                          .format(tempDay.year == _focusedDay.year ? _focusedDay : tempDay),
+                      DateFormat.y('ko_KR').format(
+                          tempDay.year == _focusedDay.year
+                              ? _focusedDay
+                              : tempDay),
                       style: header4(black)),
                   const Spacer(),
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          if (DateTime(tempDay.year + 1, tempDay.month, 1).isBefore(lastDay)) {
-                            tempDay = DateTime(tempDay.year + 1, tempDay.month, 1);
+                          if (DateTime(tempDay.year + 1, tempDay.month, 1)
+                              .isBefore(lastDay)) {
+                            tempDay =
+                                DateTime(tempDay.year + 1, tempDay.month, 1);
                           }
                         });
                       },
@@ -290,7 +306,8 @@ class _LedgerPageState extends State<LedgerPage> {
                 children: [
                   Expanded(
                     child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         childAspectRatio: 1.5,
                       ),
@@ -300,7 +317,9 @@ class _LedgerPageState extends State<LedgerPage> {
                           onTap: () {
                             Navigator.pop(context, [tempDay.year, index + 1]);
                           },
-                          child: Center(child: Text('${index + 1}월', style: body1(gray6))),
+                          child: Center(
+                              child:
+                                  Text('${index + 1}월', style: body1(gray6))),
                         );
                       },
                     ),
@@ -314,8 +333,8 @@ class _LedgerPageState extends State<LedgerPage> {
     ).then((selectedValue) {
       if (selectedValue != null) {
         setState(() {
-          _focusedDay =
-              DateTime(selectedValue[0], selectedValue[1] + 1, 1).subtract(const Duration(days: 1));
+          _focusedDay = DateTime(selectedValue[0], selectedValue[1] + 1, 1)
+              .subtract(const Duration(days: 1));
           if (_focusedDay.isBefore(DateTime.now())) {
             _onDaySelected(_focusedDay, _focusedDay);
           }
@@ -335,11 +354,16 @@ class _LedgerPageState extends State<LedgerPage> {
       builder: (context, ledgerProvider, child) {
         final ledger = ledgerProvider.ledgers.firstWhere(
           (l) => isSameDay(l.date, _selectedDay),
-          orElse: () =>
-              LedgerModel(date: _selectedDay!, sales: [], pays: [], totalPays: 0, totalSales: 0),
+          orElse: () => LedgerModel(
+              date: _selectedDay!,
+              sales: [],
+              pays: [],
+              totalPays: 0,
+              totalSales: 0),
         );
 
-        final hasData = ledgerProvider.ledgers.any((l) => isSameDay(l.date, _selectedDay));
+        final hasData =
+            ledgerProvider.ledgers.any((l) => isSameDay(l.date, _selectedDay));
 
         return Container(
           padding: const EdgeInsets.only(left: 18.0, right: 50, bottom: 40),
@@ -348,7 +372,8 @@ class _LedgerPageState extends State<LedgerPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0, bottom: 24),
-                  child: SvgPicture.asset('assets/icons/topDivider.svg', width: 130),
+                  child: SvgPicture.asset('assets/icons/topDivider.svg',
+                      width: 130),
                 ),
                 Center(
                   child: !hasData
@@ -359,8 +384,10 @@ class _LedgerPageState extends State<LedgerPage> {
                             const SizedBox(height: 140),
                             Center(
                               child: Column(children: [
-                                Image.asset('assets/icons/ledgerIcon.png', width: 130),
-                                Text("오늘의 수입과 지출을 기록하세요!", style: body1(textBlack)),
+                                Image.asset('assets/icons/ledgerIcon.png',
+                                    width: 130),
+                                Text("오늘의 수입과 지출을 기록하세요!",
+                                    style: body1(textBlack)),
                               ]),
                             ),
                             const SizedBox(height: 130),
@@ -380,12 +407,14 @@ class _LedgerPageState extends State<LedgerPage> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: primaryBlue500,
                                   foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 12),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                 ),
-                                child: Text('장부 추가', style: header4(Colors.white)),
+                                child:
+                                    Text('장부 추가', style: header4(Colors.white)),
                               ),
                             ),
                           ],
@@ -394,7 +423,9 @@ class _LedgerPageState extends State<LedgerPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(DateFormat('yyyy.MM.dd').format(_selectedDay!.toLocal()),
+                            Text(
+                                DateFormat('yyyy.MM.dd')
+                                    .format(_selectedDay!.toLocal()),
                                 style: header3B(gray8)),
                             const SizedBox(height: 12),
                             SizedBox(
@@ -415,10 +446,12 @@ class _LedgerPageState extends State<LedgerPage> {
                                   backgroundColor: Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8),
-                                    side: const BorderSide(color: primaryBlue500),
+                                    side:
+                                        const BorderSide(color: primaryBlue500),
                                   ),
                                 ),
-                                child: Text('자세히 보기', style: header4(primaryBlue500)),
+                                child: Text('자세히 보기',
+                                    style: header4(primaryBlue500)),
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -482,9 +515,12 @@ class _LedgerPageState extends State<LedgerPage> {
         TableRow(
           children: [
             Text(sale.species, style: body2(black)),
-            Text('${sale.weight}${sale.unit == 'KG' ? 'kg' : 'cs'}', style: body2(black)),
-            Text('X ${NumberFormat('#,###').format(sale.price)}', style: body2(black)),
-            Text('= ${NumberFormat('#,###').format((sale.price * sale.weight).round())}원',
+            Text('${sale.weight}${sale.unit == 'KG' ? 'kg' : 'cs'}',
+                style: body2(black)),
+            Text('X ${NumberFormat('#,###').format(sale.price)}',
+                style: body2(black)),
+            Text(
+                '= ${NumberFormat('#,###').format((sale.price * sale.weight).round())}원',
                 style: body2(black)),
           ],
         ),
@@ -540,7 +576,8 @@ class _LedgerPageState extends State<LedgerPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(0.0),
-              child: Text('${NumberFormat('#,###').format(pay.amount)}원', style: body2(black)),
+              child: Text('${NumberFormat('#,###').format(pay.amount)}원',
+                  style: body2(black)),
             ),
           ],
         ),
@@ -577,30 +614,32 @@ class _LedgerPageState extends State<LedgerPage> {
       int totalRevenue = _selectedValue == 0
           ? _calculateTotalRevenue(ledgerProvider.ledgers
               // 현재 날짜로부터 30일 이전까지의 데이터만 필터링
-              .where((ledger) => ledger.date
-                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
-              .where((ledger) =>
-                  ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
+              .where((ledger) => ledger.date.isAfter(
+                  (_selectedDay ?? _focusedDay)
+                      .subtract(const Duration(days: 30))))
+              .where((ledger) => ledger.date.isBefore(
+                  (_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
               .toList())
           : _calculateTotalRevenue(ledgerProvider.ledgers
               // 현재 날짜로부터 7일 이전까지의 데이터만 필터링
-              .where((ledger) => ledger.date
-                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
-              .where((ledger) =>
-                  ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
+              .where((ledger) => ledger.date.isAfter(
+                  (_selectedDay ?? _focusedDay)
+                      .subtract(const Duration(days: 7))))
+              .where((ledger) => ledger.date.isBefore(
+                  (_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
               .toList());
       int totalExpense = _selectedValue == 0
           ? _calculateTotalExpense(ledgerProvider.ledgers
-              .where((ledger) => ledger.date
-                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
-              .where((ledger) =>
-                  ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
+              .where((ledger) => ledger.date.isAfter(
+                  (_selectedDay ?? _focusedDay)
+                      .subtract(const Duration(days: 30))))
+              .where((ledger) => ledger.date.isBefore(
+                  (_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
               .toList())
           : _calculateTotalExpense(ledgerProvider.ledgers
-              .where((ledger) => ledger.date
-                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
-              .where((ledger) =>
-                  ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
+              .where((ledger) => ledger.date.isAfter(
+                  (_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
+              .where((ledger) => ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
               .toList());
 
       return Column(
@@ -612,8 +651,10 @@ class _LedgerPageState extends State<LedgerPage> {
               DropdownButton<int>(
                   value: _selectedValue,
                   items: [
-                    DropdownMenuItem(value: 0, child: Text('월간 총 이익', style: body1(gray5))),
-                    DropdownMenuItem(value: 1, child: Text('주간 총 이익', style: body1(gray5)))
+                    DropdownMenuItem(
+                        value: 0, child: Text('월간 총 이익', style: body1(gray5))),
+                    DropdownMenuItem(
+                        value: 1, child: Text('주간 총 이익', style: body1(gray5)))
                   ],
                   onChanged: (value) {
                     setState(() {
@@ -628,7 +669,8 @@ class _LedgerPageState extends State<LedgerPage> {
               Text("계좌연동 기능 준비중", style: body3(gray3))
             ]),
           ),
-          Text("${NumberFormat("#,###").format(totalRevenue)}원", style: header1B(primaryBlue500)),
+          Text("${NumberFormat("#,###").format(totalRevenue)}원",
+              style: header1B(primaryBlue500)),
           const SizedBox(height: 20),
           Column(
             children: [
@@ -655,7 +697,8 @@ class _LedgerPageState extends State<LedgerPage> {
                 children: [
                   Text('합계', style: body1(gray4)),
                   const SizedBox(width: 12),
-                  Text('${NumberFormat("#,###").format(totalRevenue - totalExpense)}원',
+                  Text(
+                      '${NumberFormat("#,###").format(totalRevenue - totalExpense)}원',
                       style: header4(primaryBlue500))
                 ],
               ),
@@ -671,16 +714,17 @@ class _LedgerPageState extends State<LedgerPage> {
     return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
       final ledgers = _selectedValue == 0
           ? ledgerProvider.ledgers
-              .where((ledger) => ledger.date
-                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
-              .where((ledger) =>
-                  ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
+              .where((ledger) => ledger.date.isAfter((_selectedDay ?? _focusedDay)
+                  .subtract(const Duration(days: 30))))
+              .where((ledger) => ledger.date.isBefore(
+                  (_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
               .toList()
           : ledgerProvider.ledgers
+              .where((ledger) => ledger.date.isAfter(
+                  (_selectedDay ?? _focusedDay)
+                      .subtract(const Duration(days: 7))))
               .where((ledger) => ledger.date
-                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
-              .where((ledger) =>
-                  ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
+                  .isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
               .toList();
 
       return Column(
@@ -693,7 +737,10 @@ class _LedgerPageState extends State<LedgerPage> {
             ],
           ),
           const SizedBox(height: 13.0),
-          LineChartView(ledgers: ledgers, value: _selectedValue, time: _selectedDay ?? _focusedDay),
+          LineChartView(
+              ledgers: ledgers,
+              value: _selectedValue,
+              time: _selectedDay ?? _focusedDay),
         ],
       );
     });
@@ -703,16 +750,17 @@ class _LedgerPageState extends State<LedgerPage> {
     return Consumer<LedgerProvider>(builder: (context, ledgerProvider, child) {
       final ledgers = _selectedValue == 0
           ? ledgerProvider.ledgers
-              .where((ledger) => ledger.date
-                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 30))))
-              .where((ledger) =>
-                  ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
+              .where((ledger) => ledger.date.isAfter((_selectedDay ?? _focusedDay)
+                  .subtract(const Duration(days: 30))))
+              .where((ledger) => ledger.date.isBefore(
+                  (_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
               .toList()
           : ledgerProvider.ledgers
+              .where((ledger) => ledger.date.isAfter(
+                  (_selectedDay ?? _focusedDay)
+                      .subtract(const Duration(days: 7))))
               .where((ledger) => ledger.date
-                  .isAfter((_selectedDay ?? _focusedDay).subtract(const Duration(days: 7))))
-              .where((ledger) =>
-                  ledger.date.isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
+                  .isBefore((_selectedDay ?? _focusedDay).add(const Duration(days: 1))))
               .toList();
 
       return Column(
@@ -721,8 +769,10 @@ class _LedgerPageState extends State<LedgerPage> {
           DropdownButton<int>(
               value: _pieChartSelectedValue,
               items: [
-                DropdownMenuItem(value: 0, child: Text('매출 통계', style: body1(gray8))),
-                DropdownMenuItem(value: 1, child: Text('지출 통계', style: body1(gray8)))
+                DropdownMenuItem(
+                    value: 0, child: Text('매출 통계', style: body1(gray8))),
+                DropdownMenuItem(
+                    value: 1, child: Text('지출 통계', style: body1(gray8)))
               ],
               onChanged: (value) {
                 setState(() {
