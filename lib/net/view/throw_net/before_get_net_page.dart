@@ -38,8 +38,7 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
       // NetRecordProvider를 통해 상태 업데이트
       Provider.of<NetRecordProvider>(context, listen: false) // listen: false 추가
           .addNewRecord(name, location, throwTime, false,
-              userId: loginModelProvider.kakaoId, wave:wave
-      );
+              userId: loginModelProvider.kakaoId, wave: wave);
     }
   }
 
