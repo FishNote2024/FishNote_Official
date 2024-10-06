@@ -38,7 +38,7 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // 이전 화면에서 전달된 어종만을 사용하도록 초기화
       selectedList = widget.initialSelectedSpecies.toSet();
-      // 선택 목록이 업데이트되면 UI가 반영되도록 상태를 업데이트합니다.
+      // 선택 목록이 업데이트되면 UI가 반영되도록 상태를 업데이트
       setState(() {});
     });
   }
@@ -56,7 +56,8 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => NetTabBarView(initialTabIndex: 0)));
+                    builder: (context) =>
+                        const NetTabBarView(initialTabIndex: 0)));
           },
         ),
         centerTitle: true,
@@ -70,6 +71,9 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
         child: ElevatedButton(
           onPressed: selectedList.isNotEmpty
               ? () {
+                  setState(() {
+                    speciesList = selectedList.toList();
+                  });
                   netRecordProvider.setSpecies(selectedList);
                   Navigator.pop(context, widget.recordId);
                 }

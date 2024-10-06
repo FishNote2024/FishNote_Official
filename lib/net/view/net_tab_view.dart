@@ -31,20 +31,20 @@ class _NetTabBarViewState extends State<NetTabBarView>
       backgroundColor: backgroundBlue,
       appBar: AppBar(
         backgroundColor: backgroundBlue,
-        title: Text("${todayDate} 기록하기", style: body2(textBlack)),
+        title: Text("$todayDate 기록하기", style: body2(textBlack)),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, size: 15, color: gray7),
           onPressed: () {
             Navigator.push(
-                context, MaterialPageRoute(builder: (context) => Home()));
+                context, MaterialPageRoute(builder: (context) => const Home()));
           },
         ),
         bottom: TabBar(
           controller: _tabController,
           dividerColor: Colors.transparent,
           labelStyle: header4(primaryBlue500),
-          unselectedLabelStyle: TextStyle(color: gray5),
+          unselectedLabelStyle: const TextStyle(color: gray5),
           indicatorWeight: 1,
           indicatorColor: primaryBlue500,
           indicatorSize: TabBarIndicatorSize.tab,
@@ -59,7 +59,7 @@ class _NetTabBarViewState extends State<NetTabBarView>
         padding: const EdgeInsets.all(15.0),
         child: TabBarView(
           controller: _tabController,
-          children: [BeforeGetNetPage(), AfterGetNetPage()],
+          children: const [BeforeGetNetPage(), AfterGetNetPage()],
         ),
       ),
     );

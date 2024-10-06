@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'convertGridGps.dart';
-import 'weatherAPITimeSync.dart';
 
 class ApiService {
   Dio dio = Dio(BaseOptions(

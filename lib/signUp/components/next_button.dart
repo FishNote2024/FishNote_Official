@@ -2,7 +2,7 @@ import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 
 class NextButton extends StatefulWidget {
   const NextButton({
@@ -30,24 +30,34 @@ class _NextButtonState extends State<NextButton> {
   }
 
   Future<bool> _determinePermission() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    Location location = Location();
+    bool serviceEnabled;
+    PermissionStatus permissionGranted;
+
+    location.enableBackgroundMode(enable: false);
+
+    // 서비스가 가능한지 확인하는 코드
+    serviceEnabled = await location.serviceEnabled();
     if (!serviceEnabled) {
-      return Future.value(false);
-    }
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) {
         return Future.value(false);
       }
     }
-    if (permission == LocationPermission.deniedForever) {
-      return Future.value(false);
+
+    // 사용자의 허락이 떨어졌는지 확인하는 코드
+    permissionGranted = await location.hasPermission();
+    if (permissionGranted == PermissionStatus.denied) {
+      permissionGranted = await location.requestPermission();
+      if (permissionGranted != PermissionStatus.granted) {
+        return Future.value(false);
+      }
     }
+
     return Future.value(true);
   }
 
-  void _showPermissionModal(BuildContext context) {
+  void showPermissionModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -110,7 +120,7 @@ class _NextButtonState extends State<NextButton> {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: widget.value == "agree"
-          ? () => _showPermissionModal(context)
+          ? () => showPermissionModal(context)
           : widget.value == null || widget.value == ""
               ? null
               : () {

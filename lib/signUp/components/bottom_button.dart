@@ -18,7 +18,6 @@ class BottomButton extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 16.0),
       child: OutlinedButton(
         onPressed: onPressed,
-        child: Text(text, style: header1B(Colors.white)),
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryBlue500,
           foregroundColor: Colors.white,
@@ -27,6 +26,7 @@ class BottomButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
+        child: Text(text, style: header1B(Colors.white)),
       ),
     );
   }

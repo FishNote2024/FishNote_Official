@@ -61,6 +61,8 @@ class _LineChartViewState extends State<LineChartView> {
                 1000000;
           });
 
+    final maxY = values.reduce((value, element) => value > element ? value : element) + 0.3;
+
     return SizedBox(
       height: 250,
       child: Container(
@@ -75,12 +77,12 @@ class _LineChartViewState extends State<LineChartView> {
             minX: 0, // X축의 최소값
             maxX: values.length.toDouble() - 1, // Y축의 최소값
             minY: 0, // Y축의 최소값
-            maxY: values.reduce((value, element) => value > element ? value : element) + 0.3,
+            maxY: maxY,
             gridData: const FlGridData(show: false),
             titlesData: FlTitlesData(
               show: true,
               leftTitles: AxisTitles(
-                sideTitles: leftTitles(),
+                sideTitles: leftTitles(maxY),
               ),
               rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -164,10 +166,27 @@ class _LineChartViewState extends State<LineChartView> {
     );
   }
 
-  SideTitles leftTitles() => SideTitles(
+  SideTitles leftTitles(double maxY) => SideTitles(
         getTitlesWidget: leftTitleWidgets,
         showTitles: true,
-        interval: 0.5,
+        interval: calculateInterval(maxY),
         reservedSize: 32,
       );
+
+  // interval 계산 함수
+  double calculateInterval(double maxY) {
+    if (maxY <= 1) {
+      return 0.1; // maxY가 작을 때는 0.1 단위로 설정
+    } else if (maxY <= 5) {
+      return 0.5; // maxY가 5 이하일 때는 0.5 단위
+    } else if (maxY <= 10) {
+      return 1; // maxY가 10 이하일 때는 1 단위
+    } else if (maxY <= 50) {
+      return 5; // maxY가 50 이하일 때는 5 단위
+    } else if (maxY <= 100) {
+      return 10; // maxY가 클 경우 10 단위
+    } else {
+      return 50; // maxY가 100 이상일 경우 50 단위
+    }
+  }
 }

@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 import '../../signUp/model/location.dart';
 
-Widget buildRemoveFavoriteDialog(BuildContext context, Location location) {
+Widget buildRemoveFavoriteDialog(BuildContext context, LocationInfo location) {
   final userInformationProvider = Provider.of<UserInformationProvider>(context);
   final loginModelProvider = Provider.of<LoginModelProvider>(context);
 
