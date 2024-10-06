@@ -71,14 +71,10 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
         child: ElevatedButton(
           onPressed: selectedList.isNotEmpty
               ? () {
-                  print("👉🏻 selectedList: $selectedList");
                   setState(() {
                     speciesList = selectedList.toList();
                   });
-                  print("👉🏻 speciesList: $speciesList");
                   netRecordProvider.setSpecies(selectedList);
-                  print(
-                      "👉🏻 netRecordProvider.species: ${netRecordProvider.species}");
                   Navigator.pop(context, widget.recordId);
                 }
               : null,
