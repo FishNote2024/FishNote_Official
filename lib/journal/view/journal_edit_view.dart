@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fish_note/journal/view/journal_detail_view.dart';
 import 'package:fish_note/login/model/login_model_provider.dart';
 import 'package:fish_note/signUp/model/user_information_provider.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +13,7 @@ class JournalEditView extends StatefulWidget {
   final List<NetRecord> events;
   final String recordId;
 
-  const JournalEditView({super.key, required this.events, required this.recordId});
+  const JournalEditView({Key? key, required this.events, required this.recordId}) : super(key: key);
 
   @override
   _JournalEditViewState createState() => _JournalEditViewState();
@@ -23,8 +25,11 @@ class _JournalEditViewState extends State<JournalEditView> {
   DateTime? originalDateTime; // Store the original date
   DateTime? tempThrowDateTime;
   DateTime? tempGetDateTime;
-  final TextEditingController _dateTimeController = TextEditingController();
-  final TextEditingController _dateGetTimeController = TextEditingController();
+  GeoPoint geoPoint=GeoPoint(0.0,0.0);
+  TextEditingController _dateTimeController = TextEditingController();
+  TextEditingController _dateGetTimeController = TextEditingController();
+  TextEditingController latitudeController = TextEditingController();
+  TextEditingController longitudeController = TextEditingController();
   late NetRecordProvider netRecordProvider;
   late UserInformationProvider userInformationProvider;
   late LoginModelProvider loginModelProvider;
@@ -56,7 +61,27 @@ class _JournalEditViewState extends State<JournalEditView> {
       _dateGetTimeController.text = DateFormat('yyyy년 MM월 dd일 (E) HH시 mm분', 'ko_KR').format(tempGetDateTime ?? DateTime.now());
       species = {...netRecordProvider.species, ...userInformationProvider.species};
       memo = widget.events.first.memo ?? '';
+      latitudeController.addListener(_updateGeoPoint);
+      longitudeController.addListener(_updateGeoPoint);
     }
+  }
+
+  @override
+  void dispose() {
+    latitudeController.removeListener(_updateGeoPoint);
+    longitudeController.removeListener(_updateGeoPoint);
+    super.dispose();
+  }
+
+  void _updateGeoPoint() {
+    // 위도와 경도 값을 입력받아 GeoPoint를 업데이트
+    final latitude = double.tryParse(latitudeController.text) ?? 0.0;
+    final longitude = double.tryParse(longitudeController.text) ?? 0.0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        geoPoint = GeoPoint(latitude, longitude);
+      });
+    });
   }
 
   @override
@@ -67,7 +92,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             List<NetRecord> updatedList = updateEventList(); // Gather all updated records
             Navigator.pop(context, updatedList); // Pass the updated list back
@@ -75,7 +100,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         ),
         title: Text(
           DateFormat('MM월 dd일 (E)', 'ko_KR').format(selectedDateTime!),
-          style: const TextStyle(color: black),
+          style: TextStyle(color: black),
         ),
         centerTitle: true,
         actions: [
@@ -85,12 +110,14 @@ class _JournalEditViewState extends State<JournalEditView> {
               Provider.of<NetRecordProvider>(context, listen: false).updateRecord(
                 widget.recordId,
                 userId,
+                // species: ,
+                // amount: ,
+                location: geoPoint,
                 throwTime: tempThrowDateTime,
                 getTime: tempGetDateTime,
                 memo: memo,
               );
               List<NetRecord> updatedList = updateEventList(); // Gather all updated records
-              print("dkssud${updatedList[0].throwDate}");
               Navigator.pop(context, updatedList); // Pass the updated list back
             },
             child: Text(
@@ -101,7 +128,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         ],
       ),
       body: ListView.builder(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         itemCount: widget.events.length,
         itemBuilder: (context, index) {
           final event = widget.events[index];
@@ -133,21 +160,23 @@ class _JournalEditViewState extends State<JournalEditView> {
                 Expanded(
                   child: _buildEditableTextField(
                     label: '위도',
-                    initialValue: event.location.latitude.toString(),
+                    textController: latitudeController,
+                    initValue: event.location.latitude.toString(),
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: _buildEditableTextField(
                     label: '경도',
-                    initialValue: event.location.longitude.toString(),
+                    textController:  longitudeController,
+                    initValue:event.location.longitude.toString(),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
             _buildSectionTitle('해상기록'),
-            const SizedBox(height: 16.5),
+            SizedBox(height: 16.5),
             Text.rich(
               TextSpan(
                 children: [
@@ -199,7 +228,8 @@ class _JournalEditViewState extends State<JournalEditView> {
     return Row(
       children: [
         Text(
-          '${DateFormat('HH:mm').format(event.throwDate)} ${event.locationName}',
+          DateFormat('HH:mm').format(event.throwDate) +
+              ' ${event.locationName}',
           style: header3B(gray8),
         ),
         const Spacer(),
@@ -210,7 +240,7 @@ class _JournalEditViewState extends State<JournalEditView> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text('삭제 확인'),
-                  content: const Text('정말로 삭제하시겠습니까?'),
+                  content: const Text('해당 투망 기록을 삭제하시겠습니까?'),
                   actions: <Widget>[
                     TextButton(
                       child: const Text('취소'),
@@ -244,10 +274,14 @@ class _JournalEditViewState extends State<JournalEditView> {
 
   Widget _buildEditableTextField({
     required String label,
-    required String initialValue,
     IconData? icon,
     VoidCallback? onIconPressed,
+    required TextEditingController textController,
+    required String initValue
   }) {
+    if (textController.text.isEmpty) {
+      textController.text = initValue;
+    }
     return TextField(
       decoration: InputDecoration(
         labelText: label,
@@ -257,9 +291,10 @@ class _JournalEditViewState extends State<JournalEditView> {
                 onPressed: onIconPressed,
               )
             : null,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(),
       ),
-      controller: TextEditingController(text: initialValue),
+      controller: textController,
+      keyboardType: TextInputType.number,
     );
   }
 
@@ -277,7 +312,7 @@ class _JournalEditViewState extends State<JournalEditView> {
                 onPressed: onIconPressed,
               )
             : null,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(),
       ),
       controller: _dateTimeController,
     );
@@ -297,7 +332,7 @@ class _JournalEditViewState extends State<JournalEditView> {
                 onPressed: onIconPressed,
               )
             : null,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(),
       ),
       controller: _dateGetTimeController,
     );
@@ -349,7 +384,7 @@ class _JournalEditViewState extends State<JournalEditView> {
                     event.amount.removeAt(index);
                   });
                 },
-                icon: const Icon(Icons.delete, color: alertRedBackground),
+                icon: Icon(Icons.delete, color: alertRedBackground),
                 label: Text('삭제하기', style: body2(alertRedBackground)),
               ),
             ),
@@ -385,10 +420,10 @@ class _JournalEditViewState extends State<JournalEditView> {
   }
 
   Widget _buildEditableMemo(String initialMemo) {
-    TextEditingController memoController = TextEditingController(text: memo);
+    TextEditingController _memoController = TextEditingController(text: memo);
 
     return Container(
-      padding: const EdgeInsets.all(8.0),
+      padding: EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(8.0),
@@ -399,13 +434,13 @@ class _JournalEditViewState extends State<JournalEditView> {
       ),
       child: TextField(
         maxLines: null,
-        controller: memoController,
+        controller: _memoController,
         onChanged: (value) {
           setState(() {
             memo = value;
           });
         },
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           border: InputBorder.none,
           hintText: '메모를 입력하세요',
         ),
@@ -421,6 +456,7 @@ class _JournalEditViewState extends State<JournalEditView> {
       lastDate: DateTime(2101),
       confirmText: "확인",
       cancelText: "뒤로",
+      initialEntryMode: DatePickerEntryMode.calendarOnly
     );
     if (pickedDate != null) {
       TimeOfDay? pickedTime = await showTimePicker(
@@ -460,6 +496,7 @@ class _JournalEditViewState extends State<JournalEditView> {
       lastDate: DateTime(2101),
       confirmText: "확인",
       cancelText: "뒤로",
+        initialEntryMode: DatePickerEntryMode.calendarOnly
     );
     if (pickedDate != null) {
       TimeOfDay? pickedTime = await showTimePicker(
@@ -501,7 +538,7 @@ class _JournalEditViewState extends State<JournalEditView> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(),
       ),
       value: value != null && items.contains(value) ? value : null,
       items: items.map((String itemValue) {
@@ -526,7 +563,7 @@ class _JournalEditViewState extends State<JournalEditView> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: const OutlineInputBorder(),
+        border: OutlineInputBorder(),
         suffixText: 'kg',
       ),
       keyboardType: TextInputType.number,
