@@ -37,6 +37,8 @@ class _SignUpLocationState extends State<SignUpLocation> {
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..loadRequest(Uri.parse(mapUrl!));
+
+    _getLocation();
   }
 
   @override
@@ -59,8 +61,8 @@ class _SignUpLocationState extends State<SignUpLocation> {
         setState(() {
           _latController.text = '${position.latitude}';
           _lngController.text = '${position.longitude}';
-          if ((position.latitude! > 31 && position.latitude! < 40) &&
-              (position.longitude! > 120 && position.longitude! < 132)) {
+          if ((position.latitude! > 0 && position.latitude! < 40) &&
+              (position.longitude! > 0 && position.longitude! < 132)) {
             _controller
                 .runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
             latlon = GeoPoint(position.latitude!, position.longitude!);

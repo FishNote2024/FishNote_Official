@@ -40,6 +40,8 @@ class _FavoritesViewState extends State<FavoritesView> {
             : null;
       })
       ..loadRequest(Uri.parse(mapUrl!));
+
+    _getLocation();
   }
 
   @override
@@ -63,8 +65,8 @@ class _FavoritesViewState extends State<FavoritesView> {
         setState(() {
           _latController.text = '${position.latitude}';
           _lngController.text = '${position.longitude}';
-          if ((position.latitude! > 31 && position.latitude! < 40) &&
-              (position.longitude! > 120 && position.longitude! < 132)) {
+          if ((position.latitude! > 0 && position.latitude! < 40) &&
+              (position.longitude! > 0 && position.longitude! < 132)) {
             _controller
                 .runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
             locationInfo.setLatlon(GeoPoint(position.latitude!, position.longitude!));
