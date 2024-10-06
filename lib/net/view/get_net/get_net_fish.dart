@@ -25,26 +25,35 @@ class _GetNetFishState extends State<GetNetFish> {
 
   @override
   void initState() {
+    final netRecordProvider =
+        Provider.of<NetRecordProvider>(context, listen: false);
     super.initState();
-    // 최초 로딩 시에만 UserInformationProvider에서 species를 가져와서 NetRecordProvider에 설정
+    speciesList = netRecordProvider.species;
+    print("🥨 speciesList : $speciesList");
+    // 프로바이더에 저장하는데 뭔가 페이지 나가면 자꾸 초기화되는 것 같음. 들어오자마자 init에 복제해둬서 그런가?
+    // init에서 복제하는 조건을 수정할 필요가 있음.
+
+    // 최초 로딩 시에 speciesList가 비어있을 경우에만 UserInformationProvider에서 species를 가져와서 설정
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // isFirstLoad == true일 때만 실행
-      if (isFirstLoad) {
+      // speciesList가 비어있을 경우에만 실행
+      if (speciesList.isEmpty) {
         final userInformationProvider =
             Provider.of<UserInformationProvider>(context, listen: false);
-        final netRecordProvider =
-            Provider.of<NetRecordProvider>(context, listen: false);
+        // final netRecordProvider =
+        //     Provider.of<NetRecordProvider>(context, listen: false);
 
-        // 초기 데이터 복사
+        // UserInformationProvider에서 species 가져오기
         speciesList = userInformationProvider.species.toSet();
 
         // NetRecordProvider에 species 초기값 설정
         netRecordProvider.setSpecies(speciesList);
-        isFirstLoad = false;
       }
       setState(() {
-        speciesList = speciesList;
+        // speciesList를 UI에 반영
+        // speciesList = NetRecordProvider().species;
+        print("init ---> speciesList: $speciesList");
       });
+      print("222-> speciesList is now: ${speciesList.isEmpty}");
     });
   }
 

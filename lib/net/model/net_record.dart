@@ -400,6 +400,11 @@ class NetRecordProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void resetSpecies() {
+    _species.clear();
+    notifyListeners();
+  }
+
   void setAmount(List<double> amount) {
     _amount = amount;
     notifyListeners();

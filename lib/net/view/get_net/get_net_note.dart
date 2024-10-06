@@ -29,6 +29,7 @@ class _GetNetNoteState extends State<GetNetNote> {
 
   @override
   Widget build(BuildContext context) {
+    final netRecordProvider = Provider.of<NetRecordProvider>(context);
     return Scaffold(
       resizeToAvoidBottomInset: true,
       bottomNavigationBar: Padding(
@@ -38,8 +39,16 @@ class _GetNetNoteState extends State<GetNetNote> {
             // 메모가 비어있지 않으면 저장하고 다음 페이지로 이동
             if (memo.isNotEmpty) {
               _submitMemo();
+              // 넘어가기 전에 어종 초기화
+              netRecordProvider.resetSpecies();
+              print(
+                  "🥨🥨 speciesList after submit (not empty): ${netRecordProvider.species}");
             } else {
               _submitMemo();
+              // 넘어가기 전에 어종 초기화
+              netRecordProvider.resetSpecies();
+              print(
+                  "🥨🥨 speciesList after submit (empty): ${netRecordProvider.species}");
             }
           },
           style: ElevatedButton.styleFrom(
