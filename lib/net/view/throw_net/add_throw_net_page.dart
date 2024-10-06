@@ -216,11 +216,11 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
-                        onSubmitted: (value) => setState(() {
+                        onChanged: (value) => setState(() {
                           if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
-                            if ((double.parse(_latController.text) > 31 &&
+                            if ((double.parse(_latController.text) > 0 &&
                                     double.parse(_latController.text) < 40) &&
-                                (double.parse(_lngController.text) > 120 &&
+                                (double.parse(_lngController.text) > 0 &&
                                     double.parse(_lngController.text) < 132)) {
                               _controller.runJavaScript(
                                 'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
@@ -228,7 +228,7 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                               latlon = GeoPoint(double.parse(_latController.text),
                                   double.parse(_lngController.text));
                             } else {
-                              showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                              showSnackBar(context, '지도의 범위 밖입니다. 정확히 입력해 주세요.');
                             }
                           }
                         }),
@@ -270,11 +270,11 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
-                        onSubmitted: (value) => setState(() {
+                        onChanged: (value) => setState(() {
                           if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
-                            if ((double.parse(_latController.text) > 31 &&
+                            if ((double.parse(_latController.text) > 0 &&
                                     double.parse(_latController.text) < 40) &&
-                                (double.parse(_lngController.text) > 120 &&
+                                (double.parse(_lngController.text) > 0 &&
                                     double.parse(_lngController.text) < 132)) {
                               _controller.runJavaScript(
                                 'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
@@ -282,7 +282,7 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
                               latlon = GeoPoint(double.parse(_latController.text),
                                   double.parse(_lngController.text));
                             } else {
-                              showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                              showSnackBar(context, '지도의 범위 밖입니다. 정확히 입력해 주세요.');
                             }
                           }
                         }),
