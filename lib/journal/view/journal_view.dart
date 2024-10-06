@@ -305,22 +305,20 @@ class _JournalViewState extends State<JournalView> {
               ),
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, day, netRecord) {
-                  netRecord =
-                      Provider.of<NetRecordProvider>(context).netRecords;
-                  // netRecord 리스트가 비어있지 않고, day가 _focusedDay나 _selectedDay가 아닌 경우 마커 생성
-                  if (netRecord.isNotEmpty &&
-                          !isSameDay(day, _focusedDay) &&
-                          !isSameDay(day, _selectedDay)
-                      && !isSameDay(day, _today)
-                      ) {
+                  netRecord = Provider.of<NetRecordProvider>(context).netRecords;
+
+                  // 전체 netRecord에서 marker 조건을 처리
+                  bool hasThrowDateMarker = netRecord.any((event) => isSameDay(event.throwDate, day));
+                  bool hasGetDateMarker = netRecord.any((event) => event.isGet && isSameDay(event.getDate, day));
+
+                  // Marker가 있어야 하는 경우에만 Row 위젯을 반환
+                  if (hasThrowDateMarker || hasGetDateMarker) {
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: netRecord.expand((event) {
-                        // event에 대해 마커 리스트 생성
                         List<Widget> markers = [];
 
-                        // isGet이 true인 경우
-                        // throwDate에 대해 primaryBlue500 색상의 마커 추가
+                        // throwDate에 해당하는 경우 파란색 마커 추가
                         if (isSameDay(event.throwDate, day)) {
                           markers.add(
                             Container(
@@ -332,27 +330,27 @@ class _JournalViewState extends State<JournalView> {
                               ),
                             ),
                           );
-                          if (event.isGet) {
-                            if (isSameDay(event.getDate, day)) {
-                              markers.add(
-                                Container(
-                                  margin:
-                                      const EdgeInsets.only(top: 40, right: 2),
-                                  child: const Icon(
-                                    size: 5,
-                                    Icons.circle,
-                                    color: primaryYellow700,
-                                  ),
-                                ),
-                              );
-                            }
-                          }
+                        }
+
+                        // getDate에 해당하는 경우 노란색 마커 추가
+                        if (event.isGet && isSameDay(event.getDate, day)) {
+                          markers.add(
+                            Container(
+                              margin: const EdgeInsets.only(top: 40, right: 2),
+                              child: const Icon(
+                                size: 5,
+                                Icons.circle,
+                                color: primaryYellow700,
+                              ),
+                            ),
+                          );
                         }
 
                         return markers;
                       }).toList(),
                     );
                   }
+
                   return const SizedBox.shrink(); // 조건에 맞지 않으면 빈 공간 반환
                 },
               ),
