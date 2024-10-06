@@ -21,7 +21,8 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
   final Dio dio = Dio();
   String apiKey = dotenv.env['MARKET_PRICE_API_KEY']!;
 
-  final String apiUrl = 'http://apis.data.go.kr/1192000/select0030List/getselect0030List';
+  final String apiUrl =
+      'http://apis.data.go.kr/1192000/select0030List/getselect0030List';
   String baseDt = DateFormat('yyyyMMdd').format(DateTime.now());
   Set<String> registeredSpecies = {};
   String mxtrNm = '';
@@ -32,7 +33,8 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final userInformationProvider = Provider.of<UserInformationProvider>(context);
+    final userInformationProvider =
+        Provider.of<UserInformationProvider>(context);
     registeredSpecies = userInformationProvider.species;
     mxtrNm = userInformationProvider.affiliation;
     fetchData();
@@ -118,7 +120,8 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
         if (response.statusCode == 200) {
           parseApiResponse(response.data, species);
         } else {
-          print('Error fetching data for species $species: ${response.statusCode}');
+          print(
+              'Error fetching data for species $species: ${response.statusCode}');
         }
       }
 
@@ -182,161 +185,203 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
               children: [
                 Row(
                   children: [
-                    Text(mxtrNm, style: header3B(primaryBlue500).copyWith(height: 0.6)),
+                    Text(mxtrNm,
+                        style: header3B(primaryBlue500).copyWith(height: 0.6)),
                     IconButton(
                       key: _iconKey,
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
-                      icon: const Icon(Icons.error_outline, color: gray5, size: 25),
+                      icon: const Icon(Icons.error_outline,
+                          color: gray5, size: 25),
                       onPressed: _showTooltip,
                     ),
                   ],
                 ),
                 Text("오늘의 경락시세", style: header3B().copyWith(height: 0.6)),
                 const SizedBox(height: 12),
-                Text("소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
-                    style: caption1(gray4)),
-                const SizedBox(height: 40),
+                // Text("소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
+                //     style: caption1(gray4)),
+                // const SizedBox(height: 40),
                 if (isLoading)
                   const Center(
                     child: CircularProgressIndicator(),
                   )
                 else if (hasData)
-                  Table(
-                    columnWidths: const {
-                      0: FlexColumnWidth(3),
-                      1: FlexColumnWidth(1),
-                      2: FlexColumnWidth(2),
-                      3: FlexColumnWidth(1),
-                      4: FlexColumnWidth(3),
-                    },
-                    border: const TableBorder(
-                        horizontalInside: BorderSide(color: gray1),
-                        verticalInside: BorderSide(color: Colors.transparent)),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TableRow(
-                        decoration: const BoxDecoration(
-                            border: Border(bottom: BorderSide(color: gray2, width: 1))),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
-                            child: Text('주요 어종', style: body2(gray5)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
-                            child: Text('규격', style: body2(gray5)),
-                          ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Padding(
-                              padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
-                              child: Text('수량/단위', style: body2(gray5)),
-                            ),
-                          ),
-                          const Align(
-                            alignment: Alignment.centerRight,
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
-                              child: Text(''),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 12, 12, 12),
-                            child: Row(
-                              children: [
-                                const Spacer(),
-                                Text('가격', style: body2(gray5)),
-                              ],
-                            ),
-                          ),
-                        ],
+                      Text(
+                        "소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
+                        style: caption1(gray4),
+                        textAlign: TextAlign.start,
                       ),
-                      for (var species in groupedData.keys)
-                        TableRow(
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
-                              child: Text(
-                                '${groupedData[species]!['status']}$species',
-                                style: body2(),
+                      const SizedBox(height: 28),
+                      Table(
+                        columnWidths: const {
+                          0: FlexColumnWidth(3),
+                          1: FlexColumnWidth(1),
+                          2: FlexColumnWidth(2.5),
+                          3: FlexColumnWidth(1),
+                          4: FlexColumnWidth(3),
+                        },
+                        border: const TableBorder(
+                            horizontalInside: BorderSide(color: gray1),
+                            verticalInside:
+                                BorderSide(color: Colors.transparent)),
+                        children: [
+                          TableRow(
+                            decoration: const BoxDecoration(
+                                border: Border(
+                                    bottom:
+                                        BorderSide(color: gray2, width: 1))),
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(4, 12, 0, 12),
+                                child: Text('주요 어종', style: body2(gray5)),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(4, 12, 0, 12),
-                              child: Text(
-                                groupedData[species]!['goodsStndrdNm'] ?? '',
-                                style: body2(),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(4, 12, 0, 12),
+                                child: Text('규격', style: body2(gray5)),
                               ),
-                            ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Padding(
-                                padding: const EdgeInsets.fromLTRB(12, 12, 0, 12),
-                                child: Text(
-                                  groupedData[species]!['goodsUnitNm'] ?? '',
-                                  style: body2(),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 12, 0, 12),
+                                  child: Text('수량/단위', style: body2(gray5)),
                                 ),
                               ),
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                const SizedBox(height: 20),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 1.0),
-                                  child: SvgPicture.asset('assets/icons/up.svg'),
-                                ),
-                                const SizedBox(height: 15),
-                                SvgPicture.asset('assets/icons/avg.svg'),
-                                const SizedBox(height: 15),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 1.0),
-                                  child: SvgPicture.asset('assets/icons/down.svg'),
-                                ),
-                                const SizedBox(height: 20),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(0, 12, 10, 12),
-                              child: Align(
+                              const Align(
                                 alignment: Alignment.centerRight,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 12, 0, 12),
+                                  child: Text(''),
+                                ),
+                              ),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(0, 12, 12, 12),
+                                child: Row(
                                   children: [
-                                    Text(
-                                      '${groupedData[species]!['maxPrice']!.toStringAsFixed(0)}원',
-                                      style: body2(),
-                                    ),
-                                    Text(
-                                      '${groupedData[species]!['avgPrice']!.toStringAsFixed(0)}원',
-                                      style: body2(),
-                                    ),
-                                    Text(
-                                      '${groupedData[species]!['minPrice']!.toStringAsFixed(0)}원',
-                                      style: body2(),
-                                    ),
+                                    const Spacer(),
+                                    Text('가격', style: body2(gray5)),
                                   ],
                                 ),
                               ),
+                            ],
+                          ),
+                          for (var species in groupedData.keys)
+                            TableRow(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(4, 12, 0, 12),
+                                  child: Text(
+                                    '${groupedData[species]!['status']}$species',
+                                    style: body2(),
+                                  ),
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(4, 12, 0, 12),
+                                  child: Text(
+                                    groupedData[species]!['goodsStndrdNm'] ??
+                                        '',
+                                    style: body2(),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        12, 12, 0, 12),
+                                    child: Text(
+                                      groupedData[species]!['goodsUnitNm'] ??
+                                          '',
+                                      style: body2(),
+                                    ),
+                                  ),
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    const SizedBox(height: 20),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: SvgPicture.asset(
+                                          'assets/icons/up.svg'),
+                                    ),
+                                    const SizedBox(height: 15),
+                                    SvgPicture.asset('assets/icons/avg.svg'),
+                                    const SizedBox(height: 15),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 1.0),
+                                      child: SvgPicture.asset(
+                                          'assets/icons/down.svg'),
+                                    ),
+                                    const SizedBox(height: 20),
+                                  ],
+                                ),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(0, 12, 10, 12),
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          '${groupedData[species]!['maxPrice']!.toStringAsFixed(0)}원',
+                                          style: body2(),
+                                        ),
+                                        Text(
+                                          '${groupedData[species]!['avgPrice']!.toStringAsFixed(0)}원',
+                                          style: body2(),
+                                        ),
+                                        Text(
+                                          '${groupedData[species]!['minPrice']!.toStringAsFixed(0)}원',
+                                          style: body2(),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                        ],
+                      ),
                     ],
                   )
                 else
-                  const Center(child: Text('No data available')),
-                const SizedBox(height: 20),
+                  Center(
+                      child: Column(
+                    children: [
+                      SizedBox(height: 52),
+                      Image.asset('assets/icons/ledgerIcon.png', width: 130),
+                      Text("오늘 해당 데이터가 없어요.", style: body1(textBlack))
+                    ],
+                  )),
+                const SizedBox(height: 46),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: primaryBlue500, width: 1),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: () {
                         Navigator.push(
-                            context, MaterialPageRoute(builder: (context) => const MyPageView()));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MyPageView()));
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
