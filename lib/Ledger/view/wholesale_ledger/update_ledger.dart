@@ -717,7 +717,7 @@ class _UpdateLedgerPageState extends State<UpdateLedgerPage> {
 
     setState(() {
       expenseEntries.removeAt(index);
-      expenseControllers[index].dispose();
+      expenseControllers.removeAt(index);
     });
   }
 }

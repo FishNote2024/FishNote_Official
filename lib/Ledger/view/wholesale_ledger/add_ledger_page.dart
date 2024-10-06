@@ -156,19 +156,18 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         }
       }
 
-      if (speciesPrices.isEmpty) {
-        revenueEntries.add({
-          '어종': '',
-          '위판량': '',
-          '단위': 'KG',
-          '위판단가': '',
-        });
-        revenuePriceControllers = List.generate(1, (index) => TextEditingController());
-        return;
-      }
       // speciesPrices에 저장된 key, value 값을 revenueEntries에 _addRevenueEntry() 하며 추가
       speciesPrices.forEach((species, prices) {
-        if (prices.isEmpty) return;
+        if (prices.isEmpty) {
+          revenueEntries.add({
+            '어종': '',
+            '위판량': '',
+            '단위': 'KG',
+            '위판단가': '',
+          });
+          revenuePriceControllers = List.generate(1, (index) => TextEditingController());
+          return;
+        }
 
         final average = prices.reduce((a, b) => a + b) / prices.length;
 
