@@ -29,15 +29,12 @@ class _JournalViewState extends State<JournalView> {
   final firstDay = DateTime.utc(2020, 12, 31);
   final lastDay = DateTime.utc(2031, 1, 1);
 
-
   bool hasEventsOnDay(DateTime day) {
     // _netRecords가 초기화되지 않았을 경우 빈 리스트를 반환하도록 방어 코드 추가
     if (_netRecords.isEmpty) return false;
 
-    return _netRecords.any((event) =>
-    isSameDay(event.throwDate, day));
+    return _netRecords.any((event) => isSameDay(event.throwDate, day));
   }
-
 
   @override
   void initState() {
@@ -45,12 +42,10 @@ class _JournalViewState extends State<JournalView> {
     _selectedDay = _focusedDay;
     _selectedPanelDate = _today;
     _selectedEvents = ValueNotifier<List<NetRecord>>([]);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _panelController.hide(); // 앱 시작 시 패널을 숨김
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   _panelController.hide(); // 앱 시작 시 패널을 숨김
+    // });
   }
-
-
 
   @override
   Future<void> didChangeDependencies() async {
@@ -58,8 +53,10 @@ class _JournalViewState extends State<JournalView> {
     _netRecords = Provider.of<NetRecordProvider>(context).netRecords;
     _initPanelWithData();
   }
+
   void _initPanelWithData() {
-    List<NetRecord> initialEvents = _getEventsForDay(_selectedDay??DateTime.now());
+    List<NetRecord> initialEvents =
+        _getEventsForDay(_selectedDay ?? DateTime.now());
     if (initialEvents.isNotEmpty) {
       _selectedEvents.value = initialEvents;
     }
@@ -67,12 +64,13 @@ class _JournalViewState extends State<JournalView> {
 
 // 고쳐보기
   List<NetRecord> _getEventsForDay(DateTime day) {
-    return _netRecords.where((event) => isSameDay(event.throwDate, day)).toList();
+    return _netRecords
+        .where((event) => isSameDay(event.throwDate, day))
+        .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: backgroundBlue,
       appBar: AppBar(
@@ -131,97 +129,99 @@ class _JournalViewState extends State<JournalView> {
         const SizedBox(height: 16.0),
         Center(
           child: hasEventsOnDay(_selectedDay!)
-              ?
-          DetailButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => JournalDetailView(
-                    events: _getEventsForDay(_selectedDay!),
-                  ),
-                ),
-              );
-            },
-            text: "자세히 보기",
-            color: primaryBlue500,
-          )
+              ? DetailButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => JournalDetailView(
+                          events: _getEventsForDay(_selectedDay!),
+                        ),
+                      ),
+                    );
+                  },
+                  text: "자세히 보기",
+                  color: primaryBlue500,
+                )
               : DetailButton(
-            onPressed: () {},
-            text: "자세히 보기",
-            color: gray3,
-          ),
+                  onPressed: () {},
+                  text: "자세히 보기",
+                  color: gray3,
+                ),
         ),
         const SizedBox(height: 16.0),
-
         hasEventsOnDay(_selectedDay!)
             ? ValueListenableBuilder<List<NetRecord>>(
-          valueListenable: _selectedEvents,
-          builder: (context, value, _) {
-            return ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              itemCount: value.length,
-              itemBuilder: (context, index) {
-                final event = value[index];
-                return Card(
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          DateFormat('HH:mm').format(event.throwDate) + ' ${event.locationName}',
-                          style: header3B(primaryBlue500),
+                valueListenable: _selectedEvents,
+                builder: (context, value, _) {
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: value.length,
+                    itemBuilder: (context, index) {
+                      final event = value[index];
+                      return Card(
+                        color: Colors.white,
+                        margin: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                DateFormat('HH:mm').format(event.throwDate) +
+                                    ' ${event.locationName}',
+                                style: header3B(primaryBlue500),
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                  '투망 시간 : ' +
+                                      DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
+                                          .format(event.throwDate),
+                                  style: body2(gray8)),
+                              SizedBox(height: 4),
+                              Text(
+                                '투망 위치 : 위도 ${event.location.latitude} 경도 ${event.location.longitude}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              SizedBox(height: 16.5),
+                              Text(
+                                '해상 기록',
+                                style: header4(gray8),
+                              ),
+                              SizedBox(height: 16.5),
+                              Text(
+                                '파고: ${event.wave}m', //파고
+                                style: body1(gray8),
+                              ),
+                            ],
+                          ),
                         ),
-                        SizedBox(height: 16),
-                        Text('투망 시간 : ' + DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.throwDate),
-
-                            style: body2(gray8)
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          '투망 위치 : 위도 ${event.location.latitude} 경도 ${event.location.longitude}',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        SizedBox(height: 16.5),
-                        Text(
-                          '해상 기록',
-                          style: header4(gray8),
-                        ),
-                        SizedBox(height: 16.5),
-                        Text(
-                          '파고: ${event.wave}m', //파고
-                          style: body1(gray8),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        )
+                      );
+                    },
+                  );
+                },
+              )
             : Align(
-          alignment: Alignment.topCenter, // 세로로 맨 위에, 가로로 중앙에 배치
-          child: Column(
-            children: [
-              SizedBox(height: 65),
-              Image.asset(
-                'assets/icons/no_journal.png',
+                alignment: Alignment.topCenter, // 세로로 맨 위에, 가로로 중앙에 배치
+                child: Column(
+                  children: [
+                    SizedBox(height: 65),
+                    Image.asset(
+                      'assets/icons/no_journal.png',
+                    ),
+                    Text(
+                      "오늘도 만선 하세요!",
+                      style: body1(gray8),
+                    ),
+                  ],
+                ),
               ),
-              Text(
-                "오늘도 만선 하세요!",
-                style: body1(gray8),
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
+
   Widget _buildTableCalendar() {
     return Column(
       children: [
@@ -236,8 +236,10 @@ class _JournalViewState extends State<JournalView> {
                 return isSameDay(_selectedDay, day);
               },
               // 심화 : 값이 바뀔때마다 로직이 따라올 경우 stream, rxdart
-              onDaySelected: (selectedDay, focusedDay) {  //초기 진입시에 이게 되도록 설정
-                if (!isSameDay(_selectedDay, selectedDay)) { //함수로 뺀 후 // initState에서 설정해주고 난뒤 한번 돌게끔 설정
+              onDaySelected: (selectedDay, focusedDay) {
+                //초기 진입시에 이게 되도록 설정
+                if (!isSameDay(_selectedDay, selectedDay)) {
+                  //함수로 뺀 후 // initState에서 설정해주고 난뒤 한번 돌게끔 설정
                   setState(() {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
@@ -260,9 +262,11 @@ class _JournalViewState extends State<JournalView> {
                 titleCentered: true,
                 formatButtonVisible: false,
                 titleTextStyle: body1(gray6),
-                headerPadding: const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
+                headerPadding:
+                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
                 leftChevronIcon: const Icon(Icons.arrow_back_ios, size: 15.0),
-                rightChevronIcon: const Icon(Icons.arrow_forward_ios, size: 15.0),
+                rightChevronIcon:
+                    const Icon(Icons.arrow_forward_ios, size: 15.0),
               ),
               daysOfWeekStyle: DaysOfWeekStyle(
                 weekdayStyle: body2(primaryBlue400),
@@ -273,25 +277,42 @@ class _JournalViewState extends State<JournalView> {
                 outsideTextStyle: body2(gray3),
                 defaultTextStyle: body2(gray8),
                 todayTextStyle: body2(Colors.white),
-                selectedTextStyle: body2(gray8),
+                selectedTextStyle: (day) {
+                  // If the selected day is today, apply a special style
+                  if (isSameDay(day, _today)) {
+                    return body2(Colors.white); // White text for today when selected
+                  }
+                  return body2(gray8); // Default style for other selected days
+                }(_selectedDay),
+                selectedDecoration: (day) {
+                  // If the selected day is the same as today, prioritize the todayDecoration (blue)
+                  if (isSameDay(day, _today)) {
+                    return const BoxDecoration(
+                      color: primaryBlue500, // Show blue for today
+                      shape: BoxShape.circle,
+                    );
+                  }
+                  return const BoxDecoration(
+                    color: primaryYellow500,
+                    // Show yellow for other selected days
+                    shape: BoxShape.circle,
+                  );
+                }(_selectedDay),
                 todayDecoration: const BoxDecoration(
                   color: primaryBlue500,
-                  shape: BoxShape.circle,
-                ),
-                selectedDecoration: const BoxDecoration(
-                  color: primaryYellow500,
                   shape: BoxShape.circle,
                 ),
               ),
               calendarBuilders: CalendarBuilders(
                 markerBuilder: (context, day, netRecord) {
-                  netRecord = Provider.of<NetRecordProvider>(context).netRecords;
+                  netRecord =
+                      Provider.of<NetRecordProvider>(context).netRecords;
                   // netRecord 리스트가 비어있지 않고, day가 _focusedDay나 _selectedDay가 아닌 경우 마커 생성
                   if (netRecord.isNotEmpty &&
-                      !isSameDay(day, _focusedDay) &&
-                      !isSameDay(day, _selectedDay)
-                  // && !isSameDay(day, _today)
-                  ) {
+                          !isSameDay(day, _focusedDay) &&
+                          !isSameDay(day, _selectedDay)
+                      && !isSameDay(day, _today)
+                      ) {
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: netRecord.expand((event) {
@@ -311,11 +332,12 @@ class _JournalViewState extends State<JournalView> {
                               ),
                             ),
                           );
-                          if(event.isGet){
+                          if (event.isGet) {
                             if (isSameDay(event.getDate, day)) {
                               markers.add(
                                 Container(
-                                  margin: const EdgeInsets.only(top: 40, right: 2),
+                                  margin:
+                                      const EdgeInsets.only(top: 40, right: 2),
                                   child: const Icon(
                                     size: 5,
                                     Icons.circle,
@@ -371,23 +393,29 @@ class _JournalViewState extends State<JournalView> {
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          if (DateTime(tempDay.year - 1, tempDay.month, 1).isAfter(firstDay)) {
-                            tempDay = DateTime(tempDay.year - 1, tempDay.month, 1);
+                          if (DateTime(tempDay.year - 1, tempDay.month, 1)
+                              .isAfter(firstDay)) {
+                            tempDay =
+                                DateTime(tempDay.year - 1, tempDay.month, 1);
                           }
                         });
                       },
                       icon: const Icon(Icons.arrow_back_ios, size: 14)),
                   const Spacer(),
                   Text(
-                      DateFormat.y('ko_KR')
-                          .format(tempDay.year == _focusedDay.year ? _focusedDay : tempDay),
+                      DateFormat.y('ko_KR').format(
+                          tempDay.year == _focusedDay.year
+                              ? _focusedDay
+                              : tempDay),
                       style: header4(black)),
                   const Spacer(),
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          if (DateTime(tempDay.year + 1, tempDay.month, 1).isBefore(lastDay)) {
-                            tempDay = DateTime(tempDay.year + 1, tempDay.month, 1);
+                          if (DateTime(tempDay.year + 1, tempDay.month, 1)
+                              .isBefore(lastDay)) {
+                            tempDay =
+                                DateTime(tempDay.year + 1, tempDay.month, 1);
                           }
                         });
                       },
@@ -403,7 +431,8 @@ class _JournalViewState extends State<JournalView> {
                 children: [
                   Expanded(
                     child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 3,
                         childAspectRatio: 1.5,
                       ),
@@ -413,7 +442,9 @@ class _JournalViewState extends State<JournalView> {
                           onTap: () {
                             Navigator.pop(context, [tempDay.year, index + 1]);
                           },
-                          child: Center(child: Text('${index + 1}월', style: body1(gray6))),
+                          child: Center(
+                              child:
+                                  Text('${index + 1}월', style: body1(gray6))),
                         );
                       },
                     ),
@@ -432,8 +463,4 @@ class _JournalViewState extends State<JournalView> {
       }
     });
   }
-
-
-
 }
-

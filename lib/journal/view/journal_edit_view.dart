@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:fish_note/theme/colors.dart';
 import 'package:fish_note/theme/font.dart';
 import 'package:provider/provider.dart';
-import 'package:table_calendar/table_calendar.dart';
 import '../../net/model/net_record.dart';
 
 class JournalEditView extends StatefulWidget {
@@ -78,7 +77,6 @@ class _JournalEditViewState extends State<JournalEditView> {
     // 위도와 경도 값을 입력받아 GeoPoint를 업데이트
     final latitude = double.tryParse(latitudeController.text) ?? 0.0;
     final longitude = double.tryParse(longitudeController.text) ?? 0.0;
-    print("$latitude");
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
         geoPoint = GeoPoint(latitude, longitude);
@@ -242,7 +240,7 @@ class _JournalEditViewState extends State<JournalEditView> {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: const Text('삭제 확인'),
-                  content: const Text('정말로 삭제하시겠습니까?'),
+                  content: const Text('해당 투망 기록을 삭제하시겠습니까?'),
                   actions: <Widget>[
                     TextButton(
                       child: const Text('취소'),
@@ -458,6 +456,7 @@ class _JournalEditViewState extends State<JournalEditView> {
       lastDate: DateTime(2101),
       confirmText: "확인",
       cancelText: "뒤로",
+      initialEntryMode: DatePickerEntryMode.calendarOnly
     );
     if (pickedDate != null) {
       TimeOfDay? pickedTime = await showTimePicker(
@@ -497,6 +496,7 @@ class _JournalEditViewState extends State<JournalEditView> {
       lastDate: DateTime(2101),
       confirmText: "확인",
       cancelText: "뒤로",
+        initialEntryMode: DatePickerEntryMode.calendarOnly
     );
     if (pickedDate != null) {
       TimeOfDay? pickedTime = await showTimePicker(
