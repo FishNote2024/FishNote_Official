@@ -114,7 +114,7 @@ class LoginViewState extends State<LoginView> {
             alignment: Alignment.bottomCenter,
             child: SvgPicture.asset(
               'assets/icons/splash_back.svg',
-              fit: BoxFit.fitWidth,
+              width: MediaQuery.of(context).size.width,
             ),
           ),
           Align(

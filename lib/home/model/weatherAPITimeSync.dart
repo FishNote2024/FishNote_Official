@@ -41,14 +41,14 @@ class WeatherAPITimeSync {
     DateTime forecastDate = now;
 
     if (now.hour < 2 || (now.hour == 2 && now.minute < 30)) {
-      forecastDate = now.subtract(Duration(days: 1));
+      forecastDate = now.subtract(const Duration(days: 1));
     }
 
 
-    if (now.isBefore(closestDateTime.subtract(Duration(minutes: 30)))) {
+    if (now.isBefore(closestDateTime.subtract(const Duration(minutes: 30)))) {
       if (closestTimeIndex == 0) {
         closestTime = '2300';
-        forecastDate = now.subtract(Duration(days: 1));
+        forecastDate = now.subtract(const Duration(days: 1));
       } else {
         closestTime = referenceTimes[closestTimeIndex - 1];
       }

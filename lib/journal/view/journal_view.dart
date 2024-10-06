@@ -77,7 +77,7 @@ class _JournalViewState extends State<JournalView> {
         backgroundColor: backgroundBlue,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.push(
               context,
@@ -152,51 +152,45 @@ class _JournalViewState extends State<JournalView> {
         const SizedBox(height: 16.0),
         hasEventsOnDay(_selectedDay!)
             ? ValueListenableBuilder<List<NetRecord>>(
-                valueListenable: _selectedEvents,
-                builder: (context, value, _) {
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: value.length,
-                    itemBuilder: (context, index) {
-                      final event = value[index];
-                      return Card(
-                        color: Colors.white,
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                DateFormat('HH:mm').format(event.throwDate) +
-                                    ' ${event.locationName}',
-                                style: header3B(primaryBlue500),
-                              ),
-                              SizedBox(height: 16),
-                              Text(
-                                  '투망 시간 : ' +
-                                      DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
-                                          .format(event.throwDate),
-                                  style: body2(gray8)),
-                              SizedBox(height: 4),
-                              Text(
-                                '투망 위치 : 위도 ${event.location.latitude} 경도 ${event.location.longitude}',
-                                style: TextStyle(fontSize: 14),
-                              ),
-                              SizedBox(height: 16.5),
-                              Text(
-                                '해상 기록',
-                                style: header4(gray8),
-                              ),
-                              SizedBox(height: 16.5),
-                              Text(
-                                '파고: ${event.wave}m', //파고
-                                style: body1(gray8),
-                              ),
-                            ],
-                          ),
+          valueListenable: _selectedEvents,
+          builder: (context, value, _) {
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: value.length,
+              itemBuilder: (context, index) {
+                final event = value[index];
+                return Card(
+                  color: Colors.white,
+                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${DateFormat('HH:mm').format(event.throwDate)} ${event.locationName}',
+                          style: header3B(primaryBlue500),
+                        ),
+                        const SizedBox(height: 16),
+                        Text('투망 시간 : ${DateFormat('MM.dd(E) HH시 mm분', 'ko_KR').format(event.throwDate)}',
+
+                            style: body2(gray8)
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '투망 위치 : 위도 ${event.location.latitude} 경도 ${event.location.longitude}',
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                        const SizedBox(height: 16.5),
+                        Text(
+                          '해상 기록',
+                          style: header4(gray8),
+                        ),
+                        const SizedBox(height: 16.5),
+                        Text(
+                          '파고: ${event.wave}m', //파고
+                          style: body1(gray8),
                         ),
                       );
                     },
@@ -204,19 +198,16 @@ class _JournalViewState extends State<JournalView> {
                 },
               )
             : Align(
-                alignment: Alignment.topCenter, // 세로로 맨 위에, 가로로 중앙에 배치
-                child: Column(
-                  children: [
-                    SizedBox(height: 65),
-                    Image.asset(
-                      'assets/icons/no_journal.png',
-                    ),
-                    Text(
-                      "오늘도 만선 하세요!",
-                      style: body1(gray8),
-                    ),
-                  ],
-                ),
+          alignment: Alignment.topCenter, // 세로로 맨 위에, 가로로 중앙에 배치
+          child: Column(
+            children: [
+              const SizedBox(height: 65),
+              Image.asset(
+                'assets/icons/no_journal.png',
+              ),
+              Text(
+                "오늘도 만선 하세요!",
+                style: body1(gray8),
               ),
       ],
     );

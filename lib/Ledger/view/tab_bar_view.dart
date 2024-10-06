@@ -34,7 +34,7 @@ class _LedgerTabBarViewState extends State<LedgerTabBarView>
           controller: _tabController,
           dividerColor: Colors.transparent,
           labelStyle: header4(primaryBlue500),
-          unselectedLabelStyle: TextStyle(color: gray5),
+          unselectedLabelStyle: const TextStyle(color: gray5),
           indicatorWeight: 1,
           indicatorColor: primaryBlue500,
           indicatorSize: TabBarIndicatorSize.tab,
@@ -49,7 +49,7 @@ class _LedgerTabBarViewState extends State<LedgerTabBarView>
         padding: const EdgeInsets.all(15.0),
         child: TabBarView(
           controller: _tabController,
-          children: [LedgerPage(initialTabIndex: 0), MarketPriceTable()],
+          children: const [LedgerPage(initialTabIndex: 0), MarketPriceTable()],
         ),
       ),
     );

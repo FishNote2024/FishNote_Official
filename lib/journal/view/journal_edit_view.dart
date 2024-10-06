@@ -13,7 +13,7 @@ class JournalEditView extends StatefulWidget {
   final List<NetRecord> events;
   final String recordId;
 
-  const JournalEditView({Key? key, required this.events, required this.recordId}) : super(key: key);
+  const JournalEditView({super.key, required this.events, required this.recordId});
 
   @override
   _JournalEditViewState createState() => _JournalEditViewState();
@@ -92,7 +92,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             List<NetRecord> updatedList = updateEventList(); // Gather all updated records
             Navigator.pop(context, updatedList); // Pass the updated list back
@@ -100,7 +100,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         ),
         title: Text(
           DateFormat('MM월 dd일 (E)', 'ko_KR').format(selectedDateTime!),
-          style: TextStyle(color: black),
+          style: const TextStyle(color: black),
         ),
         centerTitle: true,
         actions: [
@@ -128,7 +128,7 @@ class _JournalEditViewState extends State<JournalEditView> {
         ],
       ),
       body: ListView.builder(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         itemCount: widget.events.length,
         itemBuilder: (context, index) {
           final event = widget.events[index];
@@ -176,7 +176,7 @@ class _JournalEditViewState extends State<JournalEditView> {
             ),
             const SizedBox(height: 16),
             _buildSectionTitle('해상기록'),
-            SizedBox(height: 16.5),
+            const SizedBox(height: 16.5),
             Text.rich(
               TextSpan(
                 children: [
@@ -228,8 +228,7 @@ class _JournalEditViewState extends State<JournalEditView> {
     return Row(
       children: [
         Text(
-          DateFormat('HH:mm').format(event.throwDate) +
-              ' ${event.locationName}',
+          '${DateFormat('HH:mm').format(event.throwDate)} ${event.locationName}',
           style: header3B(gray8),
         ),
         const Spacer(),
@@ -291,7 +290,7 @@ class _JournalEditViewState extends State<JournalEditView> {
                 onPressed: onIconPressed,
               )
             : null,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       controller: textController,
       keyboardType: TextInputType.number,
@@ -312,7 +311,7 @@ class _JournalEditViewState extends State<JournalEditView> {
                 onPressed: onIconPressed,
               )
             : null,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       controller: _dateTimeController,
     );
@@ -332,7 +331,7 @@ class _JournalEditViewState extends State<JournalEditView> {
                 onPressed: onIconPressed,
               )
             : null,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       controller: _dateGetTimeController,
     );
@@ -384,7 +383,7 @@ class _JournalEditViewState extends State<JournalEditView> {
                     event.amount.removeAt(index);
                   });
                 },
-                icon: Icon(Icons.delete, color: alertRedBackground),
+                icon: const Icon(Icons.delete, color: alertRedBackground),
                 label: Text('삭제하기', style: body2(alertRedBackground)),
               ),
             ),
@@ -420,10 +419,10 @@ class _JournalEditViewState extends State<JournalEditView> {
   }
 
   Widget _buildEditableMemo(String initialMemo) {
-    TextEditingController _memoController = TextEditingController(text: memo);
+    TextEditingController memoController = TextEditingController(text: memo);
 
     return Container(
-      padding: EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(8.0),
@@ -434,13 +433,13 @@ class _JournalEditViewState extends State<JournalEditView> {
       ),
       child: TextField(
         maxLines: null,
-        controller: _memoController,
+        controller: memoController,
         onChanged: (value) {
           setState(() {
             memo = value;
           });
         },
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
           border: InputBorder.none,
           hintText: '메모를 입력하세요',
         ),
@@ -538,7 +537,7 @@ class _JournalEditViewState extends State<JournalEditView> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
       value: value != null && items.contains(value) ? value : null,
       items: items.map((String itemValue) {
@@ -563,7 +562,7 @@ class _JournalEditViewState extends State<JournalEditView> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
         suffixText: 'kg',
       ),
       keyboardType: TextInputType.number,
