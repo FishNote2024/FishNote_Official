@@ -120,10 +120,18 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         border: Border.all(
-                          color: gray2,
+                          color: gray1,
                           width: 1.0,
                         ),
                         borderRadius: BorderRadius.circular(8.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1), // 그림자 색상
+                            spreadRadius: 1, // 그림자의 퍼짐 정도
+                            blurRadius: 6, // 그림자의 흐림 정도
+                            offset: Offset(0, 3), // 그림자의 위치 (x, y)
+                          ),
+                        ],
                       ),
                       child: ListTile(
                         title: Row(
