@@ -7,6 +7,7 @@ import 'package:fish_note/net/view/get_net/get_net_fish_weight.dart';
 import 'package:fish_note/net/view/get_net/get_net_note.dart';
 import 'package:intl/intl.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:provider/provider.dart';
 
 class GetNetView extends StatefulWidget {
   final NetRecord? record;
@@ -71,9 +72,13 @@ class _GetNetViewState extends State<GetNetView> {
             onPressed: () {
               setState(() {
                 if (_currentPage > 1) {
-                  _currentPage -= 1;
+                  _currentPage -= 1; // 현재 페이지가 1보다 크면 페이지 감소
                 } else {
-                  Navigator.pop(context);
+                  // 현재 페이지가 1일 때
+                  final netRecordProvider =
+                      Provider.of<NetRecordProvider>(context, listen: false);
+                  netRecordProvider.resetSpecies(); // 상태 초기화
+                  Navigator.pop(context); // 페이지를 닫음
                 }
               });
             },
