@@ -20,10 +20,13 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
   final Map<String, TextEditingController> _controllers = {};
   bool allFieldsFilled = false;
   List<String> speciesList = [];
-
+  // late FocusNode _focusNode;
+  final Map<String, FocusNode> _focusNodes = {};
+  Color borderColor = gray3; // 기본 테두리 색상
   @override
   void initState() {
     super.initState();
+    // _focusNode = FocusNode();
 
     // NetRecordProvider에서 species 리스트를 가져와서 speciesList에 넣기
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -35,20 +38,22 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
 
       if (record != null && record.species.isNotEmpty) {
         speciesList = record.species.toList();
-
         // speciesList에 있는 각 species에 대해 TextEditingController를 설정
         for (String species in speciesList) {
           _controllers[species] = TextEditingController();
           _controllers[species]!.addListener(_updateButtonState);
+          _focusNodes[species] = FocusNode();
         }
       }
-
       setState(() {});
     });
   }
 
   @override
   void dispose() {
+    for (var focusNode in _focusNodes.values) {
+      focusNode.dispose(); // FocusNode 해제
+    }
     for (var controller in _controllers.values) {
       controller.dispose();
     }
@@ -146,7 +151,9 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                               height: 33,
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: gray3,
+                                  color: _focusNodes[species]?.hasFocus == true
+                                      ? primaryBlue500 // 포커스가 있을 경우
+                                      : gray3, // 기본 테두리 색상
                                   width: 1.0,
                                 ),
                                 color: Colors.white,
@@ -154,6 +161,7 @@ class _GetNetFishWeightState extends State<GetNetFishWeight> {
                               ),
                               child: TextField(
                                 controller: _controllers[species],
+                                focusNode: _focusNodes[species],
                                 keyboardType: TextInputType.number,
                                 decoration: const InputDecoration(
                                   border: InputBorder.none,
