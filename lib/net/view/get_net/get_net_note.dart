@@ -88,7 +88,7 @@ class _GetNetNoteState extends State<GetNetNote> {
                   decoration: InputDecoration(
                     hintText: '이곳에 메모를 입력해주세요.\n메모는 스킵 가능합니다.',
                     hintStyle: header3R(gray2),
-                    border: OutlineInputBorder(
+                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: gray2),
                     ),
