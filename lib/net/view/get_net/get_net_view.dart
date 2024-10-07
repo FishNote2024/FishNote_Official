@@ -89,7 +89,8 @@ class _GetNetViewState extends State<GetNetView> {
               style: body1(textBlack))),
       body: _currentPage != _totalPages - 1
           ? Padding(
-              padding: const EdgeInsets.only(left: 0, right: 0, bottom: 16),
+              padding:
+                  const EdgeInsets.only(left: 0, right: 0, bottom: 16, top: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
