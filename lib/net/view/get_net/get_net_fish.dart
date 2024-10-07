@@ -113,35 +113,42 @@ class _GetNetFishState extends State<GetNetFish> {
                   if (index < speciesList.length) {
                     String species = speciesList.elementAt(index);
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: selectedList.contains(species)
-                                ? primaryBlue500
-                                : gray2,
-                            width: 1.0,
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: selectedList.contains(species)
+                                  ? primaryBlue500
+                                  : gray1,
+                              width: 1.0,
+                            ),
+                            borderRadius: BorderRadius.circular(8.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1), // 그림자 색상
+                                spreadRadius: 1, // 그림자의 퍼짐 정도
+                                blurRadius: 6, // 그림자의 흐림 정도
+                                offset: Offset(0, 3), // 그림자의 위치 (x, y)
+                              ),
+                            ],
                           ),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: ListTile(
-                          title: Text(
-                            species,
-                            style: header3R(textBlack),
+                          child: ListTile(
+                            title: Text(
+                              species,
+                              style: header3R(textBlack),
+                            ),
+                            onTap: () {
+                              setState(() {
+                                if (selectedList.contains(species)) {
+                                  selectedList.remove(species);
+                                } else {
+                                  selectedList.add(species);
+                                }
+                              });
+                            },
                           ),
-                          onTap: () {
-                            setState(() {
-                              if (selectedList.contains(species)) {
-                                selectedList.remove(species);
-                              } else {
-                                selectedList.add(species);
-                              }
-                            });
-                          },
-                        ),
-                      ),
-                    );
+                        ));
                   } else {
                     return Column(
                       children: [
@@ -149,16 +156,23 @@ class _GetNetFishState extends State<GetNetFish> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             border: Border.all(
-                              color: gray2,
+                              color: gray1,
                               width: 1.0,
                             ),
                             borderRadius: BorderRadius.circular(8.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1), // 그림자 색상
+                                spreadRadius: 1, // 그림자의 퍼짐 정도
+                                blurRadius: 4, // 그림자의 흐림 정도
+                                offset: Offset(0, 3), // 그림자의 위치 (x, y)
+                              ),
+                            ],
                           ),
                           child: ListTile(
                             leading: const Icon(Icons.add_circle_outline,
-                                color: primaryBlue500),
-                            title: Text("어종 추가하기",
-                                style: header3R(primaryBlue500)),
+                                color: gray4),
+                            title: Text("어종 추가하기", style: header3B(gray4)),
                             onTap: () async {
                               // GetNetAddFish로 이동해서 목록을 수정한 후 돌아오도록
                               print("---> speciesList: $speciesList");
