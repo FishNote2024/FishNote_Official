@@ -16,8 +16,11 @@ class NetWaitCard extends StatelessWidget {
     final waitingRecords = netRecords.where((record) => !record.isGet).toList();
 
     if (waitingRecords.isEmpty) {
-      return const Center(
-        child: Text("양망 대기 중인 기록이 없습니다."),
+      return Center(
+        child: Padding(
+          padding: EdgeInsets.only(top: 50.0, bottom: 50),
+          child: Text("양망 대기 중인 기록이 없습니다.", style: body2(gray5)),
+        ),
       );
     }
 
