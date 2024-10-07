@@ -94,7 +94,7 @@ class _GetNetNoteState extends State<GetNetNote> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: gray6),
+                      borderSide: const BorderSide(color: gray2),
                     ),
                   ),
                 ),
