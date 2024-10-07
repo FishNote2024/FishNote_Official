@@ -78,6 +78,7 @@ class _GetNetNoteState extends State<GetNetNote> {
               SizedBox(
                 height: 418,
                 child: TextField(
+                  style: header3R(gray6),
                   onChanged: (value) {
                     setState(() {
                       memo = value;
@@ -86,14 +87,14 @@ class _GetNetNoteState extends State<GetNetNote> {
                   maxLines: 35,
                   decoration: InputDecoration(
                     hintText: '이곳에 메모를 입력해주세요.\n메모는 스킵 가능합니다.',
-                    hintStyle: body1(gray6),
-                    border: OutlineInputBorder(
+                    hintStyle: header3R(gray2),
+                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: gray2),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: primaryBlue500),
+                      borderSide: const BorderSide(color: gray6),
                     ),
                   ),
                 ),
