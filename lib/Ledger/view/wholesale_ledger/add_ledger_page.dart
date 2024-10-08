@@ -152,22 +152,13 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
           units[species] = unit;
         } else {
           if (!mounted) return;
-          showSnackBar(context, '경락시세를 불러오지 못했습니다.');
+          showSnackBar(context, '경락시세가 없습니다1');
         }
       }
 
       // speciesPrices에 저장된 key, value 값을 revenueEntries에 _addRevenueEntry() 하며 추가
       speciesPrices.forEach((species, prices) {
-        if (prices.isEmpty) {
-          revenueEntries.add({
-            '어종': '',
-            '위판량': '',
-            '단위': 'KG',
-            '위판단가': '',
-          });
-          revenuePriceControllers = List.generate(1, (index) => TextEditingController());
-          return;
-        }
+        if (prices.isEmpty) return;
 
         final average = prices.reduce((a, b) => a + b) / prices.length;
 
@@ -183,9 +174,19 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
         revenueEntries.length,
         (index) => TextEditingController(text: revenueEntries[index]['위판단가']),
       );
+
+      if (revenueEntries.isEmpty) {
+        revenueEntries.add({
+          '어종': '',
+          '위판량': '',
+          '단위': 'KG',
+          '위판단가': '',
+        });
+        revenuePriceControllers = List.generate(1, (index) => TextEditingController());
+      }
     } catch (e) {
       if (!mounted) return;
-      showSnackBar(context, '경락시세를 불러오지 못했습니다.');
+      showSnackBar(context, '경락시세가 없습니다2');
     } finally {
       setState(() {
         _isLoading = false; // 로딩 완료
@@ -240,12 +241,22 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                           expenseEntries[0]['비용'] == '') {
                         showSnackBar(context, '위판 정보나 지출 정보를 입력해주세요');
                         return;
-                      } else if (revenueEntries.length > 1 &&
+                      }
+
+// 위판 정보가 입력되지 않은 경우
+                      if (revenueEntries.isNotEmpty &&
                           revenueEntries.any((entry) =>
                               entry['어종'] == '' || entry['위판량'] == '' || entry['위판단가'] == '')) {
                         showSnackBar(context, '위판 정보를 모두 입력해주세요');
                         return;
-                      } else if (expenseEntries.length > 1 &&
+                      } else if (expenseEntries.length == 1 &&
+                          expenseEntries[0]['구분'] == '' &&
+                          expenseEntries[0]['비용'] == '') {
+                        expenseEntries.removeAt(0);
+                      }
+
+// 지출 정보가 입력되지 않은 경우
+                      if (expenseEntries.isNotEmpty &&
                           expenseEntries.any((entry) => entry['구분'] == '' || entry['비용'] == '')) {
                         showSnackBar(context, '지출 정보를 모두 입력해주세요');
                         return;
@@ -254,11 +265,8 @@ class _AddLedgerPageState extends State<AddLedgerPage> {
                           revenueEntries[0]['위판량'] == '' &&
                           revenueEntries[0]['위판단가'] == '') {
                         revenueEntries.removeAt(0);
-                      } else if (expenseEntries.length == 1 &&
-                          expenseEntries[0]['구분'] == '' &&
-                          expenseEntries[0]['비용'] == '') {
-                        expenseEntries.removeAt(0);
                       }
+
                       _saveLedger(context);
                     },
                     child: Text("저장", style: body2(primaryYellow900)),

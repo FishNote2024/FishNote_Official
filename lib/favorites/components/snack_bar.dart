@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 showSnackBar(BuildContext context, String message) {
   final snackBar = SnackBar(
-    margin: const EdgeInsets.fromLTRB(16, 0, 16, 450),
+    margin: const EdgeInsets.fromLTRB(16, 0, 16, 100),
     content: Text(
       message,
       style: header4(backgroundWhite),

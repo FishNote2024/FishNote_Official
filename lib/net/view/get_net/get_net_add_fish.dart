@@ -53,11 +53,12 @@ class _GetNetAddFishState extends State<GetNetAddFish> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, size: 15, color: gray7),
           onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        const NetTabBarView(initialTabIndex: 0)));
+            Navigator.pop(context, widget.recordId);
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) =>
+            //             const NetTabBarView(initialTabIndex: 0)));
           },
         ),
         centerTitle: true,

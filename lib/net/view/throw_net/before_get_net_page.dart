@@ -43,6 +43,23 @@ class _BeforeGetNetPageState extends State<BeforeGetNetPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+
+  //   // WidgetsBinding을 통해 빌드 완료 후 작업 실행
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     final netRecordProvider =
+  //         Provider.of<NetRecordProvider>(context, listen: false);
+  //     netRecordProvider.resetSpecies(); // 상태를 초기화하는 안전한 방법
+  //   });
+  // }
+
+  @override
   Widget build(BuildContext context) {
     // NetRecordProvider에서 netRecords를 가져옴
     final allRecords = Provider.of<NetRecordProvider>(context).netRecords;

@@ -40,6 +40,8 @@ class _FavoritesViewState extends State<FavoritesView> {
             : null;
       })
       ..loadRequest(Uri.parse(mapUrl!));
+
+    _getLocation();
   }
 
   @override
@@ -63,8 +65,8 @@ class _FavoritesViewState extends State<FavoritesView> {
         setState(() {
           _latController.text = '${position.latitude}';
           _lngController.text = '${position.longitude}';
-          if ((position.latitude! > 31 && position.latitude! < 40) &&
-              (position.longitude! > 120 && position.longitude! < 132)) {
+          if ((position.latitude! > 0 && position.latitude! < 40) &&
+              (position.longitude! > 0 && position.longitude! < 132)) {
             _controller
                 .runJavaScript('fromAppToWeb("${position.latitude}", "${position.longitude}");');
             locationInfo.setLatlon(GeoPoint(position.latitude!, position.longitude!));
@@ -117,7 +119,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
-                        onSubmitted: (value) => setState(() {
+                        onChanged: (value) => setState(() {
                           if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
                             if ((double.parse(_latController.text) > 31 &&
                                     double.parse(_latController.text) < 40) &&
@@ -171,11 +173,11 @@ class _FavoritesViewState extends State<FavoritesView> {
                         cursorColor: primaryBlue500,
                         keyboardType: TextInputType.number,
                         style: const TextStyle(color: Colors.black),
-                        onSubmitted: (value) => setState(() {
+                        onChanged: (value) => setState(() {
                           if (_latController.text.isNotEmpty && _lngController.text.isNotEmpty) {
-                            if ((double.parse(_latController.text) > 31 &&
+                            if ((double.parse(_latController.text) > 0 &&
                                     double.parse(_latController.text) < 40) &&
-                                (double.parse(_lngController.text) > 120 &&
+                                (double.parse(_lngController.text) > 0 &&
                                     double.parse(_lngController.text) < 132)) {
                               _controller.runJavaScript(
                                 'fromAppToWeb("${_latController.text}", "${_lngController.text}");',
@@ -183,7 +185,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                               locationInfo.setLatlon(GeoPoint(double.parse(_latController.text),
                                   double.parse(_lngController.text)));
                             } else {
-                              showSnackBar(context, '지도의 범위 밖입니다. 다시 시도해주세요.');
+                              showSnackBar(context, '지도의 범위 밖입니다. 정확히 입력해 주세요.');
                             }
                           }
                         }),
