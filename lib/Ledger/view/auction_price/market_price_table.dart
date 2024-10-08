@@ -141,8 +141,8 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
   void _showTooltip() {
     _overlayEntry = OverlayEntry(
       builder: (context) => Positioned(
-        top: MediaQuery.of(context).size.height - 655,
-        left: MediaQuery.of(context).size.width - 180,
+        top: MediaQuery.of(context).size.height - 623,
+        left: MediaQuery.of(context).size.width - 142,
         child: Material(
           color: Colors.transparent,
           child: Container(
@@ -199,9 +199,6 @@ class _MarketPriceTableState extends State<MarketPriceTable> {
                 ),
                 Text("오늘의 경락시세", style: header3B().copyWith(height: 0.6)),
                 const SizedBox(height: 12),
-                // Text("소속 조합은 마이페이지에서 변경 가능합니다.\n*가격 표시 기준: ▵ 고가, - 평균가, ▿ 저가",
-                //     style: caption1(gray4)),
-                // const SizedBox(height: 40),
                 if (isLoading)
                   const Center(
                     child: CircularProgressIndicator(),
