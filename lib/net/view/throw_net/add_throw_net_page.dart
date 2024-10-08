@@ -94,92 +94,101 @@ class _AddThrowNetPageState extends State<AddThrowNetPage> {
       ),
       isScrollControlled: true,
       backgroundColor: backgroundWhite,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '위치의 별명을 입력해주세요',
-                style: header3B(),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) => Padding(
+            padding: const EdgeInsets.all(24),
+            child: Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
               ),
-              const SizedBox(height: 8),
-              Text(
-                '해당 위치에 대한 자신만의 별명을 지어주세요.',
-                style: body1(gray6),
-              ),
-              const SizedBox(height: 18),
-              TextField(
-                onTapOutside: (event) =>
-                    FocusManager.instance.primaryFocus?.unfocus(),
-                controller: _nameController,
-                cursorColor: primaryBlue500,
-                style: const TextStyle(color: Colors.black),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: backgroundWhite,
-                  enabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    '위치의 별명을 입력해주세요',
+                    style: header3B(),
                   ),
-                  disabledBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
-                    ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                  const SizedBox(height: 8),
+                  Text(
+                    '해당 위치에 대한 자신만의 별명을 지어주세요.',
+                    style: body1(gray6),
                   ),
-                  focusedBorder: const OutlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: primaryBlue500,
+                  const SizedBox(height: 18),
+                  TextField(
+                    onTapOutside: (event) =>
+                        FocusManager.instance.primaryFocus?.unfocus(),
+                    controller: _nameController,
+                    cursorColor: primaryBlue500,
+                    style: const TextStyle(color: Colors.black),
+                    onChanged: (value) {
+                      // 입력 값이 변경될 때마다 setModalState로 버튼 활성화 상태를 갱신
+                      setModalState(() {});
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: backgroundWhite,
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: primaryBlue500,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
+                      disabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: primaryBlue500,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: primaryBlue500,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                      ),
+                      hintText: '별명을 입력해주세요',
+                      hintStyle: body1(gray3),
+                      contentPadding: const EdgeInsets.all(16),
                     ),
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
                   ),
-                  hintText: '별명을 입력해주세요',
-                  hintStyle: body1(gray3),
-                  contentPadding: const EdgeInsets.all(16),
-                ),
-              ),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: _nameController.text.isEmpty
-                    ? () => {}
-                    : () {
-                        netRecordProvider.setLocationName(_nameController.text);
-                        netRecordProvider.setThrowTime(DateTime.now());
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: _nameController.text.isEmpty
+                        ? null
+                        : () {
+                            netRecordProvider
+                                .setLocationName(_nameController.text);
+                            netRecordProvider.setThrowTime(DateTime.now());
 
-                        Navigator.pop(context);
+                            Navigator.pop(context);
 
-                        Navigator.pop(context, {
-                          'name': _nameController.text,
-                          'location': latlon ?? const GeoPoint(0, 0),
-                          'throwTime': DateTime.now(),
-                        });
-                      },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  elevation: 0,
-                  backgroundColor:
-                      _nameController.text.isEmpty ? gray2 : primaryBlue500,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                            Navigator.pop(context, {
+                              'name': _nameController.text,
+                              'location': latlon ?? const GeoPoint(0, 0),
+                              'throwTime': DateTime.now(),
+                            });
+                          },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      elevation: 0,
+                      backgroundColor:
+                          _nameController.text.isEmpty ? gray2 : primaryBlue500,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text('투망완료', style: header4(backgroundWhite)),
                   ),
-                ),
-                child: Text('투망완료', style: header4(backgroundWhite)),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
