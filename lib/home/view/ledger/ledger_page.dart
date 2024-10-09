@@ -372,8 +372,15 @@ class _LedgerPageState extends State<LedgerPage> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 10.0, bottom: 24),
-                  child: SvgPicture.asset('assets/icons/topDivider.svg',
-                      width: 130),
+                  child: GestureDetector(
+                    onTap: () {
+                      _panelController.hide();
+                    },
+                    child: SvgPicture.asset(
+                      'assets/icons/topDivider.svg',
+                      width: 130,
+                    ),
+                  ),
                 ),
                 Center(
                   child: !hasData
