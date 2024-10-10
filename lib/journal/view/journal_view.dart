@@ -313,13 +313,20 @@ class _JournalViewState extends State<JournalView> {
 
                   // Marker가 있어야 하는 경우에만 Row 위젯을 반환
                   if (hasThrowDateMarker || hasGetDateMarker) {
+                    // 카운터 추가해서 4개 이상은 표시 안되도록 설정
+                    int markerCount = 0;
+
                     return Row(
                       mainAxisSize: MainAxisSize.min,
                       children: netRecord.expand((event) {
                         List<Widget> markers = [];
 
+                        if (markerCount >= 4) {
+                          return markers; // 더 이상 마커 추가 안함
+                        }
+
                         // throwDate에 해당하는 경우 파란색 마커 추가
-                        if (isSameDay(event.throwDate, day)) {
+                        if (isSameDay(event.throwDate, day) && markerCount < 4) {
                           markers.add(
                             Container(
                               margin: const EdgeInsets.only(top: 40, right: 2),
@@ -330,10 +337,11 @@ class _JournalViewState extends State<JournalView> {
                               ),
                             ),
                           );
+                          markerCount++;
                         }
 
                         // getDate에 해당하는 경우 노란색 마커 추가
-                        if (event.isGet && isSameDay(event.getDate, day)) {
+                        if (event.isGet && isSameDay(event.getDate, day) && markerCount < 4) {
                           markers.add(
                             Container(
                               margin: const EdgeInsets.only(top: 40, right: 2),
@@ -344,6 +352,7 @@ class _JournalViewState extends State<JournalView> {
                               ),
                             ),
                           );
+                          markerCount++;
                         }
 
                         return markers;
