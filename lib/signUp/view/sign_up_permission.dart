@@ -39,25 +39,28 @@ class _SignUpPermissionState extends State<SignUpPermission> {
           const SizedBox(height: 16),
           Text("약관에 동의하고\n조업일지를 무료로 이용하세요", style: header1B()),
           const SizedBox(height: 48),
-          CheckboxListTile(
-            title: const Text("전체 약관에 동의합니다"),
-            shape: RoundedRectangleBorder(
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: gray2),
               borderRadius: BorderRadius.circular(5),
-              side: const BorderSide(color: gray2),
+              color: backgroundWhite,
             ),
-            controlAffinity: ListTileControlAffinity.leading,
-            checkColor: backgroundWhite,
-            activeColor: primaryBlue500,
-            value: _fullAgree,
-            onChanged: (value) => {
-              setState(() {
-                _serviceAgree = value!;
-                _privacyAgree = value;
-                _locationAgree = value;
-                _ageAgree = value;
-                _fullAgree = value;
-              })
-            },
+            child: CheckboxListTile(
+              title: const Text("전체 약관에 동의합니다"),
+              controlAffinity: ListTileControlAffinity.leading,
+              checkColor: backgroundWhite,
+              activeColor: primaryBlue500,
+              value: _fullAgree,
+              onChanged: (value) => {
+                setState(() {
+                  _serviceAgree = value!;
+                  _privacyAgree = value;
+                  _locationAgree = value;
+                  _ageAgree = value;
+                  _fullAgree = value;
+                })
+              },
+            ),
           ),
           const SizedBox(height: 20),
           Row(
@@ -79,7 +82,6 @@ class _SignUpPermissionState extends State<SignUpPermission> {
                   child: Text("보기", style: caption1(gray5))),
             ],
           ),
-          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -99,7 +101,6 @@ class _SignUpPermissionState extends State<SignUpPermission> {
                   child: Text("보기", style: caption1(gray5))),
             ],
           ),
-          const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -119,7 +120,6 @@ class _SignUpPermissionState extends State<SignUpPermission> {
                   child: Text("보기", style: caption1(gray5))),
             ],
           ),
-          const SizedBox(height: 8),
           Row(
             children: [
               TextButton.icon(
