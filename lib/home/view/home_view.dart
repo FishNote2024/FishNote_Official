@@ -166,57 +166,59 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               _hasJumped = true;
                             }
 
+                            // 수정된 부분: Column을 고정시키고 오른쪽 스크롤 가능 영역을 분리함
                             return Container(
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal, // 가로 스크롤
-                                controller: _scrollController,
-                                child: Row(
-                                  children: [
-                                    // 제목 Row 추가
-                                    Column(
-                                      children: [
-                                        Text('시간', style: caption2(gray4)),
-                                        const SizedBox(height: 13.0),
-                                        Text('날씨', style: caption2(gray4)),
-                                        const SizedBox(height: 13.0),
-                                        Text('풍속', style: caption2(gray4)),
-                                        const SizedBox(height: 13.0),
-                                        Text('풍향', style: caption2(gray4)),
-                                        const SizedBox(height: 13.0),
-                                        Text('파고', style: caption2(gray4)),
-                                      ],
-                                    ),
-                                    const SizedBox(width: 8),
-                                    // const SizedBox(width: 8.0), // 제목과 데이터 간의 간격 추가
-                                    const SizedBox(
-                                        width: 1,
-                                        child: Divider(color: gray1, height: 158, thickness: 300)),
-                                    const SizedBox(width: 8.0),
-                                    Row(
-                                      children: data.entries.map((entry) {
-                                        String time =
-                                            "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
-                                        Map<String, dynamic> weatherInfo = entry.value;
+                              child: Row(
+                                children: [
+                                  // 고정된 제목 Column
+                                  Column(
+                                    children: [
+                                      Text('시간', style: caption2(gray4)),
+                                      const SizedBox(height: 13.0),
+                                      Text('날씨', style: caption2(gray4)),
+                                      const SizedBox(height: 13.0),
+                                      Text('풍속', style: caption2(gray4)),
+                                      const SizedBox(height: 13.0),
+                                      Text('풍향', style: caption2(gray4)),
+                                      const SizedBox(height: 13.0),
+                                      Text('파고', style: caption2(gray4)),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 8),
+                                  // Divider
+                                  const SizedBox(
+                                      width: 1,
+                                      child: Divider(color: gray1, height: 158, thickness: 158)),
+                                  const SizedBox(width: 8.0),
+                                  // 스크롤 가능한 데이터 부분
+                                  Expanded(
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal, // 가로 스크롤
+                                      controller: _scrollController,
+                                      child: Row(
+                                        children: data.entries.map((entry) {
+                                          String time =
+                                              "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
+                                          Map<String, dynamic> weatherInfo = entry.value;
 
-                                        String direction =
-                                            _convertVecToDirection(int.parse(weatherInfo['VEC']));
-                                        IconData icon =
-                                            _getWeatherIcon(int.parse(weatherInfo['SKY']));
+                                          String direction = _convertVecToDirection(int.parse(weatherInfo['VEC']));
+                                          IconData icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
 
-                                        return Padding(
-                                          padding: const EdgeInsets.all(0.0),
-                                          child: weatherColumn(
-                                            time,
-                                            icon,
-                                            '${weatherInfo['WSD']}m/s',
-                                            direction,
-                                            '${weatherInfo['WAV']}m',
-                                          ),
-                                        );
-                                      }).toList(),
+                                          return Padding(
+                                            padding: const EdgeInsets.all(0.0),
+                                            child: weatherColumn(
+                                              time,
+                                              icon,
+                                              '${weatherInfo['WSD']}m/s',
+                                              direction,
+                                              '${weatherInfo['WAV']}m',
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             );
                           }),
@@ -338,15 +340,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       width: 60,
       child: Column(
         children: [
-          Text(time),
+          Text(time, style: caption2(gray4)),
           const SizedBox(height: 8),
           Icon(icon),
           const SizedBox(height: 8),
-          Text(windSpeed),
+          Text(windSpeed, style: caption2(gray6)),
           const SizedBox(height: 8),
           Text(direction),
           const SizedBox(height: 8),
-          Text(waveHeight),
+          Text(waveHeight, style: caption2(gray6)),
           const Padding(
             padding: EdgeInsets.only(left: 59),
             child: SizedBox(
