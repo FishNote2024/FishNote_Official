@@ -57,7 +57,7 @@ class _SignUpViewState extends State<SignUpView> {
         backgroundColor: backgroundBlue,
         surfaceTintColor: backgroundBlue,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.keyboard_arrow_left_rounded, color: Colors.black),
           onPressed: () {
             setState(() {
               if (_currentPage > 0) {

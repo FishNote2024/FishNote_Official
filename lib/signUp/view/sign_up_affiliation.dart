@@ -85,15 +85,12 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextField(
-                          onTapOutside: (event) =>
-                              FocusManager.instance.primaryFocus?.unfocus(),
+                          onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                           controller: _controller,
                           cursorColor: primaryBlue500,
                           readOnly: affiliation != null,
                           style: TextStyle(
-                              color: _controller.text == affiliation
-                                  ? Colors.white
-                                  : Colors.black),
+                              color: _controller.text == affiliation ? Colors.white : Colors.black),
                           onChanged: (value) => setState(() {
                             if (_controller.text.isNotEmpty) {
                               searchResult = [];
@@ -109,9 +106,8 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
                           }),
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: _controller.text == affiliation
-                                ? primaryBlue500
-                                : backgroundWhite,
+                            fillColor:
+                                _controller.text == affiliation ? primaryBlue500 : backgroundWhite,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(
                                 width: 1,
@@ -141,7 +137,7 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
                                       }),
                                     },
                                   )
-                                : const Icon(Icons.search),
+                                : const Icon(Icons.search_rounded),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -173,13 +169,13 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   const BorderRadius.all(Radius.circular(5)),
+                                              color: backgroundWhite,
                                               border: Border.all(
                                                 width: 1,
                                                 color: primaryBlue100,
                                               ),
                                             ),
-                                            child:
-                                                Text(searchResult[index], style: body1(gray6)),
+                                            child: Text(searchResult[index], style: body1(gray6)),
                                           ),
                                         ),
                                         separatorBuilder: (context, index) =>
@@ -199,6 +195,7 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 const BorderRadius.all(Radius.circular(4)),
+                                            color: backgroundWhite,
                                             border: Border.all(
                                               width: 1,
                                               color: gray2,
@@ -228,8 +225,7 @@ class _SignUpAffiliationState extends State<SignUpAffiliation> {
                                           ),
                                           separatorBuilder: (context, index) => const Padding(
                                             padding: EdgeInsets.symmetric(horizontal: 16),
-                                            child:
-                                                Divider(thickness: 1, color: gray1, height: 0),
+                                            child: Divider(thickness: 1, color: gray1, height: 0),
                                           ),
                                           itemCount: items.length,
                                         ),

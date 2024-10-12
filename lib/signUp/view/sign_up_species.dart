@@ -94,7 +94,7 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                 hintText: '어종 이름을 입력해주세요',
                 hintStyle: body1(gray3),
                 contentPadding: const EdgeInsets.all(16),
-                suffixIcon: const Icon(Icons.search),
+                suffixIcon: const Icon(Icons.search_rounded),
               ),
             ),
             const SizedBox(height: 20),
@@ -143,6 +143,7 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                color: backgroundWhite,
                                 border: Border.all(
                                   width: 1,
                                   color: gray2,
@@ -183,6 +184,7 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: const BorderRadius.all(Radius.circular(4)),
+                                color: backgroundWhite,
                                 border: Border.all(
                                   width: 1,
                                   color: gray2,
@@ -242,6 +244,7 @@ class _SignUpSpeciesState extends State<SignUpSpecies> {
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
                                   borderRadius: const BorderRadius.all(Radius.circular(5)),
+                                  color: backgroundWhite,
                                   border: Border.all(
                                     width: 1,
                                     color: primaryBlue100,
