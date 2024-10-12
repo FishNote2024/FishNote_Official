@@ -45,12 +45,14 @@ class _SignUpYearExperienceState extends State<SignUpYearExperience> {
           DecoratedBox(
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.all(Radius.circular(5)),
+              color: backgroundWhite,
               border: Border.all(
                 width: 1,
                 color: dropdownValue == null ? gray2 : primaryBlue500,
               ),
             ),
             child: DropdownButton<String>(
+              icon: const Icon(Icons.keyboard_arrow_down_rounded),
               hint: Text('햇수를 선택해주세요', style: body1(gray3)),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               underline: const SizedBox.shrink(),

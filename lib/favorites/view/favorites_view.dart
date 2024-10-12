@@ -101,10 +101,12 @@ class _FavoritesViewState extends State<FavoritesView> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text('변경할 위치를 확인해주세요', style: header1B()),
+                const SizedBox(height: 8),
                 Text('지도에서 위치를 직접 선택하거나\n위도 경도를 직접 입력해서 위치를 조정할 수 있습니다.', style: body1()),
                 const SizedBox(height: 24),
                 Row(
@@ -240,7 +242,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                                 _latController, _lngController, _nameController, locationInfo),
                             icon: const Icon(Icons.star_rate_rounded),
                             color: primaryBlue500,
-                            iconSize: 24,
+                            iconSize: 32,
                             style: IconButton.styleFrom(
                               backgroundColor: backgroundWhite,
                               shape: const CircleBorder(
@@ -251,6 +253,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                               ),
                             ),
                           ),
+                          const SizedBox(height: 8),
                           IconButton(
                             onPressed: () {
                               setState(() {
@@ -260,6 +263,7 @@ class _FavoritesViewState extends State<FavoritesView> {
                             icon: SvgPicture.asset(
                               'assets/icons/current_location.svg',
                               colorFilter: const ColorFilter.mode(primaryBlue500, BlendMode.srcIn),
+                              height: 32,
                             ),
                             style: IconButton.styleFrom(
                               backgroundColor: backgroundWhite,

@@ -89,6 +89,7 @@ class _LineChartViewState extends State<LineChartView> {
               bottomTitles: AxisTitles(sideTitles: bottomTitles),
             ),
             extraLinesData: ExtraLinesData(
+              extraLinesOnTop: false,
               verticalLines: List.generate(values.length, (index) {
                 return VerticalLine(
                   x: index.toDouble(),
@@ -105,7 +106,6 @@ class _LineChartViewState extends State<LineChartView> {
                 }),
                 color: primaryBlue500,
                 barWidth: 1,
-                isStrokeCapRound: true,
                 belowBarData: BarAreaData(show: false),
               ),
             ],

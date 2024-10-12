@@ -17,6 +17,14 @@ class PieChartView extends StatefulWidget {
 
 class _PieChartViewState extends State<PieChartView> {
   int touchedIndex = 0;
+  List<Color> blues = [
+    primaryBlue600,
+    primaryBlue500,
+    primaryBlue400,
+    primaryBlue300,
+    primaryBlue200
+  ];
+  List<Color> yellows = [primaryYellow900, primaryYellow800, primaryYellow700, primaryYellow600];
 
   @override
   Widget build(BuildContext context) {
@@ -89,32 +97,31 @@ class _PieChartViewState extends State<PieChartView> {
     //   payCategoryList[maxIndex] = temp2;
     // }
 
-    final List<ChartData> data = widget.value == 1
+    final List<ChartData> data = widget.value == 0
         ? List.generate(payCategoryList.length, (index) {
             return ChartData(
               title: payCategoryList[index],
               value: payAmountList[index],
-              color: Colors.yellow[900 - 100 * (index + 1)]!,
+              color: yellows[index],
             );
           })
         : List.generate(saleSpeciesList.length, (index) {
             return ChartData(
               title: saleSpeciesList[index],
               value: salePriceList[index],
-              color: Colors.blue[900 - 100 * (index + 1)]!,
+              color: blues[index],
             );
           });
 
     return data.map((ChartData data) {
       return PieChartSectionData(
-        titlePositionPercentageOffset: 0.8,
         color: data.color,
         value: data.value,
         title: widget.value == 0
-            ? '${data.title}\n${(data.value / totalSale * 100).toStringAsFixed(1)}%'
-            : '${data.title}\n${(data.value / totalPay * 100).toStringAsFixed(1)}%',
+            ? '${data.title}\n${(data.value / totalPay * 100).toStringAsFixed(1)}%'
+            : '${data.title}\n${(data.value / totalSale * 100).toStringAsFixed(1)}%',
         radius: radius,
-        titleStyle: caption1(gray8),
+        titleStyle: caption1(widget.value == 0 ? gray8 : backgroundWhite),
       );
     }).toList();
   }
