@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
 class NetRecord {
-  final DateTime throwDate;
-  final DateTime getDate;
+  DateTime throwDate;
+  DateTime getDate;
   final String locationName;
   final int daysSince;
   final String id;
@@ -263,6 +263,7 @@ class NetRecordProvider with ChangeNotifier {
         amount: amount ?? existingRecord.amount,
         memo: memo ?? existingRecord.memo,
         fishData: existingRecord.fishData,
+        wave: existingRecord.wave,
       );
       notifyListeners();
 
