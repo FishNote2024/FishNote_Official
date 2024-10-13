@@ -43,7 +43,7 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
             Navigator.pop(context);
           },
         ),
-        title: Text(DateFormat('MM.dd (E)', 'ko_KR').format(date)),
+        title: Text(DateFormat('MM.dd (E)', 'ko_KR').format(date), style: body2(textBlack),),
         centerTitle: true,
         actions: [
           if (_events.isNotEmpty)
@@ -89,36 +89,36 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                 children: [
                   Text(
                     '${DateFormat('HH:mm').format(event.throwDate)} $locationName',
-                    style: header3B(gray8),
+                    style: header4(gray8),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   Text.rich(
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: '$action시간: ',
-                          style: body2(gray5),
+                          text: '$action시간  ',
+                          style: body3(gray5),
                         ),
                         TextSpan(
                           text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
                               .format(event.throwDate),
-                          style: body2(black),
+                          style: body1(black),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 12),
                   Text.rich(
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: '$action위치: ',
-                          style: body2(gray5),
+                          text: '$action위치  ',
+                          style: body3(gray5),
                         ),
                         TextSpan(
                           text:
                           '위도 ${event.location.latitude} 경도 ${event.location.longitude}',
-                          style: body2(black),
+                          style: body1(black),
                         ),
                       ],
                     ),
@@ -126,19 +126,19 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                   const SizedBox(height: 16.5),
                   Text(
                     '해상 기록',
-                    style: header3B(gray8),
+                    style: header4(gray8),
                   ),
                   const SizedBox(height: 16.5),
                   Text.rich(
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: '파고: ',
-                          style: body2(gray5),
+                          text: '파고  ',
+                          style: body3(gray5),
                         ),
                         TextSpan(
                           text: '${event.wave}m',
-                          style: body2(black),
+                          style: body1(black),
                         ),
                       ],
                     ),
@@ -147,20 +147,20 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                     const SizedBox(height: 16.5),
                     Text(
                       '양망기록',
-                      style: header3B(gray8),
+                      style: header4(gray8),
                     ),
                     const SizedBox(height: 16.5),
                     Text.rich(
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: '양망시간: ',
-                            style: body2(gray5),
+                            text: '양망시간  ',
+                            style: body3(gray5),
                           ),
                           TextSpan(
                             text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
                                 .format(event.getDate),
-                            style: body2(black),
+                            style: body1(black),
                           ),
                         ],
                       ),
@@ -168,7 +168,7 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                     const SizedBox(height: 16.5),
                     Text(
                       '어획',
-                      style: header3B(gray8),
+                      style: header4(gray8),
                     ),
                     const SizedBox(height: 16.5),
                     Column(
@@ -179,35 +179,43 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                               vertical: 8.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
+
                             children: [
                               Text.rich(
                                 TextSpan(
                                   children: [
                                     TextSpan(
                                       text: '어종             ',
-                                      style: body2(gray5),
+                                      style: body3(gray5),
                                     ),
                                     TextSpan(
                                       text:
-                                      '${event.species.elementAt(index)}\n',
-                                      style: body2(black),
+                                      '${event.species.elementAt(index)}',
+                                      style: body1(black),
                                     ),
-                                    TextSpan(
-                                      text: '어획량         ',
-                                      style: body2(gray5),
-                                    ),
-                                    TextSpan(
-                                      text:
-                                      '${event.amount[index]} kg',
-                                      style: body2(black),
-                                    ),
-                                  ],
+                              ]),
+                              ),
+                              const SizedBox(height: 8),
+                              Text.rich(
+                                TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text: '어획량         ',
+                                        style: body3(gray5),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                        '${event.amount[index]} kg',
+                                        style: body1(black),
+                                      ),
+                                    ],
                                 ),
                               ),
-                              const SizedBox(
-                                height: 16,
+                              const SizedBox(height: 12),
+                              const Divider(
+                                color: gray1,
+                                thickness: 1,
                               ),
-                              const Divider(),
                             ],
                           ),
                         );
@@ -216,7 +224,7 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
                     const SizedBox(height: 16.5),
                     Text(
                       '메모',
-                      style: header3B(gray8),
+                      style: header4(gray8),
                     ),
                     const SizedBox(height: 16.5),
                     Container(
