@@ -268,7 +268,7 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
   Widget weatherColumn(String time, String icon, String temp, String rainPercent,
       String windSpeed, int vec, String rain, String waveHeight) {
     return SizedBox(
-      width: 70,
+      width: 60,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
