@@ -87,7 +87,7 @@ class _JournalViewState extends State<JournalView> {
             );
           },
         ),
-        title: const Text("조업 일지"),
+        title: Text("조업 일지", style: body2(textBlack),),
       ),
       body: SlidingUpPanel(
         controller: _panelController,
@@ -118,7 +118,7 @@ class _JournalViewState extends State<JournalView> {
   Widget _buildSlidingPanel(ScrollController sc) {
     return ListView(
       controller: sc,
-      padding: const EdgeInsets.all(33),
+      padding: const EdgeInsets.all(16),
       children: [
         Center(
           child: Text(
@@ -162,38 +162,65 @@ class _JournalViewState extends State<JournalView> {
                       final event = value[index];
                       return Card(
                         color: Colors.white,
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 16),
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                DateFormat('HH:mm').format(event.throwDate) +
-                                    ' ${event.locationName}',
-                                style: header3B(primaryBlue500),
+                                '${DateFormat('HH:mm').format(event.throwDate)} ${event.locationName}',
+                                style: header4(primaryBlue500),
                               ),
                               SizedBox(height: 16),
-                              Text(
-                                  '투망 시간 : ' +
-                                      DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: '투망시간  ',
+                                      style: body3(gray5),
+                                    ),
+                                    TextSpan(
+                                      text: DateFormat('MM.dd(E) HH시 mm분', 'ko_KR')
                                           .format(event.throwDate),
-                                  style: body2(gray8)),
+                                      style: body1(black),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               SizedBox(height: 4),
-                              Text(
-                                '투망 위치 : 위도 ${event.location.latitude} 경도 ${event.location.longitude}',
-                                style: TextStyle(fontSize: 14),
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: '투망위치  ',
+                                      style: body3(gray5),
+                                    ),
+                                    TextSpan(
+                                      text: "위도 ${event.location.latitude} 경도 ${event.location.longitude}",
+                                      style: body1(black),
+                                    ),
+                                  ],
+                                ),
                               ),
                               SizedBox(height: 16.5),
                               Text(
                                 '해상 기록',
                                 style: header4(gray8),
                               ),
-                              SizedBox(height: 16.5),
-                              Text(
-                                '파고: ${event.wave}m', //파고
-                                style: body1(gray8),
+                              const SizedBox(height: 16.5),
+                              Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: '파고  ',
+                                      style: body3(gray5),
+                                    ),
+                                    TextSpan(
+                                      text: "${event.wave}m",
+                                      style: body1(black),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -227,6 +254,46 @@ class _JournalViewState extends State<JournalView> {
       children: [
         Stack(
           children: [
+            Positioned(
+              top: 60,
+              left: 16,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // 첫 번째 원과 텍스트
+                  Row(
+                    children: [
+                      Container(
+                        width: 5.0,
+                        height: 5.0,
+                        decoration: const BoxDecoration(
+                          color: primaryBlue500, // Show blue for today
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 4.0), // 원과 텍스트 사이의 간격
+                      Text("투망", style: caption1(gray6)), // 첫 번째 텍스트
+                    ],
+                  ),
+                  const SizedBox(width: 16.0), // 두 개의 그룹 사이 간격
+                  // 두 번째 원과 텍스트
+                  Row(
+                    children: [
+                      Container(
+                        width: 5.0,
+                        height: 5.0,
+                        decoration: const BoxDecoration(
+                          color: primaryYellow700,// Show blue for today
+                          shape: BoxShape.circle,
+                        )
+                      ),
+                      const SizedBox(width: 4.0), // 원과 텍스트 사이의 간격
+                      Text("양망", style: caption1(gray6)), // 두 번째 텍스트
+                    ],
+                  ),
+                ],
+              ),
+            ),
             TableCalendar<NetRecord>(
               firstDay: DateTime.utc(2020, 12, 31),
               lastDay: DateTime.utc(2030, 1, 1),
@@ -263,7 +330,7 @@ class _JournalViewState extends State<JournalView> {
                 formatButtonVisible: false,
                 titleTextStyle: body1(gray6),
                 headerPadding:
-                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 12),
+                    const EdgeInsets.only(right: 65, left:65,bottom: 30, top: 17.5),
                 leftChevronIcon: const Icon(Icons.arrow_back_ios, size: 15.0),
                 rightChevronIcon:
                     const Icon(Icons.arrow_forward_ios, size: 15.0),

@@ -32,7 +32,7 @@ class DetailButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),  // 내부 여백 설정
           minimumSize: const Size(304, 16),
         ),
-        child: Text(text, style: body1(color)),
+        child: Text(text, style: header4(color)),
       ),
     );
   }
