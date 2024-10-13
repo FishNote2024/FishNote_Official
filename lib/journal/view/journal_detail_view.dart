@@ -43,7 +43,7 @@ class _JournalDetailViewState extends State<JournalDetailView> with RouteAware {
             Navigator.pop(context);
           },
         ),
-        title: Text(DateFormat('MM.dd (E)', 'ko_KR').format(date), style: body2(textBlack),),
+        title: Text(DateFormat('MM월 dd일 (E)', 'ko_KR').format(date), style: body2(textBlack),),
         centerTitle: true,
         actions: [
           if (_events.isNotEmpty)
