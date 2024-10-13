@@ -201,8 +201,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                               "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
                                           Map<String, dynamic> weatherInfo = entry.value;
 
-                                          String direction = _convertVecToDirection(int.parse(weatherInfo['VEC']));
-                                          IconData icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
+                                          int vec = int.parse(weatherInfo['VEC']);
+                                          String icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
 
                                           return Padding(
                                             padding: const EdgeInsets.all(0.0),
@@ -210,7 +210,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                               time,
                                               icon,
                                               '${weatherInfo['WSD']}m/s',
-                                              direction,
+                                              vec,
                                               '${weatherInfo['WAV']}m',
                                             ),
                                           );
@@ -319,34 +319,23 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     return '↑';
   }
 
-  IconData _getWeatherIcon(int sky) {
-    switch (sky) {
-      case 1:
-        return Icons.wb_sunny;
-      case 2:
-        return Icons.cloud;
-      case 3:
-        return Icons.cloud_queue;
-      case 4:
-        return Icons.grain; // 비 또는 눈 아이콘으로 변경 가능
-      default:
-        return Icons.wb_sunny;
-    }
-  }
 
   Widget weatherColumn(
-      String time, IconData icon, String windSpeed, String direction, String waveHeight) {
+      String time, String icon, String windSpeed, int vec, String waveHeight) {
     return SizedBox(
       width: 60,
       child: Column(
         children: [
           Text(time, style: caption2(gray4)),
           const SizedBox(height: 8),
-          Icon(icon),
+          SvgPicture.asset(icon),
           const SizedBox(height: 8),
           Text(windSpeed, style: caption2(gray6)),
           const SizedBox(height: 8),
-          Text(direction),
+          Transform.rotate(
+            angle: vec * (3.14159 / 180), // 각도를 라디안으로 변환
+            child: SvgPicture.asset('assets/icons/azimuth.svg'), // 회전시킬 화살표 SVG 파일
+          ),
           const SizedBox(height: 8),
           Text(waveHeight, style: caption2(gray6)),
           const Padding(
@@ -423,5 +412,20 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         const NetWaitCard()
       ],
     );
+  }
+
+  String _getWeatherIcon(int sky) {
+    switch (sky) {
+      case 1:
+        return 'assets/icons/sun.svg';
+      case 2:
+        return ('assets/icons/clouds.svg');
+      case 3:
+        return  ('assets/icons/cloudSun.svg');
+      case 4:
+        return ('assets/icons/rain.svg'); // 비 또는 눈 아이콘으로 변경 가능
+      default:
+        return ('assets/icons/sun.svg');
+    }
   }
 }

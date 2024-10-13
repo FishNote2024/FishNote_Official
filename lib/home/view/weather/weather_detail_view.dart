@@ -37,7 +37,7 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
     });
     if (!_hasJumped) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _scrollController.jumpTo(widget.differenceInMinutes.toDouble() - 46);
+        _scrollController.jumpTo(widget.differenceInMinutes.toDouble() - 90);
       });
       _hasJumped = true;
     }
@@ -120,77 +120,90 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8.0),
                       border: Border.all(color: gray2)),
-                  child: Row(
+                  child: Column(
                     children: [
-                      // 고정된 제목 Column
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Container(
+                          padding: const EdgeInsets.only(left: 16, top: 16),
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "날씨 및 해양정보",
+                            style: body2(gray8),
+                            textAlign: TextAlign.left,
+                          )),
+                      const SizedBox(height: 12),
+                      Row(
                         children: [
-                          const SizedBox(height: 16),
-                          Text('시간', style: caption2(gray4), textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          Text('날씨', style: caption2(gray4), textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          Text('온도', style: caption2(gray4), textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          Text('강수\n확률', style: caption2(gray4), textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          Text('풍속', style: caption2(gray4), textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          Text('풍향', style: caption2(gray4), textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          Text('강수량', style: caption2(gray4), textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                          Text('파고', style: caption2(gray4), textAlign: TextAlign.center),
-                          const SizedBox(height: 16),
-                        ],
-                      ),
-
-                      const SizedBox(width: 8),
-                      const SizedBox(
-                        width: 1,
-                        child: Divider(
-                          color: gray1,
-                          height: 240,
-                          thickness: 240,
-                        ),
-                      ),
-                      const SizedBox(width: 8.0),
-                      // 스크롤 가능한 데이터 부분
-                      Expanded(
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal, // 가로 스크롤
-                          controller: _scrollController,
-                          child: Row(
-                            children: widget.data.entries.map((entry) {
-                              String time =
-                                  "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
-                              Map<String, dynamic> weatherInfo = entry.value;
-                              String rain;
-                              if (weatherInfo['PCP'] == "강수없음") {
-                                rain = "0mm";
-                              } else if (weatherInfo['PCP'] == "1mm 미만") {
-                                rain = "1mm";
-                              } else {
-                                rain = weatherInfo['PCP'];
-                              }
-                              String icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
-
-                              return Padding(
-                                padding: const EdgeInsets.all(0.0),
-                                child: weatherColumn(
-                                    time,
-                                    icon,
-                                    '${weatherInfo['TMP']}°C',
-                                    '${weatherInfo['POP']}%',
-                                    '${weatherInfo['WSD']}m/s',
-                                    int.parse(weatherInfo['VEC']),
-                                    rain,
-                                    '${weatherInfo['WAV']}m'),
-                              );
-                            }).toList(),
+                          // 고정된 제목 Column
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 16),
+                              Text('시간', style: caption2(gray4), textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              Text('날씨', style: caption2(gray4), textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              Text('온도', style: caption2(gray4), textAlign: TextAlign.center),
+                              const SizedBox(height: 8),
+                              Text('강수\n확률', style: caption2(gray4), textAlign: TextAlign.center),
+                              const SizedBox(height: 8),
+                              Text('풍속', style: caption2(gray4), textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              Text('풍향', style: caption2(gray4), textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              Text('강수량', style: caption2(gray4), textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                              Text('파고', style: caption2(gray4), textAlign: TextAlign.center),
+                              const SizedBox(height: 16),
+                            ],
                           ),
-                        ),
+
+                          const SizedBox(width: 8),
+                          const SizedBox(
+                            width: 1,
+                            child: Divider(
+                              color: gray1,
+                              height: 240,
+                              thickness: 240,
+                            ),
+                          ),
+                          const SizedBox(width: 8.0),
+                          // 스크롤 가능한 데이터 부분
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal, // 가로 스크롤
+                              controller: _scrollController,
+                              child: Row(
+                                children: widget.data.entries.map((entry) {
+                                  String time =
+                                      "${entry.key.substring(8, 10)}:${entry.key.substring(10, 12)}";
+                                  Map<String, dynamic> weatherInfo = entry.value;
+                                  String rain;
+                                  if (weatherInfo['PCP'] == "강수없음") {
+                                    rain = "0mm";
+                                  } else if (weatherInfo['PCP'] == "1mm 미만") {
+                                    rain = "1mm";
+                                  } else {
+                                    rain = weatherInfo['PCP'];
+                                  }
+                                  String icon = _getWeatherIcon(int.parse(weatherInfo['SKY']));
+
+                                  return Padding(
+                                    padding: const EdgeInsets.all(0.0),
+                                    child: weatherColumn(
+                                        time,
+                                        icon,
+                                        '${weatherInfo['TMP']}°C',
+                                        '${weatherInfo['POP']}%',
+                                        '${weatherInfo['WSD']}m/s',
+                                        int.parse(weatherInfo['VEC']),
+                                        rain,
+                                        '${weatherInfo['WAV']}m'),
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -201,9 +214,9 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
                 top: 0,
                 bottom: 0,
                 child: SizedBox(
-                  height: 10,
+                  height: 5,
                   child: VerticalDivider(
-                    indent: 20,
+                    indent: 90,
                     color: primaryBlue500,
                     thickness: 2,
                     width: 20,
@@ -259,26 +272,24 @@ class _WeatherDetailViewState extends State<WeatherDetailView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 12),
           Text(time, style: caption2(gray4), textAlign: TextAlign.center),
-          const SizedBox(height: 11),
+          const SizedBox(height: 10),
           SvgPicture.asset(icon),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Text(temp, style: caption2(gray6), textAlign: TextAlign.center),
           const SizedBox(height: 16),
           Text(rainPercent, style: caption2(gray6), textAlign: TextAlign.center),
           const SizedBox(height: 16),
           Text(windSpeed, style: caption2(gray6), textAlign: TextAlign.center),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Transform.rotate(
             angle: vec * (3.14159 / 180), // 각도를 라디안으로 변환
             child: SvgPicture.asset('assets/icons/azimuth.svg'), // 회전시킬 화살표 SVG 파일
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Text(rain, style: caption2(gray6), textAlign: TextAlign.center),
           const SizedBox(height: 16),
           Text(waveHeight, style: caption2(gray6), textAlign: TextAlign.center),
-          const SizedBox(height: 16),
         ],
       ),
     );
